@@ -1,0 +1,35 @@
+ 
+
+// 此文件将由 MIDL 工具处理以 
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(8B3CFE6B-AB15-4C63-A3DD-7619621724D5),
+	dual,
+	nonextensible,
+	helpstring("IShellIconHandler 接口"),
+	pointer_default(unique)
+]
+interface IShellIconHandler : IDispatch{
+	[id(1), helpstring("方法Enable")] HRESULT Enable([in] LONG b);
+};
+[
+	uuid(368AA651-8CD9-4D2C-A6C6-BF767AB215AB),
+	version(1.0),
+	helpstring("ExtIconHandler 1.0 类型库")
+]
+library ExtIconHandlerLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(EE606F2F-AA02-482F-9A83-17219D749CBE),
+		helpstring("ShellIconHandler Class")
+	]
+	coclass ShellIconHandler
+	{
+		[default] interface IShellIconHandler;
+	};
+};

