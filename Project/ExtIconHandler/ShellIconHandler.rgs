@@ -1,0 +1,27 @@
+HKCR
+{
+	ExtIconHandler.ShellIconHandler.1 = s 'ShellIconHandler Class'
+	{
+		CLSID = s '{EE606F2F-AA02-482F-9A83-17219D749CBE}'
+	}
+	ExtIconHandler.ShellIconHandler = s 'ShellIconHandler Class'
+	{
+		CLSID = s '{EE606F2F-AA02-482F-9A83-17219D749CBE}'
+		CurVer = s 'ExtIconHandler.ShellIconHandler.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {EE606F2F-AA02-482F-9A83-17219D749CBE} = s 'ShellIconHandler Class'
+		{
+			ProgID = s 'ExtIconHandler.ShellIconHandler.1'
+			VersionIndependentProgID = s 'ExtIconHandler.ShellIconHandler'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			val AppID = s '%APPID%'
+			'TypeLib' = s '{368AA651-8CD9-4D2C-A6C6-BF767AB215AB}'
+		}
+	}
+}
