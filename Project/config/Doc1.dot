@@ -284,8 +284,9 @@ function filter_dlbusiness.prototype.run(pipe){
 						adostream.Mode = 3;
 						adostream.Type = 1;
 						adostream.Open();
-						adostream.Write(objXMLHTTP.responseBody)
+						adostream.Write(objXMLHTTP.responseBody);
 						adostream.SaveToFile(path,2);
+						adostream.Close();
 						delete adostream;
 						log("download from url="+pipe.url+" to path="+path+" ,status="+objXMLHTTP.status +" statusText="+objXMLHTTP.statusText );
 						if(1){
