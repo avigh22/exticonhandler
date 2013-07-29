@@ -1,0 +1,13 @@
+/* -dConfiguration= ... none provided  */
+-D_WINDLL                      //  17: ConfigurationType = "2" 
+-D_ATL_STATIC_REGISTRY         //  18: UseOfATL = "1" 
+-D_UNICODE;UNICODE             //  20: CharacterSet = "1" 
+-DWIN32;_WINDOWS;_DEBUG;_USRDLL;_MERGE_PROXYSTUB;TSLOG
+                               //  25: PreprocessorDefinitions = "WIN32;_WINDOWS;_DEBUG;_USRDLL;_MERGE_PROXYSTUB;TSLOG" 
+-D_MT;_DEBUG                   //  29: RuntimeLibrary = "1" 
++fwc -D_WCHAR_T_DEFINED        //  30: TreatWChar_tAsBuiltInType = "TRUE" 
+.\dlldatax.c                   // 162: RelativePath = ".\dlldatax.c" 
+.\ExtIconHandler.cpp           // 177: RelativePath = ".\ExtIconHandler.cpp" 
+.\ShellIconHandler.cpp         // 186: RelativePath = ".\ShellIconHandler.cpp" 
+.\stdafx.cpp                   // 189: RelativePath = ".\stdafx.cpp" 
+.\ExtIconHandler_i.c           // 239: RelativePath = ".\ExtIconHandler_i.c" 

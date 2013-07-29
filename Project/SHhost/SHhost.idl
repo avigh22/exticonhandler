@@ -1,0 +1,288 @@
+// SHhost.idl : SHhost 的 IDL 源
+//
+
+// 此文件将由 MIDL 工具处理以
+// 产生类型库(SHhost.tlb)和封送处理代码。
+
+#include <mshtmdid.h>
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(E9F2F03D-104A-44F3-AEF6-BD93D04BEF9B),
+	dual,
+	nonextensible,
+	helpstring("IXScriptHost 接口"),
+	pointer_default(unique)
+]
+interface IXScriptHost : IDispatch{
+	[id(1), helpstring("方法Load")]			HRESULT Load( [in] BSTR FileName, [in, defaultvalue(1)] LONG Mode );
+	[id(2), helpstring("方法Run")]			HRESULT Run([out, retval]VARIANT* pRet );
+	[id(3), helpstring("方法GetCurFile")]	HRESULT GetCurFile( [out, retval] BSTR *pFileName );
+
+	[id(4), helpstring("方法SetAddin")] HRESULT SetAddin([in] BSTR name, [in] IDispatch* object);
+};
+[
+	object,
+	uuid(9AA24DCC-5593-4845-BE0B-A8F04E926933),
+	dual,
+	nonextensible,
+	helpstring("IXSH 接口"),
+	pointer_default(unique)
+]
+interface IXSH : IDispatch{
+	[id(DISPID_IHTMLWINDOW2_ALERT+1), helpstring("方法Echo")]				HRESULT Echo( [in] BSTR msg );
+	[id(DISPID_IHTMLWINDOW2_ALERT), helpstring("方法alert")]				HRESULT alert( [in] BSTR msg );
+	[id(DISPID_IHTMLELEMENT2_ATTACHEVENT), helpstring("方法attachEvent")]	HRESULT attachEvent( [in] IDispatch* source, [in] BSTR event, [in] VARIANT notify, [in, optional] VARIANT listener, [out,retval] VARIANT_BOOL* pRetVal );
+	[id(DISPID_IHTMLELEMENT2_DETACHEVENT), helpstring("方法detachEvent")]	HRESULT detachEvent( [in] IDispatch* source, [in] BSTR event, [in] VARIANT notify, [in, optional] VARIANT listener, [out,retval] VARIANT_BOOL* pRetVal );
+	[id(5), helpstring("方法SetActiveScript")] HRESULT SetActiveScript([in] IUnknown* pActiveScript);
+	[id(6), helpstring("方法exit")] HRESULT exit([in,defaultvalue(0)] long code);
+
+	//  DISPID_IHTMLWINDOW3_SETTIMEOUT
+	[id( 1103), helpstring("方法setTimeout")] HRESULT setTimeout([in] VARIANT expression, [in] long msec, [in, optional ] VARIANT language, [out,retval] long* timerID);
+
+	[id( 1104), helpstring("方法clearTimeout")] HRESULT clearTimeout([in] LONG timerID);
+	// DISPID_IHTMLWINDOW3_SETINTERVAL
+	[id(1162), helpstring("方法setInterval")] HRESULT setInterval([in] VARIANT expression, [in] long msec, [in, optional] VARIANT language, [out,retval] long* timerID);
+	// DISPID_IHTMLWINDOW2_CLEARINTERVAL
+	[id(1163), helpstring("方法clearInterval")] HRESULT clearInterval([in] LONG timerID);
+	
+	[id(1164), helpstring("方法getAddin")] HRESULT getAddin([in] BSTR name, [out,retval] IDispatch** object);
+	[id(1165), helpstring("方法setAddin")] HRESULT setAddin([in] BSTR name, [in] IDispatch* object);
+	[id(1166), helpstring("方法trace")] HRESULT trace([in] BSTR msg);
+	
+	[id(1190), helpstring("方法createActiveX")] HRESULT createActiveX( [in]BSTR progid,  [out, retval] IDispatch** ppax); 	
+	[id(1191), helpstring("方法createActiveX2")] HRESULT createActiveX2([in] BSTR path, [in]BSTR clsid, [in]BSTR iid, [out, retval] IDispatch** ppax);
+
+ 
+	[propget, id(1205), helpstring("属性 __interrupted")] HRESULT __interrupted([out, retval] LONG* pVal);
+	[propput, id(1205), helpstring("属性 __interrupted")] HRESULT __interrupted([in] LONG newVal);
+	[propget, id(1206), helpstring("属性 external")] HRESULT external([out, retval] IDispatch** pVal);
+	[propget, id(1207), helpstring("属性 __processid")] HRESULT __processid([out, retval] LONG* pVal);
+	[propget, id(1208), helpstring("属性 __processhandle")] HRESULT __processhandle([out, retval] LONG* pVal);
+	[id(1209), helpstring("方法evalFile")] HRESULT evalFile([in] BSTR path, [out,retval] VARIANT* pVarRet);
+	[propget, id(1210), helpstring("属性 windows")] HRESULT windows([out, retval] IDispatch** pVal);
+	[propget, id(1211), helpstring("属性 screen")] HRESULT screen([out, retval] IDispatch** pVal);
+	[propget, id(1212), helpstring("属性 __xpos")] HRESULT __xpos([out, retval] LONG* pVal);
+	[propget, id(1213), helpstring("属性 __ypos")] HRESULT __ypos([out, retval] LONG* pVal);
+	[propget, id(1214), helpstring("属性 storage")] HRESULT storage([out, retval] IDispatch** pVal);
+	[propget, id(1215), helpstring("属性 __isadmin")] HRESULT __isadmin([out, retval] VARIANT_BOOL* pVal);
+};
+[
+	object,
+	uuid(985DB584-D7C7-4F98-BB8E-436E12B28662),
+	dual,
+	nonextensible,
+	helpstring("IActiveXContainer 接口"),
+	pointer_default(unique)
+]
+interface IActiveXContainer : IDispatch{
+	[id(DISPID_OBJECT-1), helpstring("方法createObject")]						HRESULT createObject([in] BSTR clsid, [in] BSTR path);
+	[propget, id(DISPID_IHTMLOBJECTELEMENT_OBJECT), helpstring("属性 object")]	HRESULT object([out, retval] IDispatch** pVal);
+	[propput, id(DISPID_IHTMLOBJECTELEMENT_OBJECT), helpstring("属性 object")]	HRESULT object([in] IDispatch* newVal);
+	[id(DISPID_IHTMLELEMENT2_ATTACHEVENT), helpstring("方法AttachEvent")]		HRESULT attachEvent( [in] BSTR event, [in] VARIANT notify, [in, optional] VARIANT listener, [out,retval] VARIANT_BOOL* pRetVal );
+	[id(DISPID_IHTMLELEMENT2_DETACHEVENT), helpstring("方法DetachEvent")]		HRESULT detachEvent( [in] BSTR event, [in] VARIANT notify, [in, optional] VARIANT listener, [out,retval] VARIANT_BOOL* pRetVal );
+};
+[
+	object,
+	uuid(7547EC94-DF7D-4AE0-A970-F5586B007125),
+	dual,
+	nonextensible,
+	helpstring("IUtility 接口"),
+	pointer_default(unique)
+]
+interface IUtility : IDispatch{
+	[id(1), helpstring("方法GetPID")] HRESULT GetPID([out,retval] BSTR* ppid);
+	//fso.GetFileVersion(WshShell.ExpandEnvironmentStrings(filespec))
+	[id(5), helpstring("方法GetHostVersion")] HRESULT GetHostVersion([out,retval] BSTR* pver);
+	[id(6), helpstring("方法GetHostBuild")] HRESULT GetHostBuild([out,retval] LONG* pv);
+	[id(7), helpstring("方法GetEIVersion")] HRESULT GetEIVersion([out,retval] BSTR* pver);
+	[id(8), helpstring("方法GetEIBuild")] HRESULT GetEIBuild([out,retval] LONG* pv);
+	//WshShell.run WshShell.exec
+	[id(12), helpstring("方法ShellExcute")] HRESULT ShellExcute([in] BSTR app, [in] BSTR param, [in] BSTR workdir, [in,defaultvalue( 0x00000080)] LONG startupflag, [out, retval]LONG *pProcessId);
+ 	[id(16), helpstring("方法GetLastInputInfo")] HRESULT GetLastInputInfo([out,retval] LONG* l);
+	// WshShell.Environment("Process")("key_xxx") = value_xxx
+	[id(17), helpstring("方法SetEnvironmentVariable")] HRESULT SetEnvironmentVariable([in] BSTR name, [in] BSTR value);
+	[id(18), helpstring("方法GetEnvironmentVariable")] HRESULT GetEnvironmentVariable([in] BSTR name, [out,retval] BSTR* pvalue);
+	[id(19), helpstring("方法GetTickCount")] HRESULT GetTickCount([out,retval] LONG* l);
+ 	[id(21), helpstring("方法IsSupportOpencl")] HRESULT IsSupportOpencl([out,retval] LONG* pl);
+	[id(22), helpstring("方法Open")] HRESULT Open([in] BSTR url);
+	[id(23), helpstring("方法OpenUrl")] HRESULT OpenUrl([in] BSTR url, [in] LONG mode);
+ 
+	[id(1201), helpstring("方法TerminateProcess")] HRESULT TerminateProcess([in] LONG processid, [in, defaultvalue(0)] LONG tree);
+	[id(1202), helpstring("方法GetOrganizationName")] HRESULT GetOrganizationName([in] BSTR path, [out,retval] BSTR* name);
+	[id(1203), helpstring("方法WaitForSingleObject")] HRESULT WaitForSingleObject([in] LONG h, [in] LONG ms, [out,retval] LONG* ret);
+	[id(1204), helpstring("方法SetThreadExecutionState")] HRESULT SetThreadExecutionState([in] LONG l);
+};
+[
+	object,
+	uuid(B10F63A6-2067-4CD4-8723-756FBC0AC236),
+	dual,
+	nonextensible,
+	helpstring("IXSHWindows 接口"),
+	pointer_default(unique)
+]
+interface IXSHWindows : IDispatch{
+	[id(1), helpstring("方法FindWindow")] HRESULT FindWindow([in] BSTR cls, [in] BSTR caption, [out,retval] LONG* window);
+	[id(2), helpstring("方法EnumWindows")] HRESULT EnumWindows([in] IDispatch* pfun, [out, retval] VARIANT *p);
+	[id(3), helpstring("方法GetActiveWindow")] HRESULT GetActiveWindow([out,retval] LONG* h);
+	[id(4), helpstring("方法GetForegroundWindow")] HRESULT GetForegroundWindow([out,retval] LONG* h);
+	[id(5), helpstring("方法GetCapture")] HRESULT GetCapture([out,retval] LONG* h);
+	[id(6), helpstring("方法AddMsg2RetFunCallback")] HRESULT AddMsg2RetFunCallback([in] LONG msg, [in] IDispatch* fun);
+	[id(7), helpstring("方法RemoveMsg2RetFunCallback")] HRESULT RemoveMsg2RetFunCallback([in] LONG l);
+	[id(8), helpstring("方法GetWindowLongPtr")] HRESULT GetWindowLongPtr([in] OLE_HANDLE h, [in] LONG index, [out,retval] LONG* ret);
+};
+[
+	object,
+	uuid(FE978B99-6339-42F9-A224-D65AD4EBECCB),
+	dual,
+	nonextensible,
+	helpstring("Iscreen 接口"),
+	pointer_default(unique)
+]
+interface Iscreen : IDispatch{
+	[propget, id(1), helpstring("属性 width")] HRESULT width([out, retval] LONG* pVal);
+	[propget, id(2), helpstring("属性 height")] HRESULT height([out, retval] LONG* pVal);
+	[propget, id(3), helpstring("属性 availHeight")] HRESULT availHeight([out, retval] LONG* pVal);
+	[propget, id(4), helpstring("属性 availWidth")] HRESULT availWidth([out, retval] LONG* pVal);
+};
+[
+	object,
+	uuid(DA9F221F-E2A2-4D83-B42E-E7DA4ABFC071),
+	dual,
+	nonextensible,
+	helpstring("Istorage_ud 接口"),
+	pointer_default(unique)
+]
+interface Istorage_ud : IDispatch{
+	[id(2), helpstring("方法PathFileExists")] HRESULT PathFileExists([in] BSTR path, [out,retval] LONG* b);
+	[id(3), helpstring("方法GetPrivateProfileString")] HRESULT GetPrivateProfileString([in] BSTR path, [in] BSTR app, [in] BSTR key, [out,retval] BSTR* pvalue);
+	[id(4), helpstring("方法WritePrivateProfileValue")] HRESULT WritePrivateProfileValue([in] BSTR path, [in] BSTR app, [in] BSTR key, [in] VARIANT value);
+	
+	[id(9), helpstring("方法RegQueryValue")] HRESULT RegQueryValue([in] BSTR bstrRootName, [in] BSTR bstrKey, [in] BSTR bstrValueName, [out,retval] VARIANT* pRet);
+	[id(10), helpstring("方法RegSetValue")] HRESULT RegSetValue([in] BSTR bstrRootName, [in] BSTR bstrKey, [in] BSTR bstrValueName, [in] VARIANT Ret);
+	[id(11), helpstring("方法RegDeleteValue")] HRESULT RegDeleteValue([in] BSTR bstrRootName, [in] BSTR bstrKey, [in] BSTR bstrValueName);
+
+	[id(13), helpstring("方法PathCanonicalize")] HRESULT PathCanonicalize([in] BSTR path, [out,retval] BSTR* pdest);
+	[id(14), helpstring("方法ExpandEnvironmentStrings")] HRESULT ExpandEnvironmentStrings([in] BSTR path, [out,retval] BSTR* pdest);
+
+	[id(1201), helpstring("方法GetFolderPath")] HRESULT GetFolderPath([in] long  h, [in] long nfolder, long htoken, long dwflag, [out ,retval] BSTR* ppath);	
+	[id(1202), helpstring("方法ExtractCab")] HRESULT ExtractCab([in] BSTR bstrSrc, [in] BSTR bstrDest, [out,retval] VARIANT_BOOL* pvbRet);
+	[id(1203), helpstring("方法GetFileMD5")] HRESULT GetFileMD5([in] BSTR bstrFile, [out,retval] BSTR* pbstrMD5);
+
+	[id(1204), helpstring("方法Save")] HRESULT Save([in] IStream* stream, [in] BSTR path, [out,retval] LONG* ret);
+	[id(1205), helpstring("方法CreateFileMapping")] HRESULT CreateFileMapping([in] LONG flag, [in] LONG size, [in] BSTR name, [out,retval] LONG* h);
+	[id(1206), helpstring("方法WriteFileMapping")] HRESULT WriteFileMapping([in] LONG h, [in] BSTR buf, [out,retval] LONG* ret);
+	[id(1207), helpstring("方法ReadFileMapping")] HRESULT ReadFileMapping([in] LONG h, [in] LONG size, [out,retval] BSTR* ret);
+	[id(1208), helpstring("方法OpenFileMapping")] HRESULT OpenFileMapping([in] LONG flag, [in] LONG inherit, [in] BSTR name, [out,retval] LONG* ret);
+};
+[
+	uuid(2B287098-5C3B-4B05-9D2E-3E52413E46A4),
+	version(1.0),
+	helpstring("SHhost 1.0 类型库")
+]
+library SHhostLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(79038A96-72CB-42FD-9E33-DFD20AA36FD6),
+		helpstring("_IXScriptHost事件接口")
+	]
+	dispinterface _IXScriptHostEvents
+	{
+		properties:
+		methods:
+	};
+	[
+		uuid(32812667-961B-4DB3-BE16-070161C0A7E7),
+		helpstring("XScriptHost Class")
+	]
+	coclass XScriptHost
+	{
+		[default] interface IXScriptHost;
+		[default, source] dispinterface _IXScriptHostEvents;
+	};
+	[
+		uuid(477D28B0-29EB-4A3D-B501-671B488E825E),
+		helpstring("_IXSH事件接口")
+	]
+	dispinterface _IXSHEvents
+	{
+		properties:
+		methods:
+	};
+	[
+		uuid(B9689BCB-F2B7-4D43-B6B3-6BFB66DB1745),
+		helpstring("XSH Class")
+	]
+	coclass XSH
+	{
+		[default] interface IXSH;
+		[default, source] dispinterface _IXSHEvents;
+	};
+	[
+		uuid(CA526605-DB15-44AC-A0A5-E0C77751B3FF),
+		helpstring("_IActiveXContainer事件接口")
+	]
+	dispinterface _IActiveXContainerEvents
+	{
+		properties:
+		methods:
+		[id(0x80011790), helpstring("方法onload")] HRESULT onload([in, optional] VARIANT param1, [in, optional] VARIANT param2);
+		[id(0x80011791), helpstring("方法onunload")] HRESULT onunload([in, optional] VARIANT param1, [in, optional] VARIANT param2);
+	};
+	[
+		uuid(F858FC8D-20F0-4D88-8757-ADDFDD482A5D),
+		helpstring("ActiveXContainer Class")
+	]
+	coclass ActiveXContainer
+	{
+		[default] interface IActiveXContainer;
+		[default, source] dispinterface _IActiveXContainerEvents;
+	};
+	[
+		uuid(CA689E19-DC2E-4A6A-B793-B820F88DE43C),
+		helpstring("Utility Class")
+	]
+	coclass Utility
+	{
+		[default] interface IUtility;
+	};
+	[
+		uuid(5B7D12CB-A871-48C2-9692-266AE3B7B3E2),
+		helpstring("_IXSHWindows事件接口")
+	]
+	dispinterface _IXSHWindowsEvents
+	{
+		properties:
+		methods:
+		[id(1), helpstring("方法OnNotify")] HRESULT OnNotify([in] BSTR msg, [in] VARIANT p1, [in] VARIANT p2);
+	};
+	[
+		uuid(4D4B5B96-8E49-4C6F-ADA7-184AFEE75A17),
+		helpstring("XSHWindows Class")
+	]
+	coclass XSHWindows
+	{
+		[default] interface IXSHWindows;
+		[default, source] dispinterface _IXSHWindowsEvents;
+	};
+	[
+		uuid(3201C43F-24A2-4A27-A6B9-559707223BB4),
+		helpstring("screen Class")
+	]
+	coclass screen
+	{
+		[default] interface Iscreen;
+	};
+	[
+		uuid(4143CD21-E8E7-4D96-9F79-3CC3527824E4),
+		helpstring("storage_ud Class")
+	]
+	coclass storage_ud
+	{
+		[default] interface Istorage_ud;
+	};
+};
