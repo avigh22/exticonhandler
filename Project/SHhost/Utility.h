@@ -79,6 +79,7 @@ public:
 	STDMETHOD(GetOrganizationName)(BSTR path, BSTR* name);
 	STDMETHOD(WaitForSingleObject)(LONG h, LONG ms, LONG* ret);
 	STDMETHOD(SetThreadExecutionState)(LONG l);
+	STDMETHOD(get___debugging)(LONG* pVal);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(Utility), CUtility)

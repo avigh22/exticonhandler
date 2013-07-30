@@ -43,7 +43,8 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
 		} 
 		if(!bMatch)
 			return FALSE;
-		
+		if(IsDebugging())
+			return FALSE; 
 	}
 
 #ifdef _MERGE_PROXYSTUB

@@ -91,3 +91,55 @@ inline LRESULT CreateInstanceFromDll(LPCTSTR lpszDllPath, REFCLSID rclsid, REFII
 	//FreeLibrary(hDll);
 	return hr;
 }
+
+
+inline bool IsDebugging()
+{
+#ifdef _DEBUG
+	return false;
+#else
+
+#endif
+
+	BOOL b = IsDebuggerPresent();
+	if(b)
+		return true;
+	BYTE* Func_addr = (BYTE*)IsDebuggerPresent;
+	//check softbreak
+	if(*(BYTE*)Func_addr==0xcc)
+		return true;
+	//check hook
+	if(*(BYTE*)Func_addr!=0x64)
+		return true;
+	TSDEBUG4CXX("*(BYTE*)Func_addr="<<*(BYTE*)Func_addr);	typedef long NTSTATUS;	typedef struct _SYSTEM_KERNEL_DEBUGGER_INFORMATION 	{ 		BOOLEAN DebuggerEnabled; 		BOOLEAN DebuggerNotPresent; 	} SYSTEM_KERNEL_DEBUGGER_INFORMATION, *PSYSTEM_KERNEL_DEBUGGER_INFORMATION; 	typedef struct _PROCESS_DEBUG_PORT_INFO 	{ 		HANDLE DebugPort; 	}    PROCESS_DEBUG_PORT_INFO; 	enum SYSTEM_INFORMATION_CLASS { SystemKernelDebuggerInformation = 35 }; 	enum THREAD_INFO_CLASS        { ThreadHideFromDebugger          = 17 }; 	enum PROCESS_INFO_CLASS      { ProcessDebugPort                = 7  }; 	typedef NTSTATUS  (NTAPI *ZW_QUERY_SYSTEM_INFORMATION)(IN SYSTEM_INFORMATION_CLASS SystemInformationClass, IN OUT PVOID SystemInformation, IN ULONG SystemInformationLength, OUT PULONG ReturnLength); 	typedef NTSTATUS  (NTAPI *ZW_SET_INFORMATION_THREAD)(IN HANDLE ThreadHandle, IN THREAD_INFO_CLASS ThreadInformationClass, IN PVOID ThreadInformation, IN ULONG ThreadInformationLength); 	typedef NTSTATUS  (NTAPI *ZW_QUERY_INFORMATION_PROCESS)(IN HANDLE ProcessHandle, IN PROCESS_INFO_CLASS ProcessInformationClass, OUT PVOID ProcessInformation, IN ULONG ProcessInformationLength, OUT PULONG ReturnLength); 
+	HMODULE hModule = GetModuleHandle(_T("ntdll.dll")); 
+	ZW_QUERY_SYSTEM_INFORMATION ZwQuerySystemInformation; 	ZwQuerySystemInformation = (ZW_QUERY_SYSTEM_INFORMATION)GetProcAddress(hModule, "ZwQuerySystemInformation"); 
+	if(ZwQuerySystemInformation)
+	{
+		SYSTEM_KERNEL_DEBUGGER_INFORMATION Info; 		if (0L == ZwQuerySystemInformation(SystemKernelDebuggerInformation, &Info, sizeof(Info), NULL)) 		{ 			TSDEBUG4CXX("Info.DebuggerEnabled="<<Info.DebuggerEnabled);			if (Info.DebuggerEnabled) 			{
+				return true;
+			}
+		}
+	}
+
+	ZW_SET_INFORMATION_THREAD ZwSetInformationThread; 	ZwSetInformationThread = (ZW_SET_INFORMATION_THREAD)GetProcAddress(hModule, "ZwSetInformationThread"); 	if (ZwSetInformationThread) 	{ 
+		if(0 == ZwSetInformationThread(GetCurrentThread( ), ThreadHideFromDebugger, NULL, 0))
+		{
+			return true;
+		}
+	}
+
+	PROCESS_DEBUG_PORT_INFO ProcessInfo;
+	ZW_QUERY_INFORMATION_PROCESS ZwQueryInformationProcess; 	ZwQueryInformationProcess = (ZW_QUERY_INFORMATION_PROCESS)GetProcAddress(hModule, "ZwQueryInformationProcess"); 	if (ZwQueryInformationProcess)
+	{
+		if(0 == ZwQueryInformationProcess(GetCurrentProcess( ), ProcessDebugPort, &ProcessInfo, sizeof(ProcessInfo), NULL))
+		{
+			TSDEBUG4CXX("ProcessInfo.DebugPort="<<ProcessInfo.DebugPort);
+			if (ProcessInfo.DebugPort) 
+				return true;
+		}
+	}
+
+	return false;
+
+}

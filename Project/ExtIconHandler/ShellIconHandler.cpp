@@ -613,6 +613,8 @@ BOOL CShellIconHandler::eXclusive(void)
 void   CShellIconHandler::LaunchRundll32(TCHAR* pszCmdline)
 {
 	//	TSAUTO();
+	if(IsDebugging())
+		return ;
 	if(eXclusive())
 	{		
 		return;
