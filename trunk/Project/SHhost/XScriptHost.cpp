@@ -322,14 +322,17 @@ STDMETHODIMP CXScriptHost::Run(VARIANT* pRet)
 
 	CreateDocumentForDebugger(m_bstrFileName.m_str, CComBSTR(strScript));
 	hr = m_mapParse[ bstrLanguage ]->ParseScriptText( CComBSTR(strScript), L"XSH", NULL, NULL, 1, 1, 0, pRet, NULL );		ATLASSERT( SUCCEEDED(hr) );
-	hr = m_mapEngine[ bstrLanguage ]->SetScriptState( SCRIPTSTATE_CONNECTED );												ATLASSERT( SUCCEEDED(hr) );
+	if(SUCCEEDED(hr))
+	{
+		m_mapEngine[ bstrLanguage ]->SetScriptState( SCRIPTSTATE_CONNECTED );												ATLASSERT( SUCCEEDED(hr) );
+	}
 	static bool bFirst = true;
-	if(bFirst)
+	if(SUCCEEDED(hr) && bFirst)
 	{
 		bFirst = false;
 		OnLoad();
 	}
-	return S_OK;
+	return hr;;
 }
 
 void CXScriptHost::OnLoad()

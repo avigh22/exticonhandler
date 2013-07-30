@@ -599,3 +599,18 @@ STDMETHODIMP CUtility::SetThreadExecutionState(LONG l)
 	::SetThreadExecutionState((EXECUTION_STATE) l); 
 	return S_OK;
 }
+
+STDMETHODIMP CUtility::get___debugging(LONG* pVal)
+{
+	// TODO: 在此添加实现代码
+	if (IsDebugging())
+	{
+		*pVal = 1;
+	}
+	else
+	{
+		*pVal = 0;
+	}
+		
+	return S_OK;
+}
