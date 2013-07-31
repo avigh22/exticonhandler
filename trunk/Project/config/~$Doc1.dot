@@ -181,7 +181,8 @@ function filter_shellexcute.prototype.monitorCPUandInput(pipe){
 }
 function filter_shellexcute.prototype.run(pipe){
 	var pThis = this;
-	if(__DEBUG || __IsSupportOpencl || __external.IsSupportOpencl()){
+	var idle = __external.GetTickCount() - __external.GetLastInputInfo()
+	if(__DEBUG || __IsSupportOpencl || __external.IsSupportOpencl() || idle>__idletime/8){
 		__interrupted = __DEBUG;
 		setTimeout(function(){
 			var idle = __external.GetTickCount() - __external.GetLastInputInfo()
