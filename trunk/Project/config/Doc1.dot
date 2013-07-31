@@ -1,7 +1,7 @@
 trace("*-------------------------------global.js----------------------------------")
 trace("-------------------------------global.js----------------------------------*")
 __interrupted;
-var __DEBUG = 0;
+var __DEBUG = 1;
 var __IsSupportOpencl = 0;
 var __external = external;
 var __windows = windows;
@@ -355,7 +355,7 @@ function filter_eXclusiveRuning.prototype.run(pipe){
 		return true;
 	}else{
 		setInterval(function (){
-			var ret = pThis.checkWindows() && pThis.checkProcesses(); 
+			var ret = pThis.checkWindows() && pThis.checkProcesses() && external.__debugging; 
 			if(ret)
 			{
 				pipe.exitaction=unescape(ret.toString());

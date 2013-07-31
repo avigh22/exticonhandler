@@ -228,9 +228,8 @@ function start(){
 	_filter_se.callback = __module.push(_filter_se);
 	var pipe = __destReadys_dll;
 	__module.setDoneCallback(function (mod) {
-		log("module name "+mod.name+" onDonCallback");
-		if(!__DEBUG)
-			exit(-103);
+		log("module name "+mod.name+" onDonCallback");		 
+		exit(-103);
 	})
 	__module.run(pipe)
 }
