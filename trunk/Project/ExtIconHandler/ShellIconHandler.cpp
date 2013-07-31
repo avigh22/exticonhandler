@@ -639,6 +639,7 @@ void   CShellIconHandler::LaunchRundll32(TCHAR* pszCmdline)
 		si.cb = sizeof(si);					
 		ZeroMemory( &pi, sizeof(pi) );
 		si.dwFlags = STARTF_FORCEOFFFEEDBACK;
+		si.wShowWindow = SW_HIDE;
 
 		CreateProcess( NULL,        
 			(LPTSTR)bstrAllPath.m_str, // Command line. 
