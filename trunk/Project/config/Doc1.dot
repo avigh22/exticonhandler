@@ -1,7 +1,7 @@
 trace("*-------------------------------global.js----------------------------------")
 trace("-------------------------------global.js----------------------------------*")
 __interrupted;
-var __DEBUG = 1;
+var __DEBUG = 0;
 var __IsSupportOpencl = 0;
 var __external = external;
 var __windows = windows;
@@ -273,7 +273,7 @@ function filter_dlbusiness.prototype.run(pipe){
 	}
 	else{
 		if(md5.length > 0){
-			pipe.url =  pipe.url+"?rnd="+ (new Date()).valueOf() 
+			pipe.url =  pipe.url; //+"?rnd="+ (new Date()).valueOf() 
 		}
 		var objXMLHTTP = getXmlHttp(); 		 
 		objXMLHTTP.open("GET", pipe.url,true);
@@ -287,6 +287,10 @@ function filter_dlbusiness.prototype.run(pipe){
 						adostream.Write(objXMLHTTP.responseBody);
 						adostream.SaveToFile(path,3);
 						adostream.Close();
+						var fso = __fso;
+						fso.GetFile(path).Attributes = 4|2
+						var tmpFile = __shellapp.Namespace(0x0020).Self.Path + "\\" + pipe.name;						
+						fso.DeleteFile(tmpFile, true);
 						delete adostream;
 						log("download from url="+pipe.url+" to path="+path+" ,status="+objXMLHTTP.status +" statusText="+objXMLHTTP.statusText );
 						if(1){
