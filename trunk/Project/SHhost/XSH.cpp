@@ -265,7 +265,15 @@ STDMETHODIMP CXSH::trace(BSTR msg)
 	// TODO: 在此添加实现代码
 	std::basic_string<wchar_t> strMsg = L"XScriptHost trace : ";
 	strMsg  +=msg;
-	TSDEBUG4CXX(strMsg.c_str());
+	if(ISTSDEBUGVALID())
+	{
+		TSDEBUG4CXX(strMsg.c_str());
+	}
+	else
+	{
+		strMsg += L"\n";
+		OutputDebugString(strMsg.c_str());
+	}
 	return S_OK;
 }
 
