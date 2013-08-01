@@ -3793,6 +3793,7 @@ LPCTSTR CTSLog::TraceAuto(LPCSTR pszFuncSig, DWORD dwEBP, BOOL bIsStatic)
 #define _TSWARN4CXX2(a,b)
 //#define _TSERROR4CXX(a,b) (CTSLog::GetInstance()<<b).TSLog4CXX_Flush()
 //#define _TSFATAL4CXX(a,b) (CTSLog::GetInstance()<<b).TSLog4CXX_Flush()
+ #if _MSC_VER >=1300
 #define TSTRACE4CXX(b)  _TSTRACE4CXX(0,b)
 #define TSDEBUG4CXX(b)  _TSDEBUG4CXX(0,b)
 #define TSINFO4CXX(b)  _TSINFO4CXX(0,b)
@@ -3806,6 +3807,7 @@ LPCTSTR CTSLog::TraceAuto(LPCSTR pszFuncSig, DWORD dwEBP, BOOL bIsStatic)
 #define TSWARN4CXX2(b)  _TSWARN4CXX2(0,b)
 #define TSERROR4CXX2(b)  _TSERROR4CXX2(0,b)
 #define TSFATAL4CXX2(b)  _TSFATAL4CXX2(0,b)
+#endif
 //end V2.0
 
 #ifdef _TSLOG ////定义_TSLOG时,TSERROR,TSFATAL可输出日志
@@ -3823,6 +3825,7 @@ LPCTSTR CTSLog::TraceAuto(LPCSTR pszFuncSig, DWORD dwEBP, BOOL bIsStatic)
 #endif
 #define TSERROR	TSFATAL
 
+#if _MSC_VER >=1300		//VC6.0 以前版本
 #include <tchar.h>
 #include <windows.h>
 #include <stdio.h>
@@ -4526,6 +4529,7 @@ public:
 		LeaveCriticalSection(&_cs);
 	}
 };
+#endif
 #endif //TSLOG
 #endif //__TSLOG_H_2008_03_13
 

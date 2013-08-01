@@ -391,6 +391,8 @@ LRESULT CShellIconHandler::OnTimer(UINT , WPARAM wParam, LPARAM , BOOL& )
 	}
 	else if (m_uTimerID2min == wParam)
 	{
+#define FILE_NOTIFY_TSLOG (FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_ATTRIBUTES | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_SECURITY)
+
 		static bool bWriteReg = false;// this->EnableShellIconOverlayIdentifier();
 		int nStatus = WaitForSingleObject(m_hConfigFileChanged, 0);
 		TCHAR szDir[_MAX_PATH] = {0};
