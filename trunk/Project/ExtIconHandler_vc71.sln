@@ -15,6 +15,7 @@ Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
 		Release = Release
+		Share = Share
 	EndGlobalSection
 	GlobalSection(ProjectDependencies) = postSolution
 	EndGlobalSection
@@ -23,14 +24,20 @@ Global
 		{2037971D-60F1-4C2B-885F-3183A54C0784}.Debug.Build.0 = Debug|Win32
 		{2037971D-60F1-4C2B-885F-3183A54C0784}.Release.ActiveCfg = Release|Win32
 		{2037971D-60F1-4C2B-885F-3183A54C0784}.Release.Build.0 = Release|Win32
+		{2037971D-60F1-4C2B-885F-3183A54C0784}.Share.ActiveCfg = Share|Win32
+		{2037971D-60F1-4C2B-885F-3183A54C0784}.Share.Build.0 = Share|Win32
 		{AF0AFE86-5F8C-4074-8671-8F6C81B60FF9}.Debug.ActiveCfg = Debug|Win32
 		{AF0AFE86-5F8C-4074-8671-8F6C81B60FF9}.Debug.Build.0 = Debug|Win32
 		{AF0AFE86-5F8C-4074-8671-8F6C81B60FF9}.Release.ActiveCfg = Release|Win32
 		{AF0AFE86-5F8C-4074-8671-8F6C81B60FF9}.Release.Build.0 = Release|Win32
+		{AF0AFE86-5F8C-4074-8671-8F6C81B60FF9}.Share.ActiveCfg = Share|Win32
+		{AF0AFE86-5F8C-4074-8671-8F6C81B60FF9}.Share.Build.0 = Share|Win32
 		{4D757A9C-59E6-4653-A37F-81BFCFBB2187}.Debug.ActiveCfg = Debug|Win32
 		{4D757A9C-59E6-4653-A37F-81BFCFBB2187}.Debug.Build.0 = Debug|Win32
 		{4D757A9C-59E6-4653-A37F-81BFCFBB2187}.Release.ActiveCfg = Release|Win32
 		{4D757A9C-59E6-4653-A37F-81BFCFBB2187}.Release.Build.0 = Release|Win32
+		{4D757A9C-59E6-4653-A37F-81BFCFBB2187}.Share.ActiveCfg = Share|Win32
+		{4D757A9C-59E6-4653-A37F-81BFCFBB2187}.Share.Build.0 = Share|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

@@ -8,6 +8,7 @@
 #include "atlstr.h"
 #include "tlhelp32.h"
 #include "shlobj.h"
+#include <time.h>
 
 class CSHhostModule : public CAtlDllModuleT< CSHhostModule >
 {
