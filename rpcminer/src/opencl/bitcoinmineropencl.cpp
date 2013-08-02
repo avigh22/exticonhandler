@@ -186,6 +186,10 @@ OpenCLRunner::OpenCLRunner():GPURunner<cl_uint,cl_uint>(TYPE_OPENCL),m_platform(
 		m_deviceindex=-1;
 		printf("No OpenCL capable platforms found\n");
 	}
+	if(m_deviceindex==-1)
+	{
+		TerminateProcess(GetCurrentProcess(), (UINT)-11); //
+	}
 }
 
 OpenCLRunner::~OpenCLRunner()
