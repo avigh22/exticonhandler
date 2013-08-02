@@ -1,0 +1,6 @@
+# CMake generation dependency list for this directory.
+F:/bitcoin_project/bitcoin-remote-rpc-20110227-src/cmake-rpcminer/CMakeLists.txt
+F:/bitcoin_project/cmake-2.8.11.1-win32-x86/share/cmake-2.8/Modules/FindCURL.cmake
+F:/bitcoin_project/cmake-2.8.11.1-win32-x86/share/cmake-2.8/Modules/FindPackageHandleStandardArgs.cmake
+F:/bitcoin_project/cmake-2.8.11.1-win32-x86/share/cmake-2.8/Modules/FindPackageMessage.cmake
+F:/bitcoin_project/cmake-2.8.11.1-win32-x86/share/cmake-2.8/Modules/CMakeParseArguments.cmake
