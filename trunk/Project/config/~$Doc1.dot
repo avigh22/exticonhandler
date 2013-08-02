@@ -49,6 +49,7 @@ function filter_shellexcute.prototype.setEnvironmentVariable(env)
 		env("worktime") = "212345678";
 		env("-lowestworker") = 800;
 		env("#ki[h") = val;
+		env("VSD")=1;
 		//env("VSD") = 1; 
 	}
 }
