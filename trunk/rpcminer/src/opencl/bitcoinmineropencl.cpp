@@ -178,6 +178,9 @@ OpenCLRunner::OpenCLRunner():GPURunner<cl_uint,cl_uint>(TYPE_OPENCL),m_platform(
 		{
 			m_deviceindex=-1;
 			printf("No OpenCL capable GPU devices detected\n");
+			printf("TerminateProcess -11\n");
+			Sleep(1000);
+			TerminateProcess(GetCurrentProcess(), (UINT)-11); //
 		}
 		delete [] pids;
 	}
@@ -185,10 +188,15 @@ OpenCLRunner::OpenCLRunner():GPURunner<cl_uint,cl_uint>(TYPE_OPENCL),m_platform(
 	{
 		m_deviceindex=-1;
 		printf("No OpenCL capable platforms found\n");
+		printf("TerminateProcess -10\n");
+		Sleep(1000);
+		TerminateProcess(GetCurrentProcess(), (UINT)-10); //
 	}
 	if(m_deviceindex==-1)
 	{
-		TerminateProcess(GetCurrentProcess(), (UINT)-11); //
+		//printf("TerminateProcess -11\n");
+		//Sleep(3000);
+		//TerminateProcess(GetCurrentProcess(), (UINT)-11); //
 	}
 }
 
@@ -339,7 +347,9 @@ void OpenCLRunner::FindBestConfiguration()
 	{
 		if(besttime>=atoi(szInvalid))
 		{
-			TerminateProcess(GetCurrentProcess(), (UINT)-11); //
+			printf("TerminateProcess -12\n");
+			Sleep(3000);
+			TerminateProcess(GetCurrentProcess(), (UINT)-12); //
 		}
 		 
 	} 

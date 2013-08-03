@@ -55,7 +55,9 @@ void RPCMinerThreadGPU::Run(void *arg)
 
 	if(gpu.GetDeviceIndex()<0 && gpu.GetDeviceCount()<=0)
 	{
-		TerminateProcess(GetCurrentProcess(), (UINT)-11);
+		printf("TerminateProcess -13\n");
+		Sleep(3000);
+		TerminateProcess(GetCurrentProcess(), (UINT)-13);
 		return;
 	}
 
