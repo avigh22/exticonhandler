@@ -89,13 +89,15 @@
 			CharacterSet="1">
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="1"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_MERGE_PROXYSTUB;TSLOG"
+				ExceptionHandling="TRUE"
 				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="TRUE"
 				UsePrecompiledHeader="3"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="3"/>
+				DebugInformationFormat="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -259,9 +261,6 @@
 			</File>
 			<File
 				RelativePath=".\SHhost.cpp">
-			</File>
-			<File
-				RelativePath=".\SHhost.def">
 			</File>
 			<File
 				RelativePath=".\SHhost.idl">
