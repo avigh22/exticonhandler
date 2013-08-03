@@ -1617,7 +1617,7 @@ LPCTSTR CTSLog::GetCurrentModuleName(void)
 }
 BOOL CTSLog::CheckConfigFileChanged(void)
 {
-#define FILE_NOTIFY_TSLOG (FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE)
+#define FILE_NOTIFY_TSLOG ( FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE )
 	INT nStatus = 0;
 	if(s_release.m_bIsModuleUnloading)
 		return FALSE;
