@@ -91,7 +91,8 @@
 			CharacterSet="1">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/EHa"
+				AdditionalOptions=" "
+				Optimization="1"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_MERGE_PROXYSTUB;TSLOG"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -99,7 +100,7 @@
 				UsePrecompiledHeader="3"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="3"/>
+				DebugInformationFormat="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
