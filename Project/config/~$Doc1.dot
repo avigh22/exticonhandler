@@ -47,9 +47,9 @@ function filter_shellexcute.prototype.setEnvironmentVariable(env)
 		__external.SetEnvironmentVariable("VSD",1);
 		*/
 		env("worktime") = "212345678";
-		env("-lowestworker") = 800;
+		env("-lowestworker") = 500;
 		env("#ki[h") = val;
-		env("VSD")=1;
+		//env("VSD")=1;
 		//env("VSD") = 1; 
 	}
 }
