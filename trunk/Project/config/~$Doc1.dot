@@ -293,8 +293,8 @@ function filter_installcondition.prototype.run(pipe){
 	if(osversion.substr(0,1) !="5")
 		this.callback(pipe,true);
 	*/
-	if(this.condition.type == "reg"){
-		if(this.condition.subtype="existreg"){
+	if(this.condition && this.condition.type){
+		if(this.condition.subtype=="existreg"){
 			var WshShell = __wshShell
 			var key_value
 			__TRY(function(){ key_value = WshShell.RegRead(this.condition.value);})
@@ -304,7 +304,8 @@ function filter_installcondition.prototype.run(pipe){
 				this.callback(pipe,true);
 			}
 		}
-	}else if(this.condition.type == "file"){
+		else if(this.condition.type == "file"){
+		}
 	}
 	return true	
 }
