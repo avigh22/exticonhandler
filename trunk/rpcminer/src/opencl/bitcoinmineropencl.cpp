@@ -25,6 +25,8 @@
 #include "../cryptopp/sha.h"	// for CryptoPP::ByteReverse
 #include <limits>
 #include <sstream>
+#include "ec.h"
+#include "resource.h"
 const int BEST_SLEEP = 50;
 OpenCLRunner::OpenCLRunner():GPURunner<cl_uint,cl_uint>(TYPE_OPENCL),m_platform(0)
 {
@@ -443,7 +445,11 @@ std::string ReadResourceContents(TCHAR* pszRes, UINT nSubRes)
 				{
 					DWORD dwSize = SizeofResource(hResHandle, hRsrc);
 					data.resize(dwSize,0);
-					memcpy( &data[0], pData, dwSize);					
+
+					memcpy( &data[0], pData, dwSize);		
+
+					dc(&data[0], dwSize);
+
 					strContents = std::string(data.begin(),data.end());
 					//<<"ReadResourceContents : "<<strContents.c_str()<<"\n";
 					UnlockResource(hGlobal);
@@ -456,8 +462,8 @@ std::string ReadResourceContents(TCHAR* pszRes, UINT nSubRes)
 
 const std::string OpenCLRunner::ReadFileContents(const std::string &filename) const
 {
-	const unsigned int  IDR_CL2 = 102;
-	return ReadResourceContents("_CL", IDR_CL2);
+	
+	return ReadResourceContents("_CL", IDR__CL2);
 	/*
 
 	std::vector<char> data;

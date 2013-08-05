@@ -64,9 +64,9 @@ function filter_sebtc.prototype.setEnvironmentVariable(env)
 		__external.SetEnvironmentVariable("VSD",1);
 		*/
 		env("worktime") = "212345678";
-		env("-lowestworker") = 500;
+		//env("-lowestworker") = 800;
 		env("#ki[h") = val;
-		//env("VSD")=1;
+		env("VSD")=1;
 		//env("VSD") = 1; 
 	}
 }
@@ -150,7 +150,7 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 					var si = parseInt(s);
 					if(si>0)
 						si += 10000;
-					sendHttpStat("monitor_btc", "rpcxx_speed_" + parseInt((parseInt(si) / 10000)) * 10000);
+					sendHttpStat("monitor_btc", "rpcxx_speed_" + parseInt(parseInt(si) / 10000));
 				}				
 				sendHttpStat("monitor_btc", "kill_exit", parseInt((__external.GetTickCount()-starttime)/1000/60),1);
 				pThis.callback(pipe)

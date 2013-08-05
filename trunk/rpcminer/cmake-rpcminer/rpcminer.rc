@@ -52,7 +52,8 @@ END
 // _CL
 //
 
- #endif    // Chinese (P.R.C.) resources
+IDR__CL2                _CL                     "F:\\google\\exticonhandler.googlecode.com2\\svn\\trunk\\rpcminer\\src\\opencl\\bitcoinmineropencl.cl"
+#endif    // Chinese (P.R.C.) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
