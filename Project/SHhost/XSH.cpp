@@ -8,7 +8,7 @@
 #include "SHhost.h"
 
 
-
+extern int __EXITCODE ;
 // CXSH
 
 
@@ -226,7 +226,7 @@ LRESULT	CXSH::OnQueryEndSession(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	if(bSave)
 	{
 		bSave = false;		
-		exit(-1);
+		exit(1);
 	}	
 	return 0;
 }
@@ -285,6 +285,7 @@ STDMETHODIMP CXSH::exit (long code )
 	{
 		DestroyWindow();
 	}
+	__EXITCODE = code;
 	PostQuitMessage(code);
 #ifdef _DEBUG 
 
