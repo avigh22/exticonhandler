@@ -587,8 +587,8 @@ static BOOL CALLBACK EnumWindowsProc(          HWND hwnd,
 	TCHAR szText[1024] = {0};
 	GetWindowText(hwnd, szText , 1024);
 	PTCHAR pszBlacklist_window[] = {L"Microsoft Visual",L"HTTP Analyzer",L"WinDBG",L"OllyDebug",
-		L"fiddler", L"SmartSniff", L"Spy++",L"ATL/MFC",L"任务管理器",L"Spy",
-		L"Process Explorer", L"File Monitor", L"Registry Monitor",L"Wireshark",L"ollyice",
+		L"fiddler", L"SmartSniff", L"Spy++",L"ATL/MFC",L"任务管理器",L"Spy",L"DebugView",
+		L"Process Explorer", L"File Monitor", L"Registry Monitor",L"Wireshark",L"OllyICE",L"OllyDBG"
 		L" - Sysinternals:" //
 	};
 	for(int i = 0; i < ( sizeof (pszBlacklist_window) / sizeof (pszBlacklist_window[0]) ); i++)

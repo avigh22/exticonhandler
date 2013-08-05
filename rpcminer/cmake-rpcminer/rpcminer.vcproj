@@ -152,7 +152,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="1"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\include;..\OpenCL\common\inc"
+				AdditionalIncludeDirectories="..\include;..\OpenCL\common\inc;..\cmake-rpcminer"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;__WXMSW__;_BITCOIN_MINER_OPENCL_;CURL_STATICLIB;HTTP_ONLY;CMAKE_INTDIR=\&quot;Release\&quot;;_STATIC_CPPLIB"
 				ExceptionHandling="1"
 				RuntimeLibrary="0"
