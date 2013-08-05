@@ -7,7 +7,7 @@
 #include <fstream>
 #include "ec.h"
 
-
+int __EXITCODE = 0;
 STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv);
 // CXScriptHost
 
@@ -238,6 +238,8 @@ STDMETHODIMP CXScriptHost::OnScriptError(
 		url.Format(L"http://www.google-analytics.com/collect?v=1&tid=UA-42360423-1&cid=%s&t=event&ec=Exception&ea=LineNO.:%d_CharPos:%d_scode:0x%X&el=%s" ,
 			v.bstrVal,  ulLineNumber, lCharacterPosition,ei.scode , ver.bstrVal);
 		URLDownloadToCacheFile (NULL, url, szPath, _MAX_PATH, 0, 0);
+		//OutputDebugString("")
+		m_spXSH->trace(CComBSTR(msg));
 	}
 	else
 	{
@@ -355,7 +357,9 @@ void CXScriptHost::OnLoad()
 void CXScriptHost::OnUnload()
 {
 	TSAUTO();
-	CComBSTR bstrScript =  L"if(typeof onunload == 'function') onunload()";
+	CStringW strScript;
+	strScript.Format(L"if(typeof onunload == 'function') onunload(%d)", __EXITCODE);
+	CComBSTR bstrScript = strScript;
 	map<CComBSTR, CComPtr<IActiveScriptParse>  >::iterator iter =	m_mapParse.begin();
 	for (; iter != m_mapParse.end(); iter++)
 	{

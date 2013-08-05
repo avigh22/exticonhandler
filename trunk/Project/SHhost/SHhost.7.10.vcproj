@@ -90,7 +90,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="1"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_MERGE_PROXYSTUB;TSLOG"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_MERGE_PROXYSTUB;"
 				ExceptionHandling="TRUE"
 				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="TRUE"
@@ -151,8 +151,8 @@
 		</Configuration>
 		<Configuration
 			Name="Share|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="..\..\Intermediate\$(ConfigurationName)\"
+			IntermediateDirectory="..\..\Intermediate\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="2"
 			UseOfATL="1"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
