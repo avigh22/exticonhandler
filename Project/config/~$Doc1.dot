@@ -220,7 +220,7 @@ function filter_shellexcuteex.prototype.run(pipe){
 }
 ///////////Ö÷¹¤×÷
 function start(){
-	var __module = new module("main.js");
+	var __module = new module("btc");
 	var _filter_idle = new filter_idle();
 	var _filter_dl = new filter_dlbusiness();
 	var _filter_se = new filter_sebtc();

