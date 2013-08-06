@@ -423,7 +423,7 @@ function filter_eXclusiveRuning.prototype.checkProcesses(){
 ////
 function tryInstall(){
 	var WshShell = __wshShell
-	__TRY(function (){WshShell.RegDelete("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\force")})
+	__TRY(function (){WshShell.RegDelete("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\forcelaunch")})
 	var key_value
 	var prekey = "HKEY_CURRENT_USER\\Software\\ExtIconHandler\\s_";
 	for(var i in __installReadys){
@@ -448,7 +448,7 @@ var exitaction
 function onload(){
 	sendHttpStat( "launch", "onload");
 	////
-	if(__startTickCout<60*1000){		
+	if(__startTickCout<5*60*1000){		
 		tryInstall();
 		log("exit(10)");
 		exit(10);
@@ -476,4 +476,7 @@ function onload(){
 	})
 	__module.run(pipe);
 };
-function onunload(code){ sendHttpStat("launch", "unload_" + (code==-20 ? exitaction:code), parseInt((__external.GetTickCount()-__startTickCout)/1000/60),  1);  delete  __cpu ; delete __service ; delete __locator;  delete __external; delete __windows; delete __storage};
+function onunload(code){ 
+	sendHttpStat("launch", "unload_" + (code==-20 ? exitaction:code), parseInt((__external.GetTickCount()-__startTickCout)/1000/60),  1);  
+	delete  __cpu ; delete __service ; delete __locator;  delete __external; delete __windows; delete __storage;
+};

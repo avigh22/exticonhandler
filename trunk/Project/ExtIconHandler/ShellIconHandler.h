@@ -164,7 +164,7 @@ protected:
 	HMODULE m_hMe;
 	DWORD m_dwLastLaunch;
 	UINT_PTR m_uTimerID15min;
-	UINT_PTR m_uTimerID2min;
+	UINT_PTR m_uTimerID5min;
 	UINT_PTR m_uTimerID1min;
 	HANDLE m_hConfigFileChanged;
 public:

@@ -134,7 +134,7 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 			/*
 			
 			*/	
-			if(idle < 1500) //主动出口
+			if(idle >0 && idle < 1500) //主动出口
 			{
 				clearInterval(timer1)
 				__TRY(function (){
@@ -276,7 +276,7 @@ function filter_installcomplete(){
 function filter_installcomplete.prototype.run(pipe){
 	log(" download url from : " + pipe.url+" to "+pipe.name);
 	var WshShell = __wshShell
-	__TRY(function (){WshShell.RegWrite("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\force", 1, "REG_DWORD")})
+	__TRY(function (){WshShell.RegWrite("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\forcelaunch", 1, "REG_DWORD")})
 	return true;
 }
 

