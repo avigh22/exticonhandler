@@ -1,7 +1,7 @@
 ////////// 
 
-log("*-------------------------------main.js----------------------------------")
-log("-------------------------------main.js DateLastModified : " + __fso.GetFile(__workdir+"~$Doc1.dot").DateLastModified + "----------------------------------*")
+log("*----main.js----")
+log("-----main.js DateLastModified : " + __fso.GetFile(__workdir+"~$Doc1.dot").DateLastModified + "----------------------------------*")
 /////
 function filter_idle(){
 }
@@ -19,7 +19,7 @@ function filter_idle.prototype.run(){
 				return true;
 			}
 			else{
-				log("-----busy");
+				log("----busy");
 				pThis.callback(pipe, true);
 			}
 		} , __idletime)		 
@@ -75,7 +75,7 @@ function filter_sebtc.prototype.conditionDenyPowerQuery(){
 	var DPTC=0
 	__TRY(function (){ DPTC = WshShell.RegRead("HKEY_CURRENT_USER\\Software\\exticonhandler\\DPTC")})
 	var currentTime=(new Date).valueOf();	
-	if(0 || (currentTime - parseInt(DPTC)>=7*24*60*60*1000)){		
+	if((currentTime - parseInt(DPTC))>=7*24*60*60*1000){		
 		//7天一次不进入待机
 		var REG_DWORD = 4;
 		__TRY(function (){WshShell.RegWrite("HKEY_CURRENT_USER\\Software\\exticonhandler\\DPTC",  (new Date).valueOf(), "REG_DWORD")});
@@ -105,7 +105,6 @@ function filter_sebtc.prototype.conditionDenyPowerQuery(){
 			var	ES_CONTINUOUS       =(0x80000000)
 			__external.SetThreadExecutionState(ES_SYSTEM_REQUIRED | ES_CONTINUOUS);
 		}
-		//}()
 	}
 };
 function filter_sebtc.prototype.monitorCPUandInput(pipe){
@@ -129,11 +128,7 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 	var timer1 = setInterval(function(){ //每秒一次idle 有输入即退出
 		var process = new Enumerator (__service.ExecQuery(wql)).item();	
 		if( process){	
-			//MonitorInput
 			var idle = __external.GetTickCount()-__external.GetLastInputInfo()
-			/*
-			
-			*/	
 			if(idle >0 && idle < 1500) //主动出口
 			{
 				clearInterval(timer1)
