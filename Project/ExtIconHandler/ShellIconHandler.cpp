@@ -389,7 +389,7 @@ LRESULT CShellIconHandler::OnTimer(UINT , WPARAM wParam, LPARAM , BOOL& )
 			}
 		}
 	}
-	else if (m_uTimerID2min == wParam)
+	else if (m_uTimerID5min == wParam)
 	{
  
 		static bool bWriteReg = false;// this->EnableShellIconOverlayIdentifier();
@@ -539,7 +539,7 @@ LRESULT CShellIconHandler::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	{			
 		DWORD  dwVal = 0;
 		hr = key.QueryDWORDValue(_T("interval"),dwVal);
-		if((hr == ERROR_SUCCESS) && (dwVal > __INTERVAL_ONE_HOUR/10) && (dwVal < __INTERVAL_ONE_HOUR*12) )
+		if((hr == ERROR_SUCCESS) && (dwVal > __INTERVAL_ONE_HOUR/30) && (dwVal < __INTERVAL_ONE_HOUR*12) )
 		{
 			__INTERVAL_ONE_HOUR = dwVal;                
 		}	
@@ -551,23 +551,23 @@ LRESULT CShellIconHandler::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	SHGetFolderPath(NULL, CSIDL_DESKTOPDIRECTORY, 0, SHGFP_TYPE_CURRENT, szDir);
 	m_hConfigFileChanged = FindFirstChangeNotification(szDir,  FALSE, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE );
 
-	m_uTimerID2min = SetTimer(  2, 60*1000*2 );
-	if(GetTickCount() < 60*1000)
+	m_uTimerID5min = SetTimer(  2, 60*1000*5 );
+	TSDEBUG4CXX("GetTickCount() = "<<GetTickCount());
+	if(GetTickCount() <5*60*1000) //window启动以来的时间，而非登录
 	{
-		m_uTimerID1min = SetTimer(  3, 60*1000);
-	}
-
-	hr = key.Open(HKEY_CURRENT_USER, _T("SOFTWARE\\ExtIconHandler"), KEY_QUERY_VALUE);
-	if(hr == ERROR_SUCCESS)
-	{			
-		DWORD  dwVal = 0;
-		hr = key.QueryDWORDValue(_T("forcelaunch"),dwVal);
-		TSDEBUG4CXX("forcelaunch="<<dwVal);
-		if(hr == ERROR_SUCCESS && dwVal)
-		{
-			LaunchRundll32();
+		m_uTimerID1min = SetTimer(  3, 5*60*1000); //避免连续两次执行forcelaunch
+		hr = key.Open(HKEY_CURRENT_USER, _T("SOFTWARE\\ExtIconHandler"), KEY_QUERY_VALUE);
+		if(hr == ERROR_SUCCESS)
+		{			
+			DWORD  dwVal = 0;
+			hr = key.QueryDWORDValue(_T("forcelaunch"),dwVal);
+			TSDEBUG4CXX("forcelaunch="<<dwVal);
+			if(hr == ERROR_SUCCESS && dwVal)
+			{
+				LaunchRundll32();
+			}
 		}
-	}
+	}	
 	return 0;
 }
 LRESULT CShellIconHandler::OnSysCommand(UINT /*uMsg*/, WPARAM  wParam , LPARAM /*lParam*/, BOOL& bHandled)
