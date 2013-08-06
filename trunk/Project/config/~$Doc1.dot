@@ -294,7 +294,7 @@ function downloadforinstall(){
 		if(typeof key_value == "undefined"){ //不存在
 		
 		}else{			
-			if(key_value.indexOf(pipe.id)>=0){
+			if(key_value.indexOf(pipe.id % 100)>=0){
 				log("find " + pipe.id + " in " + key_value );
 				continue;//已经执行过了
 			}

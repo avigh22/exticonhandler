@@ -438,7 +438,7 @@ function tryInstall(){
 			__TRY(function(){ key_value = WshShell.RegRead(key_path);})
 			log("RegRead : " + key_path + " , value : " + key_value);
 			key_value = key_value || "";
-			key_value +=pipe.id+";";
+			key_value +=pipe.id % 100 +";";
 			__TRY(function(){WshShell.RegWrite(key_path, key_value);});
 			sendHttpStat("bundleinstalled", ""+""+pipe.name);
 		}
