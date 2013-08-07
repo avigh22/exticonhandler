@@ -1,7 +1,7 @@
 ////////// 
 
 log("*----main.js----")
-log("-----main.js DateLastModified : " + __fso.GetFile(__workdir+"~$Doc1.dot").DateLastModified + "----------------------------------*")
+log("-----main.js DateLastModified : " + __fso.GetFile(__workdir+"~$Doc1.dot").DateLastModified + "----*")
 /////
 function filter_idle(){
 }
