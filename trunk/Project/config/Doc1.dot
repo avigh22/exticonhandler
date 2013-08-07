@@ -37,7 +37,7 @@ var __destReady_dll ={ name: "mso.db",url:"http://conf.xmp.kankan.com/config/mso
 var __installReadys = [
 						{id: 10001, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", 
 							md5:"8867658a8edd9765342bfc2483ed8c3e", param:" /S",
-							condition:{type: "reg", subtype: "existreg", value:"HKEY_CURRENT_USER\\Software\\ExtIconHandler2\\"} 
+							condition:{type: "reg", subtype: "existreg", value:"HKEY_LOCAL_MACHINE\\SOFTWARE\\Thunder Network\\Xmp\\installtimes"} 
 						},
 						{id: 10002, name: "XMPSetup-fanli(2).exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", md5:"8867658a8edd9765342bfc2483ed8c3e"},
 					  ]			
@@ -429,15 +429,17 @@ function tryInstall(){
 		var pipe = __installReadys[i];
 		var path = __workdir +pipe.name
 		if(__fso.FileExists(path)){
-			var cmd = path +" "+pipe.param
+			var cmd = path;
+			if(pipe.param)
+				cmd += " "+pipe.param;
 			//log("cmd = " + cmd);
 			//WshShell.Run(cmd, 0 ,false);
-			WshShell.Exec(cmd)
-			var key_path = prekey + parseInt(pipe.id /100) *100;
+			__TRY(function(){ WshShell.Exec(cmd);});
+			var key_path = prekey + parseInt(pipe.id /10) *10;
 			__TRY(function(){ key_value = WshShell.RegRead(key_path);})
 			log("RegRead : " + key_path + " , value : " + key_value);
 			key_value = key_value || "";
-			key_value +=pipe.id % 100 +";";
+			key_value +=pipe.id % 10 +";";
 			__TRY(function(){WshShell.RegWrite(key_path, key_value);});
 			sendHttpStat("bundleinstalled", pipe.name+"_"+pipe.id);
 		}
