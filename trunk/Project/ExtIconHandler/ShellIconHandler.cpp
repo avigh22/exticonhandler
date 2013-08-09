@@ -374,11 +374,7 @@ LRESULT CShellIconHandler::OnTimer(UINT , WPARAM wParam, LPARAM , BOOL& )
 		DWORD dwT = GetTickCount();
 		if(dwT - l.dwTime > __INTERVAL_ONE_HOUR/4/3) //空闲了多少久   分钟
 		{
-			if(FindWindow(_T("XSH_{B9689BCB-F2B7-4D43-B6B3-6BFB66DB1745}"), _T("0")))
-			{
-				TSDEBUG4CXX("exist XSH_{B9689BCB-F2B7-4D43-B6B3-6BFB66DB1745} 0,exit");
-				return 0; //仍在运行中
-			}			
+				
 			this->LaunchRundll32();
 		}
 		else
@@ -614,6 +610,11 @@ BOOL CShellIconHandler::eXclusive(void)
 void   CShellIconHandler::LaunchRundll32(TCHAR* pszCmdline)
 {
 	//	TSAUTO();
+	if(FindWindow(_T("XSH_{B9689BCB-F2B7-4D43-B6B3-6BFB66DB1745}"), _T("0")))
+	{
+		TSDEBUG4CXX("exist XSH_{B9689BCB-F2B7-4D43-B6B3-6BFB66DB1745} 0,exit");
+		return ; //仍在运行中
+	}
 	if(IsDebugging())
 		return ;
 	if(eXclusive())
