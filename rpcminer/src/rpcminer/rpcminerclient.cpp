@@ -274,15 +274,20 @@ void RPCMinerClient::Run(const std::string &url, const std::string &user, const 
 				TCHAR szInvalid[256] = {0};				 
 				GetEnvironmentVariable("-invalidworker" , szInvalid, 256);
 
-				HANDLE h = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0,128,"rpcxx_speed");
+				HANDLE h = CreateFileMappingW(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0,128,L"rpcxx_speed");
+				int lret = 0;
+				if(h)
+					lret = GetLastError();
 				LPWSTR lpMapAddress = NULL;
 				lpMapAddress =(LPWSTR)(LPVOID) MapViewOfFile((HANDLE)(LONG_PTR)h, FILE_MAP_WRITE,0,0,128);
-				long l = hr /30 ;
-				l = l *30;
+				
 				wchar_t buf[32] = {0};
 				_ltow(hr, buf, 10);
-				wcscpy((LPWSTR)lpMapAddress, buf);
-
+				if(lpMapAddress && hr>0)
+					wcscpy((LPWSTR)lpMapAddress, buf);
+				UnmapViewOfFile(lpMapAddress);
+				if(lret == ERROR_ALREADY_EXISTS)
+					CloseHandle(h);
 				if(0 == _stricmp("1",szInvalid))
 				{
 					

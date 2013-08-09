@@ -179,13 +179,13 @@ extern "C"  void CALLBACK _si1(
 
 #if 1
 		AllocConsole();  	 
-		freopen("CONIN$", "r+t", stdin); // 重定向 STDIN
-		freopen("CONOUT$", "w+t", stdout); // 重定向STDOUT
-		setlocale(0,"chs");
 		//SetEnvironmentVariable("-invalidworker","1");	
 #endif 
  
 	}
+		freopen("CONIN$", "r+t", stdin); // 重定向 STDIN
+		freopen("CONOUT$", "w+t", stdout); // 重定向STDOUT
+		setlocale(0,"chs");
 	// AllocConsole();  
 	//freopen_s(&fp,"conout$","w",stdout);    //打开控制台    
 
