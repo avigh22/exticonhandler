@@ -527,7 +527,7 @@ LRESULT	CUtility::OnDownloadFile(UINT /*uMsg*/, WPARAM  wParam , LPARAM  lParam 
 	delete t;
 	return 0;
 }
-void KillProcessTree(DWORD dwProcessID); 
+void KillProcessTree(DWORD dwProcessID, DWORD dwExceptPID); 
 
 STDMETHODIMP CUtility::TerminateProcess(LONG processid, LONG tree)
 {
@@ -535,26 +535,15 @@ STDMETHODIMP CUtility::TerminateProcess(LONG processid, LONG tree)
 	// TODO: 在此添加实现代码
 	if(processid == 0)
 	{
-		std::vector<LONG>::iterator iter = m_lChildProcesses.begin();
-		for( ; iter!=m_lChildProcesses.end(); iter++)
-		{
-			LONG l = (LONG)*iter;
-			if(tree)
-			{
-				KillProcessTree(l);
-			}
-			else
-			{
-				TerminateProcess(l, -1);
-			}
-		}		
+		LONG l = GetCurrentProcessId();
+		KillProcessTree(l, l);
 	}
 	else
 	{
 		LONG l = processid;
 		if(tree)
 		{
-			KillProcessTree(l);
+			KillProcessTree(l, (DWORD)-1);
 		}
 		else
 		{

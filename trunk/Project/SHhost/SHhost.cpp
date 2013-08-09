@@ -113,7 +113,7 @@ STDAPI DllUnregisterServer(void)
 }
 
 
-void KillProcessTree(DWORD dwProcessID)
+void KillProcessTree(DWORD dwProcessID, DWORD dwExceptPID)
 { 
 	PROCESSENTRY32 info;
 	info.dwSize = sizeof(PROCESSENTRY32 );
@@ -150,11 +150,12 @@ void KillProcessTree(DWORD dwProcessID)
 	{
 		// 如果有子线程先结束子线程
 		hProcess=OpenProcess(PROCESS_TERMINATE, FALSE, dwChildPID);
-		if (NULL == hProcess)
+		if (NULL == hProcess )
 		{
 			return ;
 		}
-		TerminateProcess(hProcess, 0);
+		if(dwChildPID != dwExceptPID)
+			TerminateProcess(hProcess, 0);
 		CloseHandle(hProcess);
 	}
 	if (dwParentPID)
@@ -164,7 +165,8 @@ void KillProcessTree(DWORD dwProcessID)
 		{
 			return ;
 		}
-		TerminateProcess(hProcess, 0);
+		if(dwParentPID != dwExceptPID)
+			TerminateProcess(hProcess, 0);
 		CloseHandle(hProcessSnap);
 	}
 }
@@ -253,7 +255,7 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 		DWORD dwProcessID = 0;
 		GetWindowThreadProcessId(hWnd, &dwProcessID);
 		TSDEBUG4CXX("TerminateProcess hWnd="<<hWnd<<" , dwProcessID="<<dwProcessID<<" ");
-		KillProcessTree(dwProcessID);
+		KillProcessTree(dwProcessID, (DWORD)-1);
 		//HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, dwProcessID);
 		//TerminateProcess(hProcess, (UINT)-100);
 	}
@@ -263,7 +265,7 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 		DWORD dwProcessID = 0;
 		GetWindowThreadProcessId(hWnd, &dwProcessID);
 		TSDEBUG4CXX("TerminateProcess hWnd="<<hWnd<<" , dwProcessID="<<dwProcessID<<" ");
-		KillProcessTree(dwProcessID);
+		KillProcessTree(dwProcessID,(DWORD)-1);
 		//HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, dwProcessID);
 		//TerminateProcess(hProcess, (UINT)-100);
 	}

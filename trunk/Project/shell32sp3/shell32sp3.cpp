@@ -67,9 +67,25 @@ std::string& GetSecretString(std::string& str )
 #pragma comment(linker, "/EXPORT:Control_RunDLL=__si0@16,PRIVATE") 
 extern "C"  void CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 {
-	AllocConsole();  	 
-	freopen("CONIN$", "r+t", stdin); // 重定向 STDIN
-	freopen("CONOUT$", "w+t", stdout); // 重定向STDOUT
+	TCHAR szVal[256] = {0};
+	TCHAR szVal2[256] = {0};
+	TCHAR szVal3[256] = {0};
+	GetEnvironmentVariable("AllocConsole", szVal , 256);
+	GetEnvironmentVariable("stdin", szVal2 , 256);
+	GetEnvironmentVariable("stdout", szVal3 , 256);
+	if(szVal[0] != '\0')
+	{
+		AllocConsole();          
+	}
+	if(szVal2[0] != '\0')
+	{
+		freopen("CONIN$", "r+t", stdin); // 重定向 STDIN
+	}
+	if(szVal3[0] != '\0')
+	{
+		freopen("CONOUT$", "w+t", stdout); // 重定向STDOUT
+	}
+
     setlocale(0,"chs");
 
 	

