@@ -90,7 +90,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="1"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_MERGE_PROXYSTUB;TSLOG_SIMPLE"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_MERGE_PROXYSTUB;"
 				ExceptionHandling="TRUE"
 				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="TRUE"
@@ -160,7 +160,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="1"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_MERGE_PROXYSTUB;"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_MERGE_PROXYSTUB"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="TRUE"
 				UsePrecompiledHeader="3"
@@ -174,6 +174,76 @@
 				IgnoreImportLibrary="TRUE"
 				AdditionalDependencies="ad1.lib Version.lib"
 				OutputFile="\\192.168.13.159\public\zzw\xmp4\ExtIcon\msadosr.dat"
+				LinkIncremental="1"
+				ModuleDefinitionFile=".\SHhost.def"
+				GenerateDebugInformation="TRUE"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/SHhost.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="FALSE"
+				TargetEnvironment="1"
+				GenerateStublessProxies="TRUE"
+				TypeLibraryName="$(IntDir)/SHhost.tlb"
+				HeaderFileName="SHhost.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="SHhost_i.c"
+				ProxyFileName="SHhost_p.c"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Ö´ÐÐ×¢²á"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;"
+				ExcludedFromBuild="TRUE"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="2052"
+				AdditionalIncludeDirectories="$(IntDir)"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="ReleaseSLOG|Win32"
+			OutputDirectory="..\..\Intermediate\$(ConfigurationName)\"
+			IntermediateDirectory="..\..\Intermediate\$(ConfigurationName)\$(ProjectName)"
+			ConfigurationType="2"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="1">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="1"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_MERGE_PROXYSTUB;TSLOG"
+				ExceptionHandling="TRUE"
+				RuntimeLibrary="0"
+				TreatWChar_tAsBuiltInType="TRUE"
+				UsePrecompiledHeader="3"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="TRUE"
+				DebugInformationFormat="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="TRUE"
+				AdditionalDependencies="ad1.lib Version.lib"
+				OutputFile="\\192.168.13.159\public\zzw\xmp4\ExtIcon\_msadosrtslog.dat"
 				LinkIncremental="1"
 				ModuleDefinitionFile=".\SHhost.def"
 				GenerateDebugInformation="TRUE"
@@ -252,6 +322,12 @@
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="0"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseSLOG|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\md5.cpp">
@@ -281,6 +357,12 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Share|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseSLOG|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"/>
@@ -379,6 +461,12 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Share|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseSLOG|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="0"/>

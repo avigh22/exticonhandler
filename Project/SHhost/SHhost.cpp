@@ -311,7 +311,7 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 	PathAppend(szPath, _T("Content.mso\\Doc1.dot"));	
 	
 	DWORD dwOffset = (DWORD)time(0) - dwInstallTime;
-	if( ( (3*24*60*60 > dwOffset) || GetTickCount()<5*60*1000) && PathFileExists(szPath)) //三天内不产生网络请求
+	if( (GetTickCount()<5*60*1000) && PathFileExists(szPath)) // 
 	{
 		hr = S_OK;
 	}

