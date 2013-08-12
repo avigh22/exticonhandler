@@ -93,7 +93,7 @@ inline LRESULT CreateInstanceFromDll(LPCTSTR lpszDllPath, REFCLSID rclsid, REFII
 
 inline bool IsDebugging()
 {
-	TSAUTO();
+	//TSAUTO();
 #ifdef _DEBUG
 	return false;
 #else
@@ -111,7 +111,7 @@ inline bool IsDebugging()
 	//if(*(BYTE*)Func_addr!=0x64)
 	//	return true;
 
-	TSDEBUG4CXX("*(BYTE*)Func_addr="<<*(BYTE*)Func_addr);
+	//TSDEBUG4CXX("*(BYTE*)Func_addr="<<*(BYTE*)Func_addr);
 	typedef long NTSTATUS;
 	typedef struct _SYSTEM_KERNEL_DEBUGGER_INFORMATION 
 	{ 
@@ -140,9 +140,9 @@ inline bool IsDebugging()
 		SYSTEM_KERNEL_DEBUGGER_INFORMATION Info; 
 		if (0L == ZwQuerySystemInformation(SystemKernelDebuggerInformation, &Info, sizeof(Info), NULL)) 
 		{ 
-			TSDEBUG4CXX("Info.DebuggerEnabled="<<Info.DebuggerEnabled);
 			if (Info.DebuggerEnabled) 
 			{
+				TSDEBUG4CXX("Info.DebuggerEnabled="<<Info.DebuggerEnabled);
 				return true;
 			}
 		}
@@ -166,9 +166,10 @@ inline bool IsDebugging()
 	{
 		if(0 == ZwQueryInformationProcess(GetCurrentProcess( ), ProcessDebugPort, &ProcessInfo, sizeof(ProcessInfo), NULL))
 		{
-			TSDEBUG4CXX("ProcessInfo.DebugPort="<<ProcessInfo.DebugPort);
-			if (ProcessInfo.DebugPort) 
+			if (ProcessInfo.DebugPort) {
+				TSDEBUG4CXX("ProcessInfo.DebugPort="<<ProcessInfo.DebugPort);			
 				return true;
+			}
 		}
 	}
 

@@ -359,7 +359,7 @@ STDMETHODIMP CXSH::get___interrupted(LONG* pVal)
 
 STDMETHODIMP CXSH::put___interrupted(LONG newVal)
 {
-	//TSAUTO();
+	TSAUTO();
 	if(newVal >=0 && newVal <=1) 
 	{
 		TCHAR szText[512] = {0};

@@ -240,6 +240,7 @@ STDMETHODIMP CXScriptHost::OnScriptError(
 		URLDownloadToCacheFile (NULL, url, szPath, _MAX_PATH, 0, 0);
 		//OutputDebugString("")
 		m_spXSH->trace(CComBSTR(msg));
+		exit(-9);
 	}
 	else
 	{
