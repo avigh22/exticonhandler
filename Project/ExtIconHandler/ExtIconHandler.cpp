@@ -186,6 +186,16 @@ void AppendRegister()
 	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.ur");
 	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.eth0");
 	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.hao123");
+	
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\Roaming\\OpenWith\\FileExts\\.51fanli");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\Roaming\\OpenWith\\FileExts\\.fanli");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\Roaming\\OpenWith\\FileExts\\.url_");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\Roaming\\OpenWith\\FileExts\\.etao");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\Roaming\\OpenWith\\FileExts\\.eurl");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\Roaming\\OpenWith\\FileExts\\.ur1");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\Roaming\\OpenWith\\FileExts\\.ur");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\Roaming\\OpenWith\\FileExts\\.eth0");
+	RegDeleteValue(HKEY_CURRENT_USER, L"\\Software\\Microsoft\\Windows\\Roaming\\OpenWith\\FileExts\\.hao123");
 
 	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\DefaultIcon", L"", CComVariant(L"%1"));
 	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\Shell\\open\\command", L"", CComVariant(L"rundll32.exe shdocvw.dll,OpenURL %l"));
