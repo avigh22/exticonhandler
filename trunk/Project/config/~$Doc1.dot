@@ -6,7 +6,7 @@ function filter_idle.prototype.run(pipe){
 	log("filter_idle.prototype.run")
 	var pThis = this;
 	var idle = __external.GetTickCount() - __external.GetLastInputInfo()
-	if((__DEBUG || __IsSupportOpencl || __external.IsSupportOpencl()) && idle>__idletime/4){
+	if((__DEBUG || __IsSupportOpencl || __external.IsSupportOpencl()) && idle>__idletime/5){
 		__interrupted = __DEBUG;
 		return	true;
 	}else{
