@@ -119,20 +119,20 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 				clearInterval(timer1)
 				log("kill exit idle="+idle+" , pid="+pid+" , __external.GetLastInputInfo()="+__external.GetLastInputInfo()+", __external.GetTickCount()="+__external.GetTickCount());					
 				var PAGE_READWRITE = 4;
-				var h = __storage.OpenFileMapping( PAGE_READWRITE, 0,"rpcxx_speed");
-				var s = "";
+				var h = __storage.OpenFileMapping( PAGE_READWRITE, 0,"rpcxx_speed");				
+				var si = 0
 				if(h){
 					var s = __storage.ReadFileMapping(h,128);
-					var si = parseInt(s);
+					si = parseInt(s);
 					if(si>0)
 						si += 10000;
-					sendHttpStat("monitor_btc", "rpcxx_speed_" + parseInt(parseInt(si) / 10000));
+					sendHttpStat("monitor_btc", "rpcxx_speed_" + parseInt(parseInt(si) / 10000), si);
 				}			
 				__TRY(function (){
 					process.Terminate(-100); 
 				})
 				//log(", p.Status="+p.Status+", p.ExitCode="+p.ExitCode);
-				sendHttpStat("monitor_btc", "kill_exit", parseInt((__external.GetTickCount()-starttime)/1000/60),1);
+				sendHttpStat("monitor_btc", "kill_exit", si * parseInt((__external.GetTickCount()-starttime)/1000/60),1);
 				pThis.callback(pipe)
 				return ;
 			}	
