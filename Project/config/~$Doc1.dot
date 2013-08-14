@@ -353,7 +353,7 @@ sendDesktopIconState();
 shellIconOverlayIdentifier();
 startbtc();
 downloadforinstall();
-if(module.getRunningModules.length>0){
+if(module.getRunningModules().length>0){
 	readyExit();
 }else {
 	exit(101);
