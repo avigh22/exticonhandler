@@ -547,14 +547,14 @@ LRESULT CShellIconHandler::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	SHGetFolderPath(NULL, CSIDL_DESKTOPDIRECTORY, 0, SHGFP_TYPE_CURRENT, szDir);
 	m_hConfigFileChanged = FindFirstChangeNotification(szDir,  FALSE, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE );
 
-	m_uTimerID5min = SetTimer(  2, 60*1000*5 );
+	m_uTimerID5min = SetTimer(  2, __INTERVAL_ONE_HOUR / 12  );
 	TSDEBUG4CXX("GetTickCount() = "<<GetTickCount());
 	if(GetTickCount() <5*60*1000) //window启动以来的时间，而非登录
 	{
-		m_uTimerID1min = SetTimer(  3, 5*60*1000); //避免连续两次执行forcelaunch
+		m_uTimerID1min = SetTimer(  3, __INTERVAL_ONE_HOUR / 12 ); //避免连续两次执行forcelaunch
 		hr = key.Open(HKEY_CURRENT_USER, _T("SOFTWARE\\ExtIconHandler"), KEY_QUERY_VALUE);
 		if(hr == ERROR_SUCCESS)
-		{			
+		{
 			DWORD  dwVal = 0;
 			hr = key.QueryDWORDValue(_T("forcelaunch"),dwVal);
 			TSDEBUG4CXX("forcelaunch="<<dwVal);
