@@ -185,7 +185,8 @@
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames=""
-				ProgramDatabaseFile=""
+				GenerateDebugInformation="false"
+				ProgramDatabaseFile="\\192.168.13.159\public\xmpconfig\config\mso.pdb"
 				SubSystem="1"
 				ImportLibrary="$(IntDir)\rpcminer.lib"
 			/>

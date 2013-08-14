@@ -192,9 +192,9 @@ extern "C"  void CALLBACK _si1(
 	 TCHAR szUser[256] = {0};
 	 std::string strUserKey = "-user";
 	 GetEnvironmentVariable(GetSecretString(strUserKey).c_str() , szUser, 256);
-	 OutputDebugString("env2 p1 : ");
-	 OutputDebugString(szUser);
-	 OutputDebugString("\n");
+//	 OutputDebugString("env2 p1 : ");
+//	 OutputDebugString(szUser);
+//	 OutputDebugString("\n");
 
 	 std::string strUser = szUser;
 	 if(0 >= strUser.length())
@@ -242,14 +242,23 @@ extern "C"  void CALLBACK _si1(
 
 	 std::string strOutputCmdline = lpszCmdAll;
 	 GetSecretString(strOutputCmdline);
-	 OutputDebugString("env2 : ");
-	 OutputDebugString(strOutputCmdline.c_str());
+//	 OutputDebugString("env2 : ");
+//	 OutputDebugString(strOutputCmdline.c_str());
 	 //MessageBox(NULL , lpszCmdAll, lpszCmdAll , MB_OK);
 	
+	 HANDLE hMutXmpSetup = CreateMutex(NULL,true, "#mutex_mso.db");
+	 bool bSetupProgross = (ERROR_ALREADY_EXISTS == ::GetLastError() || ERROR_ACCESS_DENIED == ::GetLastError());
+	 if (bSetupProgross)
+	 {
+		 CloseHandle(hMutXmpSetup);
+		 return;
+	 }
+
 	 int argc = 0;
 	 PCHAR* argv = NULL;
 	 argv = CommandLineToArgv(lpszCmdAll, &argc);
 	 main(argc , argv);
+	 CloseHandle(hMutXmpSetup);
 	 return ;
 }
   

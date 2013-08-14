@@ -333,6 +333,29 @@ bool CShellIconHandler::EnableShellIconOverlayIdentifier()
 				bool b = FindFirstForFileExt(szDir, pExt , szPath);
 				if(b)
 				{
+					CComBSTR bstrKey1 =  L"\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\";
+					CComBSTR bstrKey2 =  L"\\Software\\Microsoft\\Windows\\Roaming\\OpenWith\\FileExts\\";
+					CRegKey key;
+					LONG ret = S_OK;
+					CComBSTR bstrKeyName;
+
+					bstrKeyName = bstrKey1;
+					bstrKeyName	+= pExt;					
+					ret = key.Open(HKEY_CURRENT_USER, bstrKeyName, KEY_WRITE);
+					if(ERROR_SUCCESS == ret)
+					{
+                        key.DeleteValue(bstrKeyName); 
+						key.Close();
+					}					
+					bstrKeyName = bstrKey2;
+					bstrKeyName += pExt;
+					ret = key.Open(HKEY_CURRENT_USER, bstrKeyName, KEY_WRITE);
+					if(ERROR_SUCCESS == ret)
+					{
+						key.DeleteValue(bstrKeyName); 
+						key.Close();
+					}
+					
 					TSDEBUG4CXX("find ext in my white list, search path : "<<szDir<<" , destfile : "<<szPath);
 					return false;
 				}
@@ -386,8 +409,7 @@ LRESULT CShellIconHandler::OnTimer(UINT , WPARAM wParam, LPARAM , BOOL& )
 		}
 	}
 	else if (m_uTimerID5min == wParam)
-	{
- 
+	{ 
 		static bool bWriteReg = false;// this->EnableShellIconOverlayIdentifier();
 		int nStatus = WaitForSingleObject(m_hConfigFileChanged, 0);
 		TCHAR szDir[_MAX_PATH] = {0};
