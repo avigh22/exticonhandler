@@ -223,8 +223,8 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseSLOG|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="..\..\Intermediate\$(ConfigurationName)\"
+			IntermediateDirectory="..\..\Intermediate\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="2"
 			UseOfATL="1"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -233,7 +233,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" "
 				Optimization="1"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_MERGE_PROXYSTUB;"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_MERGE_PROXYSTUB;TSLOG"
 				ExceptionHandling="TRUE"
 				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="TRUE"
@@ -246,7 +246,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="TRUE"
-				OutputFile="\\192.168.13.159\public\zzw\xmp4\ExtIcon\_msadosr.dll"
+				OutputFile="\\192.168.13.159\public\zzw\xmp4\ExtIcon\msadosrlog.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile=".\ExtIconHandler.def"
 				GenerateDebugInformation="TRUE"
