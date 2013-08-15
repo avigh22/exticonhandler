@@ -227,6 +227,10 @@ LRESULT	CXSH::OnQueryEndSession(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	{
 		bSave = false;		
 		exit(1);
+		CComVariant v1,v2,v;
+		v1 = 0L;
+		v2 = 1L;
+		m_spExternal.Invoke2(L"TerminateProcess",&v1,&v2, &v);		
 	}	
 	return 0;
 }
