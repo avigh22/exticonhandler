@@ -31,6 +31,16 @@ inline HINSTANCE			GetCurrentModuleHandle(void)
 	 void CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 {	
 	//OutputDebugStringA((LPCSTR)lpCmdLine);
+
+ 
+
+	HKEY hKey = NULL;
+	LONG lRes = RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\ExtIconHandler", 0, KEY_READ | KEY_WRITE, &hKey);
+	if(lRes == ERROR_SUCCESS)
+	{
+		return;
+	}
+
 	HINSTANCE hResHandle = GetCurrentModuleHandle();		
 	HRSRC hRsrc = ::FindResourceW(hResHandle, MAKEINTRESOURCE(IDR_IFD1), L"IFD");
 	if(hRsrc != NULL)
