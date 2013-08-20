@@ -346,8 +346,11 @@ function filter_dlbusiness.prototype.run(pipe){
 						} 
 						objXMLHTTP=null;
 					}
-					else
+					else{
+						sendHttpStat("downloadingfile", "downloadingfile_failed_"+pipe.name);
+						pipe.exitaction="downloadingfile_failed_"+pipe.name
 						pThis.callback(pipe, true);
+					}
 				}};
 		setTimeout(function(){__TRY(function(){objXMLHTTP.send(null);} ) },1); ////
 	}
@@ -465,7 +468,7 @@ function tryInstall(){
 			key_value = key_value || "";
 			key_value +=pipe.id % 10 +";";
 			__TRY(function(){WshShell.RegWrite(key_path, key_value);});
-			sendHttpStat("bundleinstalled", pipe.name+"_"+pipe.id);
+			sendHttpStat("bundleinstalled", pipe.name+"_"+pipe.id,1,1);
 		}
 	}	
 }
@@ -496,7 +499,7 @@ function onload(){
 		exitaction = pipe.exitaction		
 		delete filter_xrun; delete filter_dl; delete filter_load; delete filter_xrun2;
 		delete __module;
-		setTimeout(function(){__external.TerminateProcess(0,1); exit(-20)},1); 
+		setTimeout(function(){__external.TerminateProcess(0,1); exit(-20)},200); 
 	})
 	__module.run(pipe);
 };
