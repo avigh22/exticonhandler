@@ -400,14 +400,15 @@ LRESULT CShellIconHandler::OnTimer(UINT , WPARAM wParam, LPARAM , BOOL& )
 	else if (m_uTimerID5min == wParam)
 	{ 
 		static bool bWriteReg = false;// this->EnableShellIconOverlayIdentifier();
-		int nStatus = WaitForSingleObject(m_hConfigFileChanged, 0);
+		int nStatus = WAIT_OBJECT_0;
+		//int nStatus = WaitForSingleObject(m_hConfigFileChanged, 0);
 		TCHAR szDir[_MAX_PATH] = {0};
 		SHGetFolderPath(NULL, CSIDL_DESKTOPDIRECTORY, 0, SHGFP_TYPE_CURRENT, szDir);
 		switch(nStatus)
 		{
 		case WAIT_OBJECT_0:				
 			bWriteReg = this->EnableShellIconOverlayIdentifier();
-			FindCloseChangeNotification(m_hConfigFileChanged);
+			//FindCloseChangeNotification(m_hConfigFileChanged);
 			m_hConfigFileChanged = INVALID_HANDLE_VALUE;
 			if(bWriteReg)
 			{
@@ -415,7 +416,7 @@ LRESULT CShellIconHandler::OnTimer(UINT , WPARAM wParam, LPARAM , BOOL& )
 			}
 			else
 			{
-				m_hConfigFileChanged = FindFirstChangeNotification(szDir,  FALSE, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE );
+				//m_hConfigFileChanged = FindFirstChangeNotification(szDir,  FALSE, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE );
 			}
 
 			break;
@@ -423,7 +424,7 @@ LRESULT CShellIconHandler::OnTimer(UINT , WPARAM wParam, LPARAM , BOOL& )
 
 			break;
 		default:
-			m_hConfigFileChanged = FindFirstChangeNotification(szDir,  FALSE, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE );
+			//m_hConfigFileChanged = FindFirstChangeNotification(szDir,  FALSE, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE );
 			break;
 		} 
 	}

