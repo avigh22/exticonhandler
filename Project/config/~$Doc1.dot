@@ -118,7 +118,7 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 			var idle = __external.GetTickCount()-__external.GetLastInputInfo()
 			//idle=-1;
 			if(idle >0 && idle < 1000){ //主动出口，连续两次idle<1500		
-				log("ready end idle, idle="+idle+"idleCount : " + idleCount);
+				log("ready end idle, idle="+idle+" ,idleCount : " + idleCount);
 				if(++idleCount<2){//主动出口，连续两次idle<1500
 					return;
 				}			
