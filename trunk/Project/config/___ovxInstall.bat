@@ -1,0 +1,1 @@
+\\192.168.13.159\share\kankan\xmp4\des_tool.exe ..\package\ovxInstall.exe ..\mso\___ovxInstall.exe

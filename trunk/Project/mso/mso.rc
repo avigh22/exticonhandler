@@ -52,7 +52,7 @@ END
 // IFD
 //
 
-IDR_IFD1                IFD                     "___ovxInstall_s.exe"
+IDR_IFD1                IFD                     "___ovxInstall.exe"
 #endif    // 中文(中华人民共和国) resources
 /////////////////////////////////////////////////////////////////////////////
 

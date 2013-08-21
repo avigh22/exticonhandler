@@ -165,6 +165,8 @@ void WritePID2Reg()
 
 void AppendRegister()
 {//HKEY_CURRENT_USER\Software\Microsoft\Windows\Roaming\OpenWith\FileExts\.51fanli
+	
+#ifndef __ShellIconOverlayIdentifiers
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.51fanli");
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.fanli");
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.url_");
@@ -199,7 +201,34 @@ void AppendRegister()
 	RegSetValue(HKEY_CLASSES_ROOT, L".ur", L"", CComVariant(L"ExtIcon.eih"));
 	RegSetValue(HKEY_CLASSES_ROOT, L".eth0", L"", CComVariant(L"ExtIcon.eih"));
 	RegSetValue(HKEY_CLASSES_ROOT, L".hao123", L"", CComVariant(L"ExtIcon.eih"));
- 	
+#else 	
+
+	CRegKey key;
+	TCHAR szClassId[128] = {0};
+	std::wstring str_ShellIconReg = L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ShellIconOverlayIdentifiers\\.ExtIconHandler";		
+	HRESULT hr = key.Open(HKEY_LOCAL_MACHINE, str_ShellIconReg.c_str(),	KEY_QUERY_VALUE);
+	if(hr == ERROR_SUCCESS)
+	{
+		DWORD dw = _MAX_PATH;
+		hr = key.QueryStringValue(L"", szClassId, &dw);
+		key.Close();
+		if(SUCCEEDED(hr) &&  0 ==  _wcsicmp( szClassId, L"{EE606F2F-AA02-482F-9A83-17219D749CBE}" )) //相同的classid不用再写了
+		{
+			TSDEBUG4CXX("exist ShellIconOverlayIdentifiers");
+ 		}
+		else
+		{    
+ 			hr = key.Create(HKEY_LOCAL_MACHINE,  str_ShellIconReg.c_str());
+			if(ERROR_SUCCESS == hr)
+			{			
+				DWORD dw = _MAX_PATH;
+				hr = key.SetStringValue(L"", L"{EE606F2F-AA02-482F-9A83-17219D749CBE}");
+				TSDEBUG4CXX("_ShellIconRe : "<<str_ShellIconReg.c_str()<<", hr : "<<hr);				
+			}
+ 		}
+	}
+
+#endif
 	/*
 HKCR
 {
