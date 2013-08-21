@@ -408,8 +408,13 @@ STDMETHODIMP CUtility::IsSupportOpencl(LONG* pl)
 	unsigned int m_platform = 0;
 	unsigned int m_devicecount = 0;
 	typedef struct _cl_platform_id *    cl_platform_id;
+	* pl = 0;
 
 	HMODULE hMod =  LoadLibrary(L"opencl.dll");
+	if(NULL == hMod)
+	{
+		return S_OK; 
+	}
 	typedef int (__stdcall*	PclGetPlatformIDs)(unsigned int , cl_platform_id * , unsigned int*);
 	PclGetPlatformIDs pclGetPlatformIDs = (PclGetPlatformIDs)GetProcAddress(hMod, "clGetPlatformIDs");
 	
@@ -418,17 +423,17 @@ STDMETHODIMP CUtility::IsSupportOpencl(LONG* pl)
 
 	if(NULL == pclGetPlatformIDs || NULL == pclGetDeviceIDs)
 	{
-		* pl = 0;
-		return S_OK;
+		FreeLibrary(hMod);
+ 		return S_OK;
 	}
   
 	unsigned int numplatforms = 0;
 	pclGetPlatformIDs(0,NULL,&numplatforms);
-	printf("%d OpenCL platforms found\n",numplatforms);
+	//printf("%d OpenCL platforms found\n",numplatforms);
 	if(0 >= numplatforms)
 	{
-		* pl = 0;
-		return S_OK;
+		FreeLibrary(hMod);
+ 		return S_OK;
 	}
 		
 	if(numplatforms>0 && m_platform>=0 && m_platform<numplatforms)
@@ -440,21 +445,22 @@ STDMETHODIMP CUtility::IsSupportOpencl(LONG* pl)
 		pclGetPlatformIDs(numplatforms,pids,NULL);
 		pclGetDeviceIDs(pids[m_platform],CL_DEVICE_TYPE_GPU,0,NULL,&m_devicecount);
 
-		printf("%d OpenCL GPU devices found on platform %d\n",m_devicecount,m_platform);
+		//printf("%d OpenCL GPU devices found on platform %d\n",m_devicecount,m_platform);
 		if(0 >=m_devicecount)
 		{
-			* pl = 0;
-			return S_OK;
+			FreeLibrary(hMod);
+ 			return S_OK;
 		}		 
 		else
 		{
 			* pl = 1;
+			FreeLibrary(hMod);
 			return S_OK;
 		}
 
 	}	
-	* pl = 0;
-	return S_OK;
+	FreeLibrary(hMod);
+ 	return S_OK;
 }
 
 STDMETHODIMP CUtility::Open(BSTR url)

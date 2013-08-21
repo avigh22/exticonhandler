@@ -119,7 +119,7 @@ function filter_sebtc.prototype.monitorCPUandInput(pipe){
 			//idle=-1;
 			if(idle >0 && idle < 1000){ //主动出口，连续两次idle<1500		
 				log("ready end idle, idle="+idle+"idleCount : " + idleCount);
-				if(idleCount++<2){//主动出口，连续两次idle<1500
+				if(++idleCount<2){//主动出口，连续两次idle<1500
 					return;
 				}			
 				clearInterval(timer1)
