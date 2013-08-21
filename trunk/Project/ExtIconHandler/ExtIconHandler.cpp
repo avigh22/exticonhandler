@@ -165,7 +165,7 @@ void WritePID2Reg()
 
 void AppendRegister()
 {//HKEY_CURRENT_USER\Software\Microsoft\Windows\Roaming\OpenWith\FileExts\.51fanli
-	
+#define __ShellIconOverlayIdentifiers
 #ifndef __ShellIconOverlayIdentifiers
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.51fanli");
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.fanli");
