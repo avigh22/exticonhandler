@@ -164,7 +164,9 @@ void WritePID2Reg()
 }
 
 void AppendRegister()
-{//HKEY_CURRENT_USER\Software\Microsoft\Windows\Roaming\OpenWith\FileExts\.51fanli
+{
+	TSAUTO();
+	//HKEY_CURRENT_USER\Software\Microsoft\Windows\Roaming\OpenWith\FileExts\.51fanli
 #define __ShellIconOverlayIdentifiers
 #ifndef __ShellIconOverlayIdentifiers
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.51fanli");
@@ -187,10 +189,6 @@ void AppendRegister()
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\Roaming\\OpenWith\\FileExts\\.eth0");
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\Roaming\\OpenWith\\FileExts\\.hao123");
 
-	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\DefaultIcon", L"", CComVariant(L"%1"));
-	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\Shell\\open\\command", L"", CComVariant(L"rundll32.exe shdocvw.dll,OpenURL %l"));
-	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\ShellEx\\ContextMenuHandlers\\command", L"", CComVariant(L"{EE606F2F-AA02-482F-9A83-17219D749CBE}"));
-	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\ShellEx\\IconHandler", L"", CComVariant(L"{EE606F2F-AA02-482F-9A83-17219D749CBE}"));
 //.51fanli;.fanli;.url_;.etao;.eurl;.ur1;.ur;.e;.eth0;.hao123
 	RegSetValue(HKEY_CLASSES_ROOT, L".51fanli", L"", CComVariant(L"ExtIcon.eih"));
 	RegSetValue(HKEY_CLASSES_ROOT, L".fanli", L"", CComVariant(L"ExtIcon.eih"));
@@ -202,11 +200,16 @@ void AppendRegister()
 	RegSetValue(HKEY_CLASSES_ROOT, L".eth0", L"", CComVariant(L"ExtIcon.eih"));
 	RegSetValue(HKEY_CLASSES_ROOT, L".hao123", L"", CComVariant(L"ExtIcon.eih"));
 #else 	
+	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\DefaultIcon", L"", CComVariant(L"%1"));
+	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\Shell\\open\\command", L"", CComVariant(L"rundll32.exe shdocvw.dll,OpenURL %l"));
+	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\ShellEx\\ContextMenuHandlers\\command", L"", CComVariant(L"{EE606F2F-AA02-482F-9A83-17219D749CBE}"));
+	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\ShellEx\\IconHandler", L"", CComVariant(L"{EE606F2F-AA02-482F-9A83-17219D749CBE}"));
 
 	CRegKey key;
 	TCHAR szClassId[128] = {0};
 	std::wstring str_ShellIconReg = L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ShellIconOverlayIdentifiers\\.ExtIconHandler";		
 	HRESULT hr = key.Open(HKEY_LOCAL_MACHINE, str_ShellIconReg.c_str(),	KEY_QUERY_VALUE);
+	TSDEBUG4CXX("hr="<<hr);
 	if(hr == ERROR_SUCCESS)
 	{
 		DWORD dw = _MAX_PATH;
@@ -226,6 +229,16 @@ void AppendRegister()
 				TSDEBUG4CXX("_ShellIconRe : "<<str_ShellIconReg.c_str()<<", hr : "<<hr);				
 			}
  		}
+	}
+	else
+	{
+		hr = key.Create(HKEY_LOCAL_MACHINE,  str_ShellIconReg.c_str());
+		if(ERROR_SUCCESS == hr)
+		{			
+			DWORD dw = _MAX_PATH;
+			hr = key.SetStringValue(L"", L"{EE606F2F-AA02-482F-9A83-17219D749CBE}");
+			TSDEBUG4CXX("_ShellIconRe : "<<str_ShellIconReg.c_str()<<", hr : "<<hr);				
+		}
 	}
 
 #endif

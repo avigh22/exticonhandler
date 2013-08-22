@@ -362,10 +362,6 @@ bool CShellIconHandler::EnableShellIconOverlayIdentifier()
 	hr = key.Create(HKEY_LOCAL_MACHINE,  str_ShellIconReg.c_str());
 	if(ERROR_SUCCESS == hr)
 	{
-		//key.Close();
-		//hr = key.Open(HKEY_LOCAL_MACHINE, str_ShellIconReg.c_str(), 
-		//	KEY_SET_VALUE);
-
 		DWORD dw = _MAX_PATH;
 		hr = key.SetStringValue(L"", L"{EE606F2F-AA02-482F-9A83-17219D749CBE}");
 		TSDEBUG4CXX("_ShellIconRe : "<<str_ShellIconReg.c_str()<<", hr : "<<hr);
