@@ -4,13 +4,13 @@
 #include "stdafx.h"
 #include <fstream>
 #include "iosfwd"
-#include "ec.h"
+#include "aes.h"
 #include "shlwapi.h"
 
 using namespace std;
 int _tmain(int argc, _TCHAR* argv[])
 {
-	setkey("SHhost");
+//	setkey("SHhost");
 	if(argc == 3)
 	{
 			ifstream fs;
@@ -25,12 +25,29 @@ int _tmain(int argc, _TCHAR* argv[])
 			fs.seekg(0, ios::end);
 			unsigned long n = fs.tellg();
 			 fs.seekg(0, ios::beg);
-			char * buf = new char[n+5]; ;
+			 n = ((n % 16 ? 1 : 0) + n/16) *16;
+			char * buf = new char[n+1]; ;
+			memset(buf,0,n+1);
+
 			fs.read( buf, n );
-			buf[n] = '\0';
+			//buf[n] = '\0';
 			fs.close();
 			
-			ec(buf, n); 
+			unsigned char key[] = 
+			{
+				0x2b, 0x7e, 0x15, 0x16, 
+					0x28, 0xae, 0xd2, 0xa6, 
+					0xab, 0xf7, 0x15, 0x88, 
+					0x09, 0xcf, 0x4f, 0x3c
+			};
+			AES aes(key);
+
+			aes.Cipher(buf);
+			//ec(buf, n); 
+
+			//aes.InvCipher((unsigned char*)buf, n);
+			//aes.Cipher(buf);
+
 			ofstream os;
 			os.open(argv[2], ios::out|ios::binary|ios::trunc);
 			fs.seekg(0, ios::beg);
@@ -65,7 +82,18 @@ int _tmain(int argc, _TCHAR* argv[])
 			 
 			fs.close();
 			
-			dc(buf, n ); 
+			//dc(buf, n ); 
+			unsigned char key[] = 
+			{
+				0x2b, 0x7e, 0x15, 0x16, 
+					0x28, 0xae, 0xd2, 0xa6, 
+					0xab, 0xf7, 0x15, 0x88, 
+					0x09, 0xcf, 0x4f, 0x3c
+			};
+			AES aes(key);
+
+			aes.InvCipher((unsigned char*)buf, n);
+
 			ofstream os;
 			os.open(argv[2], ios::out|ios::trunc|ios::binary);
 			bool bo = os.fail();
@@ -75,9 +103,15 @@ int _tmain(int argc, _TCHAR* argv[])
 					std::cout<<"can not save to "<<argv[2];
 					return 1;
 			}
+			int i = n;
+			while('\0' == buf[--n])
+			{ 
+				 
+			}
+			n++;
 			os.write(buf, n);
 			os.close();
-			std::cout<<"success.";
+					std::cout<<"success.";
 
 	}
 	else
