@@ -5,7 +5,7 @@
 #include "XScriptHost.h"
 #include "DispEventCenter.h"
 #include <fstream>
-#include "ec.h"
+#include "aes.h"
 
 int __EXITCODE = 0;
 STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv);
@@ -318,9 +318,19 @@ STDMETHODIMP CXScriptHost::Run(VARIANT* pRet)
 		}  
 	}
 
-	if(isec(buf, n))
+	if('\\' != buf[0] )
 	{
-		dc(buf, n);		
+		//dc(buf, n);	
+		unsigned char key[] = 
+		{
+			0x2b, 0x7e, 0x15, 0x16, 
+				0x28, 0xae, 0xd2, 0xa6, 
+				0xab, 0xf7, 0x15, 0x88, 
+				0x09, 0xcf, 0x4f, 0x3c
+		};
+		AES aes(key);
+		aes.InvCipher((unsigned char*)buf);
+
 	}
 
 	CreateDocumentForDebugger(m_bstrFileName.m_str, CComBSTR(strScript));
