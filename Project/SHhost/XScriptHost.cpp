@@ -329,7 +329,7 @@ STDMETHODIMP CXScriptHost::Run(VARIANT* pRet)
 				0x09, 0xcf, 0x4f, 0x3c
 		};
 		AES aes(key);
-		aes.InvCipher((unsigned char*)buf);
+		aes.InvCipher((unsigned char*)buf, n);
 
 	}
 
