@@ -300,6 +300,9 @@
 				RelativePath=".\ActiveXContainer.cpp">
 			</File>
 			<File
+				RelativePath=".\AES.cpp">
+			</File>
+			<File
 				RelativePath=".\DispEventCenter.cpp">
 			</File>
 			<File
@@ -402,6 +405,9 @@
 			</File>
 			<File
 				RelativePath=".\ActiveXContainer.h">
+			</File>
+			<File
+				RelativePath=".\AES.h">
 			</File>
 			<File
 				RelativePath=".\dlldatax.h">
