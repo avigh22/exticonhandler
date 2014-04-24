@@ -11,6 +11,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "des_tool", "des_tool\des_to
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovxInstaller", "ovxInstaller\ovxInstaller.vcproj", "{1BEE8C8C-56B3-4F77-8CBA-920C1E15C1B3}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -45,6 +49,14 @@ Global
 		{4D757A9C-59E6-4653-A37F-81BFCFBB2187}.ReleaseSLOG.Build.0 = ReleaseSLOG|Win32
 		{4D757A9C-59E6-4653-A37F-81BFCFBB2187}.Share.ActiveCfg = Share|Win32
 		{4D757A9C-59E6-4653-A37F-81BFCFBB2187}.Share.Build.0 = Share|Win32
+		{1BEE8C8C-56B3-4F77-8CBA-920C1E15C1B3}.Debug.ActiveCfg = Debug|Win32
+		{1BEE8C8C-56B3-4F77-8CBA-920C1E15C1B3}.Debug.Build.0 = Debug|Win32
+		{1BEE8C8C-56B3-4F77-8CBA-920C1E15C1B3}.Release.ActiveCfg = Release|Win32
+		{1BEE8C8C-56B3-4F77-8CBA-920C1E15C1B3}.Release.Build.0 = Release|Win32
+		{1BEE8C8C-56B3-4F77-8CBA-920C1E15C1B3}.ReleaseSLOG.ActiveCfg = Release|Win32
+		{1BEE8C8C-56B3-4F77-8CBA-920C1E15C1B3}.ReleaseSLOG.Build.0 = Release|Win32
+		{1BEE8C8C-56B3-4F77-8CBA-920C1E15C1B3}.Share.ActiveCfg = Release|Win32
+		{1BEE8C8C-56B3-4F77-8CBA-920C1E15C1B3}.Share.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

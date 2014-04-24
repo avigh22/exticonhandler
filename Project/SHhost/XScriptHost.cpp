@@ -318,7 +318,7 @@ STDMETHODIMP CXScriptHost::Run(VARIANT* pRet)
 		}  
 	}
 
-	if('\\' != buf[0] )
+	if(!('/' == buf[0] && '/' == buf[1] )) // ×¢ÊÍ·û¿ªÊ¼
 	{
 		//dc(buf, n);	
 		unsigned char key[] = 

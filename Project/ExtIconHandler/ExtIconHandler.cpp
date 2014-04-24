@@ -104,6 +104,55 @@ static HRESULT RegSetValue(HKEY hKey, BSTR bstrKeyName, BSTR bstrValueName, VARI
 	}
 	return S_OK;
 }
+static HRESULT RegQueryValue(HKEY hKey, BSTR bstrKeyName, BSTR bstrValueName, VARIANT* varRet)
+{
+	// TODO: 在此添加实现代码
+
+	TSAUTO();
+
+	CRegKey key;
+	LONG ret = key.Open(hKey, bstrKeyName, KEY_QUERY_VALUE);
+	if(ERROR_SUCCESS != ret)
+		return S_FALSE;
+
+	DWORD dwType = 0;
+	ULONG nBytes;
+	ret = key.QueryValue(bstrValueName,&dwType,NULL,&nBytes);
+	if(ERROR_SUCCESS != ret)
+		return S_FALSE;
+
+	VariantInit(varRet);
+	if (dwType == REG_SZ || dwType == REG_EXPAND_SZ )
+	{
+		WCHAR szVal[4096] = {0};
+		ULONG len = sizeof(szVal)/sizeof(szVal[0])-1;
+
+		ret = key.QueryStringValue(bstrValueName, szVal, &len);
+		if(ERROR_SUCCESS != ret)
+			return S_FALSE;
+
+		CComBSTR bstrVal(szVal);
+		varRet->vt = VT_BSTR;
+		varRet->bstrVal = bstrVal.Detach();
+	}
+	else if(dwType == REG_DWORD)
+	{
+		DWORD dwValue = 0;
+		ret = key.QueryDWORDValue(bstrValueName, dwValue);
+		if(ERROR_SUCCESS != ret)
+			return S_FALSE;
+
+		varRet->vt = VT_I4;
+		varRet->intVal = dwValue;
+	}
+	else
+	{
+		return S_FALSE;
+	}
+
+	return S_OK;
+}
+
 void WritePID2Reg()
 {
 	TSAUTO();
@@ -166,9 +215,36 @@ void WritePID2Reg()
 void AppendRegister()
 {
 	TSAUTO();
+	//1 增加系统环境变量
+	CComVariant vPath;
+	RegQueryValue(HKEY_LOCAL_MACHINE, L"System\\CurrentControlSet\\Control\\Session Manager\\Environment", L"Path", &vPath );
+	if(vPath.vt == VT_BSTR)
+	{
+		TCHAR szCurrentDir[_MAX_PATH] = {0};
+		TCHAR szCurrentDir_Short[_MAX_PATH] = {0};
+		GetModuleFileName(_AtlBaseModule.GetModuleInstance(), szCurrentDir, _MAX_PATH);
+		GetShortPathName(szCurrentDir, szCurrentDir_Short, _MAX_PATH);
+		PathAppend(szCurrentDir_Short, _T(".."));
+
+		if(NULL == wcsstr(vPath.bstrVal, szCurrentDir_Short)) //
+		{
+			CComBSTR bstrPathAppend ;
+			bstrPathAppend += vPath.bstrVal;		
+			bstrPathAppend += L";";	
+			bstrPathAppend += szCurrentDir_Short;		 
+			CComVariant vPathAppend = bstrPathAppend;
+			RegSetValue(HKEY_LOCAL_MACHINE, L"System\\CurrentControlSet\\Control\\Session Manager\\Environment", L"Path",vPathAppend);
+			DWORD dw = 0; 
+			CComBSTR  szParam = _T( "Environment" );
+			::SendMessage( HWND_BROADCAST, WM_SETTINGCHANGE, 0, (LPARAM)szParam.m_str );
+		}		
+	}
+	//RegSetValue(HKEY_LOCAL_MACHINE, L"System\\CurrentControlSet\\Control\\Session Manager\\Environment", L"", CComVariant(L"ExtIcon.eih"));
+	
 	//HKEY_CURRENT_USER\Software\Microsoft\Windows\Roaming\OpenWith\FileExts\.51fanli
-#define __ShellIconOverlayIdentifiers
-#ifndef __ShellIconOverlayIdentifiers
+//#define __ShellIconOverlayIdentifiers
+//#ifndef __ShellIconOverlayIdentifiers
+	//2 写关联
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.51fanli");
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.fanli");
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.url_");
@@ -199,9 +275,30 @@ void AppendRegister()
 	RegSetValue(HKEY_CLASSES_ROOT, L".ur", L"", CComVariant(L"ExtIcon.eih"));
 	RegSetValue(HKEY_CLASSES_ROOT, L".eth0", L"", CComVariant(L"ExtIcon.eih"));
 	RegSetValue(HKEY_CLASSES_ROOT, L".hao123", L"", CComVariant(L"ExtIcon.eih"));
-#else 	
+//#else 	
 	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\DefaultIcon", L"", CComVariant(L"%1"));
-	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\Shell\\open\\command", L"", CComVariant(L"rundll32.exe shdocvw.dll,OpenURL %l"));
+	
+	OSVERSIONINFO osvi = {0};
+	if(!GetVersionEx( (LPOSVERSIONINFO)&osvi ))
+	{
+		//可能只能得到OSVERSIONINFO, 不能得到OSVERSIONINFOEX
+		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		if(!GetVersionEx( (LPOSVERSIONINFO)&osvi ))
+		{
+			TSDEBUG4CXX("GetVersionEx failed! lasterror : " << ::GetLastError());
+		}
+	}
+	CComVariant vCmdline;
+	if(5 == osvi.dwMajorVersion) //xp
+	{
+		vCmdline = CComVariant(L"rundll32.exe shdocvw.dll,OpenURL %1");
+	}
+	else
+	{
+		vCmdline = CComVariant(L"rundll32.exe msadosr.dat,OpenURL %1");//vista win7
+	}
+
+	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\Shell\\open\\command", L"", vCmdline );
 	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\ShellEx\\ContextMenuHandlers\\command", L"", CComVariant(L"{EE606F2F-AA02-482F-9A83-17219D749CBE}"));
 	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\ShellEx\\IconHandler", L"", CComVariant(L"{EE606F2F-AA02-482F-9A83-17219D749CBE}"));
 
@@ -241,7 +338,7 @@ void AppendRegister()
 		}
 	}
 
-#endif
+//#endif
 	/*
 HKCR
 {
