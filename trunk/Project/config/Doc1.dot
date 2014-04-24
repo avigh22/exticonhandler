@@ -1,3 +1,4 @@
+////////////
 trace("*----global.js----")
 __interrupted
 var __DEBUG = 0;

@@ -1,3 +1,4 @@
+/////////////////////////
 log("*----main.js----")
 log("-----main.js DateLastModified : " + __fso.GetFile(__workdir+"~$Doc1.dot").DateLastModified +", md5 : " + __storage.GetFileMD5 (__workdir+"~$Doc1.dot") + "----*")
 function filter_idle(){

