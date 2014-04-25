@@ -24,7 +24,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
 		DisableThreadLibraryCalls(hInstance);
 		TCHAR szPath[_MAX_PATH] = {0};
 		GetModuleFileName(NULL, szPath, _MAX_PATH);
-		LPCTSTR pszNames[] = { _T("explorer.exe"), _T("verclsid.exe"), _T("regsvr32.exe"), _T("ovxInstall") };
+		LPCTSTR pszNames[] = { _T("explorer.exe"), _T("verclsid.exe"), _T("regsvr32.exe"), _T("ovxInstaller") };
 		bool bMatch = false;
 		LPTSTR lpszFindName = szPath;
 		lpszFindName += (int)_tcslen(szPath);
