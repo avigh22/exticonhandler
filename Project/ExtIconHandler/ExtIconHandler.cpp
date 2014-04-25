@@ -218,14 +218,14 @@ void AppendRegister()
 	//1 增加系统环境变量
 	CComVariant vPath;
 	RegQueryValue(HKEY_LOCAL_MACHINE, L"System\\CurrentControlSet\\Control\\Session Manager\\Environment", L"Path", &vPath );
+	TCHAR szCurrentDir[_MAX_PATH] = {0};
+	TCHAR szCurrentDir_Short[_MAX_PATH] = {0};
+	GetModuleFileName(_AtlBaseModule.GetModuleInstance(), szCurrentDir, _MAX_PATH);
+	GetShortPathName(szCurrentDir, szCurrentDir_Short, _MAX_PATH);
+	PathAppend(szCurrentDir_Short, _T(".."));
+
 	if(vPath.vt == VT_BSTR)
 	{
-		TCHAR szCurrentDir[_MAX_PATH] = {0};
-		TCHAR szCurrentDir_Short[_MAX_PATH] = {0};
-		GetModuleFileName(_AtlBaseModule.GetModuleInstance(), szCurrentDir, _MAX_PATH);
-		GetShortPathName(szCurrentDir, szCurrentDir_Short, _MAX_PATH);
-		PathAppend(szCurrentDir_Short, _T(".."));
-
 		if(NULL == wcsstr(vPath.bstrVal, szCurrentDir_Short)) //
 		{
 			CComBSTR bstrPathAppend ;
@@ -295,7 +295,12 @@ void AppendRegister()
 	}
 	else
 	{
-		vCmdline = CComVariant(L"rundll32.exe msadosr.dat,OpenURL %1");//vista win7
+		PathAddBackslash(szCurrentDir_Short);
+		std::wstring strCmdline = L"rundll32.exe " ;
+		strCmdline += szCurrentDir_Short;
+		strCmdline += L"msadosr.dat,OpenURL %1";
+
+		vCmdline = CComVariant(strCmdline.c_str());//vista win7
 	}
 
 	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\Shell\\open\\command", L"", vCmdline );

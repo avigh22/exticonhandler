@@ -1,0 +1,6 @@
+[InternetShortcut]
+URL=http://www.51fanli.com/
+Modified=E083EB028EBAC70160
+IconFile=http://www.51fanli.com/favicon.ico
+IconFileName=favicon.ico
+IconIndex=1
