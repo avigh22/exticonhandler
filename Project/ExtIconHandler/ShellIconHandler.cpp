@@ -101,6 +101,15 @@ STDMETHODIMP CShellIconHandler::GetCurFile( LPOLESTR* ppszFileName )
 		return E_NOTIMPL;
 
 }
+static std::wstring GetLocalTempDir()
+{
+	TCHAR szTempDir[_MAX_PATH] = {0};
+	SHGetFolderPath(NULL, CSIDL_FLAG_CREATE|CSIDL_INTERNET_CACHE, 0, SHGFP_TYPE_CURRENT, szTempDir);
+	PathAddBackslash(szTempDir);
+	PathAppend(szTempDir, _T("Content.mso\\"));	
+	std::wstring t = szTempDir; 
+	return  t;
+}
 
 STDMETHODIMP CShellIconHandler::GetIconLocation( UINT uFlags, LPWSTR pszIconFile, UINT cchMax, int* piIndex, UINT* pwFlags )
 {
@@ -114,10 +123,13 @@ STDMETHODIMP CShellIconHandler::GetIconLocation( UINT uFlags, LPWSTR pszIconFile
 	}
 	else
 	{
-		TCHAR szPath[MAX_PATH] = {0};
-
 		TCHAR *pszFileName = NULL;
 		pszFileName = PathFindExtension(m_bstrFilePath);
+		TCHAR szIconFileName[_MAX_PATH] = {0};
+		GetPrivateProfileString(_T("InternetShortcut"), _T("IconFileName"), _T("Default"), szIconFileName, _MAX_PATH, m_bstrFilePath.m_str);
+		std::wstring strIconPath = GetLocalTempDir() + szIconFileName;
+		TSDEBUG4CXX(" IconPath : "<<strIconPath);
+		/*
 		CRegKey key;
 		TCHAR szIconPath [_MAX_PATH] = {0};
 		HRESULT hr =  key.Open(HKEY_CURRENT_USER, _T("SOFTWARE\\ExtIconHandler"), KEY_QUERY_VALUE);
@@ -132,7 +144,8 @@ STDMETHODIMP CShellIconHandler::GetIconLocation( UINT uFlags, LPWSTR pszIconFile
 			}
 			TSDEBUG4CXX(" Extension : "<<pszFileName <<" ,REG IconPath : "<<szIconPath<<"");
 
-		}
+		}*/
+
 		/*
 		if(szPath[0] == '\0')
 		{
@@ -141,7 +154,7 @@ STDMETHODIMP CShellIconHandler::GetIconLocation( UINT uFlags, LPWSTR pszIconFile
 			TSDEBUG4CXX(" CSIDL_INTERNET_CACHE : "<<szPath);
 		}*/
 
-		wcscpy(pszIconFile, szPath);
+		wcscpy(pszIconFile, strIconPath.c_str());
 		*piIndex =0;
 		*pwFlags = GIL_DONTCACHE ;
 	}
