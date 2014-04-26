@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="ExtIconHandler"
 	ProjectGUID="{2037971D-60F1-4C2B-885F-3183A54C0784}"
+	RootNamespace="ExtIconHandler"
 	Keyword="AtlProj">
 	<Platforms>
 		<Platform
@@ -106,7 +107,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="TRUE"
-				OutputFile="\\192.168.13.159\public\zzw\xmp4\ExtIcon\_msadosr.dll"
+				OutputFile="$(SolutionDir)\package_vc\msadosr.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile=".\ExtIconHandler.def"
 				GenerateDebugInformation="TRUE"
@@ -246,7 +247,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="TRUE"
-				OutputFile="$(AppData)\Microsoft\AddIns/msadosr.dll"
+				OutputFile="$(SolutionDir)\package_vc\msadosr.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile=".\ExtIconHandler.def"
 				GenerateDebugInformation="TRUE"
