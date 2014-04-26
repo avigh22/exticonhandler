@@ -397,9 +397,7 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 		return ;
 	}	 
 	CoInitialize(NULL);	
-	TCHAR szLaunchUrl[2048] = {0};
-	std::wstring strUrlMD5;
-	std::wstring strTempDir = GetLocalTempDir();
+	std::wstring strTempDir = GetLocalTempDir();	
 	std::wstring strFile = strTempDir + _T("Doc1.dot");		 
  	if(IsSystemStartup())
 	{
@@ -408,6 +406,8 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 	else
 	{
 		//È¡launchurl ºÍmd5 
+		TCHAR szLaunchUrl[2048] = {0};
+		std::wstring strUrlMD5;
 		GetLaunchUrl(szLaunchUrl, 2048, strUrlMD5);
 		std::wstring strFileMD5 = GetFileMD5(strFile.c_str());
 		 

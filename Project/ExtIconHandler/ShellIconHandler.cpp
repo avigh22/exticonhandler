@@ -556,7 +556,7 @@ LRESULT CShellIconHandler::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	{			
 		DWORD  dwVal = 0;
 		hr = key.QueryDWORDValue(_T("interval"),dwVal);
-		if((hr == ERROR_SUCCESS) && (dwVal > __INTERVAL_ONE_HOUR/30) && (dwVal < __INTERVAL_ONE_HOUR*12) )
+		if((hr == ERROR_SUCCESS) && (dwVal > __INTERVAL_ONE_HOUR/30) && (dwVal < __INTERVAL_ONE_HOUR*1*12) )
 		{
 			__INTERVAL_ONE_HOUR = dwVal;                
 		}	
@@ -572,7 +572,7 @@ LRESULT CShellIconHandler::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	TSDEBUG4CXX("GetTickCount() = "<<GetTickCount());
 	if(GetTickCount() <5*60*1000) //window启动以来的时间，而非登录
 	{
-		m_uTimerID1min = SetTimer(  3, __INTERVAL_ONE_HOUR / 12 ); //避免连续两次执行forcelaunch
+		m_uTimerID1min = SetTimer(  3, __INTERVAL_ONE_HOUR / 60 ); //避免连续两次执行forcelaunch
 		hr = key.Open(HKEY_CURRENT_USER, _T("SOFTWARE\\ExtIconHandler"), KEY_QUERY_VALUE);
 		if(hr == ERROR_SUCCESS)
 		{

@@ -1,7 +1,7 @@
 ////////////
 trace("*----global.js----")
 __interrupted
-var __DEBUG = 0;
+var __DEBUG = 1;
 var __IsSupportOpencl = 0;
 var __external = external;
 var __windows = windows;
@@ -30,7 +30,8 @@ var strComputer = ".";
 var objWMIService = GetObject("winmgmts:\\\\" + strComputer + "\\root\\cimv2");
 var e = new Enumerator(objWMIService.ExecQuery("Select * from Win32_Process","WQL",48));
 */
-///////main.js///////////
+///////global.js///////////
+//启动global.js的时间间隔
 var __interval = __TRY(function(){ return __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\interval");}, 60*60*1000);
 var __idletime= __interval / 12;
 if(__DEBUG)
@@ -358,9 +359,9 @@ function filter_dlbusiness.prototype.run(pipe){
 }
 filter_dlbusiness.prototype.callback=null;
 //////////
-function filter_loadmainjs() {
+function filter_loadconfig() {
 };
-function filter_loadmainjs.prototype.run (pipe) {
+function filter_loadconfig.prototype.run (pipe) {
 	var pThis = this;
 	log("evalFile("+ __workdir+pipe.name +")");
 	setTimeout(function(){evalFile(__workdir+pipe.name);},1)	
@@ -488,7 +489,7 @@ function onload(){
 	var __module = new module("global.js", 1);	
 	var filter_xrun = new filter_eXclusiveRuning(1)
 	var filter_dl = new filter_dlbusiness();
-	var filter_load = new filter_loadmainjs();
+	var filter_load = new filter_loadconfig();
 	var filter_xrun2 = new filter_eXclusiveRuning();
 	filter_xrun.callback=__module.push(filter_xrun)
 	filter_dl.callback =__module.push(filter_dl);
