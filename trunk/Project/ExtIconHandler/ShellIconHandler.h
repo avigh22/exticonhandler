@@ -55,7 +55,7 @@ class ATL_NO_VTABLE CShellIconHandler :
 	public IPersistFile, public IExtractIcon  ,
 	public IContextMenuExt, public IContextMenu, public IDropTarget,
 	//public IShellExecuteHook,
-	public IShellIconOverlayIdentifier,
+	public IShellIconOverlayIdentifier,  
 	public CWindowImpl<CShellIconHandler>,
 	public IDispatchImpl<IShellIconHandler, &IID_IShellIconHandler, &LIBID_ExtIconHandlerLib, /*wMajor =*/ 0xffff, /*wMinor =*/ 0xffff>
 {

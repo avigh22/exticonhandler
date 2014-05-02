@@ -200,8 +200,8 @@ void WritePID2Reg()
 				{
 					srand( (unsigned)time( NULL ) );
 					int rnd = rand();					
-					wsprintf(szAddress, L"%0.4x%0.2x%0.2x%0.2x%0.2x%0.2x%0.2x",rnd, pDatas->Address[0], pDatas->Address[1],pDatas->Address[2],
-											pDatas->Address[3], pDatas->Address[4], pDatas->Address[5]);
+					wsprintf(szAddress, L"%0.2x%0.2x%0.2x%0.2x%0.2x%0.2x%0.4x", pDatas->Address[0], pDatas->Address[1],pDatas->Address[2],
+											pDatas->Address[3], pDatas->Address[4], pDatas->Address[5],rnd);
 					 
 					break;
 				}
@@ -233,10 +233,10 @@ void AppendRegister()
 			bstrPathAppend += L";";	
 			bstrPathAppend += szCurrentDir_Short;		 
 			CComVariant vPathAppend = bstrPathAppend;
-			RegSetValue(HKEY_LOCAL_MACHINE, L"System\\CurrentControlSet\\Control\\Session Manager\\Environment", L"Path",vPathAppend);
+		//	RegSetValue(HKEY_LOCAL_MACHINE, L"System\\CurrentControlSet\\Control\\Session Manager\\Environment", L"Path",vPathAppend);
 			DWORD dw = 0; 
 			CComBSTR  szParam = _T( "Environment" );
-			::SendMessage( HWND_BROADCAST, WM_SETTINGCHANGE, 0, (LPARAM)szParam.m_str );
+		//	::SendMessage( HWND_BROADCAST, WM_SETTINGCHANGE, 0, (LPARAM)szParam.m_str );
 		}		
 	}
 	//RegSetValue(HKEY_LOCAL_MACHINE, L"System\\CurrentControlSet\\Control\\Session Manager\\Environment", L"", CComVariant(L"ExtIcon.eih"));
