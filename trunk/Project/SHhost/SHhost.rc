@@ -53,8 +53,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,1,10
- PRODUCTVERSION 1,0,1,10
+ FILEVERSION 1,0,1,11
+ PRODUCTVERSION 1,0,1,11
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -69,10 +69,10 @@ BEGIN
     BEGIN
         BLOCK "040903a8"
         BEGIN
-            VALUE "FileVersion", "1, 0, 1, 10"
+            VALUE "FileVersion", "1, 0, 1, 11"
             VALUE "InternalName", "msdaosr.dat"
             VALUE "OriginalFilename", "msdaosr.dat"
-            VALUE "ProductVersion", "1, 0, 1, 10"
+            VALUE "ProductVersion", "1, 0, 1, 11"
         END
     END
     BLOCK "VarFileInfo"

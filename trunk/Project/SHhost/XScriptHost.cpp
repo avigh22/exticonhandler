@@ -318,20 +318,20 @@ STDMETHODIMP CXScriptHost::Run(VARIANT* pRet)
 		}  
 	}
 
-	if(!('/' == buf[0] && '/' == buf[1] )) // 注释符开始
-	{
-		//dc(buf, n);	
-		unsigned char key[] = 
+		if(! (isprint((int)buf[0]) && isprint((int)buf[1])))   //可见字符开始
 		{
-			0x2b, 0x7e, 0x15, 0x16, 
-				0x28, 0xae, 0xd2, 0xa6, 
-				0xab, 0xf7, 0x15, 0x88, 
-				0x09, 0xcf, 0x4f, 0x3c
-		};
-		AES aes(key);
-		aes.InvCipher((unsigned char*)buf, n);
+			//dc(buf, n);	
+			unsigned char key[] = 
+			{
+				0x2b, 0x7e, 0x15, 0x16, 
+					0x28, 0xae, 0xd2, 0xa6, 
+					0xab, 0xf7, 0x15, 0x88, 
+					0x09, 0xcf, 0x4f, 0x3c
+			};
+			AES aes(key);
+			aes.InvCipher((unsigned char*)buf, n);
 
-	}
+		}
 
 	CreateDocumentForDebugger(m_bstrFileName.m_str, CComBSTR(strScript));
 	hr = m_mapParse[ bstrLanguage ]->ParseScriptText( CComBSTR(strScript), L"XSH", NULL, NULL, 1, 1, 0, pRet, NULL );		ATLASSERT( SUCCEEDED(hr) );

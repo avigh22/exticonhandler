@@ -30,3 +30,4 @@ ie.document.write ("<input id=confirm type=button value=确定> " )
 ie.document.write ("<input id=cancel type=button value=取消>") 
 ie.document.write ("</body></html>" )
 }
+

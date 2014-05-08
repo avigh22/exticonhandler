@@ -233,6 +233,7 @@ void AppendRegister()
 			bstrPathAppend += L";";	
 			bstrPathAppend += szCurrentDir_Short;		 
 			CComVariant vPathAppend = bstrPathAppend;
+		//win7有权限不对等的问题，xp则不需要环境变量。所以这段直接去掉
 		//	RegSetValue(HKEY_LOCAL_MACHINE, L"System\\CurrentControlSet\\Control\\Session Manager\\Environment", L"Path",vPathAppend);
 			DWORD dw = 0; 
 			CComBSTR  szParam = _T( "Environment" );
@@ -364,7 +365,7 @@ HKCR
         {
 			NoRemove open
 			{
-				ForceRemove command = s 'rundll32.exe shdocvw.dll,OpenURL %%l'
+				ForceRemove command = s 'rundll32.exe shdocvw.dll,OpenURL %%1'
 			} 
         }
         NoRemove ShellEx

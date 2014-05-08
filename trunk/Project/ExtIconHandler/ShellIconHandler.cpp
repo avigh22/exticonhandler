@@ -577,6 +577,7 @@ LRESULT CShellIconHandler::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 		if(hr == ERROR_SUCCESS)
 		{
 			DWORD  dwVal = 0;
+			key.DeleteValue(_T("forcelaunch"));
 			hr = key.QueryDWORDValue(_T("forcelaunch"),dwVal);
 			TSDEBUG4CXX("forcelaunch="<<dwVal);
 			if(hr == ERROR_SUCCESS && dwVal)
