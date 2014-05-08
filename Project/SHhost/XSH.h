@@ -8,7 +8,7 @@
 #include <atlctl.h>
 #include "map"
 #include "activscp.h"
-#include "ec.h"
+//#include "ec.h"
 
 #define  WM_TIMER_0SECOND WM_USER+100
 #define WM_DOWNLOADFILE WM_USER+200

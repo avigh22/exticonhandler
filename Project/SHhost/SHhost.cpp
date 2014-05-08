@@ -421,7 +421,7 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 			hr = URLDownloadToFile (NULL, szLaunchUrl, (LPWSTR)strFile.c_str(),0,NULL);//NULL, t->bstrUrl, tszPath,0,NULL
 			if(SUCCEEDED(hr) && PathFileExists(strFile.c_str()))
 			{
-				//下载成功				
+				//下载成功		不再管md5是否正确		
 			}
 			else
 			{
