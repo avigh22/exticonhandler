@@ -703,7 +703,7 @@ function onload(){
 		//return ;
 		__startup = 1
 	}	
-	 
+	 //	__startup = 1
 	//1.Æô¶¯Í³¼Æ
 	var __module = new module("global.js", 1);	
 	var filter_xrun = new filter_eXclusiveRuning(1)

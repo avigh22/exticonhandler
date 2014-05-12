@@ -381,7 +381,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="\\192.168.13.159\public\zzw\xmp4\ExtIcon/msadosr64log.dll"
+				OutputFile="$(SolutionDir)\package_vc/msadosr64.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile=".\ExtIconHandler.def"
 				GenerateDebugInformation="false"
@@ -580,7 +580,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="\\192.168.13.159\public\zzw\xmp4\ExtIcon/msadosr64.dll"
+				OutputFile="$(SolutionDir)\package_vc/msadosr64.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile=".\ExtIconHandler.def"
 				GenerateDebugInformation="false"
