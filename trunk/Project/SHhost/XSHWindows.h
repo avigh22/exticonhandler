@@ -93,6 +93,7 @@ public:
 	STDMETHOD(AddMsg2RetFunCallback)(LONG msg, IDispatch* fun);
 	STDMETHOD(RemoveMsg2RetFunCallback)(LONG l);
 	STDMETHOD(GetWindowLongPtr)(OLE_HANDLE h, LONG index, LONG* ret);
+	STDMETHOD(ModifyStyleExByTitle)(OLE_HANDLE  , LONG lRemove, LONG lAdd, LONG nFlags);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(XSHWindows), CXSHWindows)

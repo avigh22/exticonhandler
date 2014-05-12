@@ -134,6 +134,7 @@ interface IXSHWindows : IDispatch{
 	[id(6), helpstring("方法AddMsg2RetFunCallback")] HRESULT AddMsg2RetFunCallback([in] LONG msg, [in] IDispatch* fun);
 	[id(7), helpstring("方法RemoveMsg2RetFunCallback")] HRESULT RemoveMsg2RetFunCallback([in] LONG l);
 	[id(8), helpstring("方法GetWindowLongPtr")] HRESULT GetWindowLongPtr([in] OLE_HANDLE h, [in] LONG index, [out,retval] LONG* ret);
+	[id(9), helpstring("方法ModifyStyleExByTitle")] HRESULT ModifyStyleExByTitle([in]OLE_HANDLE  hWnd, [in] LONG lRemove, [in] LONG lAdd, [in] LONG nFlags);
 };
 [
 	object,

@@ -12,7 +12,14 @@ STDMETHODIMP CXSHWindows::FindWindow(BSTR cls, BSTR caption, LONG* window)
 {
 	// TODO: 在此添加实现代码
 	HANDLE h = NULL;
-	h = ::FindWindow(cls,caption);
+	BSTR _cls = NULL;
+	BSTR _caption = NULL;
+	if(cls[0] != '\0')
+		_cls = cls;
+	if(caption[0] != '\0')
+		_caption = caption;
+
+	h = ::FindWindow(_cls,_caption);
 	*window = (LONG)(LONG_PTR)h;
 	return S_OK;
 }
@@ -126,6 +133,7 @@ STDMETHODIMP CXSHWindows::AddMsg2RetFunCallback(LONG msg, IDispatch* fun)
 {
 	// TODO: 在此添加实现代码
 	TSAUTO();
+	 
 	m_mapMsg2RetFun[(UINT)msg] = fun;
 	return S_OK;
 }
@@ -147,5 +155,39 @@ STDMETHODIMP CXSHWindows::GetWindowLongPtr(OLE_HANDLE h, LONG index, LONG* ret)
 	//TSAUTO();
 	*ret = (LONG)(LONG_PTR)::GetWindowLongPtr((HWND)(UINT_PTR)h, (int)index);
 	TSDEBUG4CXX(" hWnd : " <<h<<" , nIndex : "<<index<<", ret = "<<*ret);
+	return S_OK;
+}
+
+/*
+ATLASSERT(::IsWindow(m_hWnd));
+
+DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_EXSTYLE);
+DWORD dwNewStyle = (dwStyle & ~dwRemove) | dwAdd;
+if(dwStyle == dwNewStyle)
+return FALSE;
+
+::SetWindowLong(m_hWnd, GWL_EXSTYLE, dwNewStyle);
+if(nFlags != 0)
+{
+::SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
+SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | nFlags);
+}
+*/
+
+
+STDMETHODIMP CXSHWindows::ModifyStyleExByTitle(OLE_HANDLE h, LONG lRemove, LONG lAdd, LONG nFlags)
+{
+	// TODO: 在此添加实现代码
+	HWND hWnd = (HWND)(ULONG_PTR)h;
+	DWORD dwStyle = ::GetWindowLong(hWnd, GWL_EXSTYLE);
+	DWORD dwNewStyle = (dwStyle & ~lRemove) | lAdd;
+	if(dwStyle == dwNewStyle)
+		return S_OK;
+	::SetWindowLong(hWnd, GWL_EXSTYLE, dwNewStyle);
+	if(nFlags != 0)
+	{
+		::SetWindowPos(hWnd, NULL, 0, 0, 0, 0,
+			SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | nFlags);
+	}
 	return S_OK;
 }
