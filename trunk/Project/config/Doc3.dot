@@ -23,3 +23,5 @@ ie.document.write ("<body bgcolor =skyblue scroll=no><br><br>  <h2 align=center>
 ie.visible=1           
 }
 
+alert("ie...")
+exit(3000)

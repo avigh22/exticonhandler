@@ -188,7 +188,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	int i_DatBuild = GetBuildVersionA(szPath_Dat);
 
 	bool bDotRecovery = false;
-	if(iDatBuild && (i_DllBuild >=iDatBuild))
+	if(i_DllBuild && (i_DllBuild >=iDllBuild))
 	{
 		CHAR szPathDllWithBuild[_MAX_PATH] = {0};	
 		bDotRecovery = true; //
@@ -206,7 +206,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	rename(szPath_Dll, szPathDll);
 	DeleteFileA(szPath_Dll);
 	
-	if(iDatBuild && (i_DatBuild >=iDatBuild))
+	if(i_DatBuild && (i_DatBuild >=iDatBuild))
 	{
 		CHAR szPathDatWithBuild[_MAX_PATH] = {0};
 		bDotRecovery = true;
@@ -269,7 +269,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	PathAddBackslashA(szRegsvr32Path);
 	PathAppendA(szRegsvr32Path, "regsvr32.exe");
 	CHAR szParam[_MAX_PATH] = {0};
-	strcat(szParam, " \"");
+	strcat(szParam, "/s \"");
 	strcat(szParam, szPathDll);
 	strcat(szParam, "\"");
 	 
@@ -319,9 +319,11 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	
 	
 
+	SHChangeNotify(SHCNE_ASSOCCHANGED,SHCNF_FLUSHNOWAIT,0,0);
 	// "http://www.google-analytics.com/collect?v=1&tid=UA-42360423-1&cid=$R1&t=event&ec=install&ea=silent_$EXEFILE&el=$9&ev=1"
 	//	WriteRegStr HKCU "Software\ExtIconHandler" "if" $EXEFILE
 	//	System::Call		"urlmon::URLDownloadToCacheFileW(i 0, t R0, t .r10, t 1024,i 0,i 0)"
+
 
 	_Module.Term();
 	::CoUninitialize();
