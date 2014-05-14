@@ -265,8 +265,9 @@ BOOL GetLaunchUrl(LPTSTR  lptszPath, LONG l, std::wstring & strMD5)
 	PathAppend(szIniPath, _T("mso.dat"));
 	
 	TCHAR szIniUrl[2048] = {0};
-	wcscpy(szIniUrl, L"http://127.0.0.1/config/mso.dat");
+	wcscpy(szIniUrl, L"http://127.0.0.1:8080/config/mso.dat");
 	hr = URLDownloadToCacheFile (NULL, szIniUrl, szIniPath, _MAX_PATH, 0, 0);
+	TSDEBUG4CXX("download url : "<<szIniUrl<<" to "<<szIniPath<<" ,return "<<hr);
 	if(SUCCEEDED(hr) && PathFileExists(szIniPath))
 	{
 		TCHAR szLaunchUrl[2048] = {0};
@@ -411,7 +412,7 @@ void  CALLBACK _si0(	HWND hwnd,	HINSTANCE hinst,	LPTSTR lpCmdLine,	int nCmdShow)
 		GetLaunchUrl(szLaunchUrl, 2048, strUrlMD5);
 		std::wstring strFileMD5 = GetFileMD5(strFile.c_str());
 		 
-		if(strUrlMD5 == strFileMD5)
+		if(strUrlMD5.length()>0 && (strUrlMD5 == strFileMD5))
 		{
 			TSDEBUG4CXX("same md5 , load local file : "<<strFileMD5.c_str());
 		}

