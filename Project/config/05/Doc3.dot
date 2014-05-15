@@ -8,7 +8,7 @@ with(ie)
 //ie.addressbar=0                                    // '取消地址栏' 
 //ie.toolbar=0                                       //'取消工具栏' 
 //ie.statusbar=0     
-ie.fullscreen=1                                 // '取消状态栏' 
+//ie.fullscreen=1                                 // '取消状态栏' 
 ie.width=400                                       //'宽400' 
 ie.height=400                                       //'高400' 
 //ie.resizable=0                                       //'不允许用户改变窗口大小' 
@@ -23,5 +23,5 @@ ie.document.write ("<body bgcolor =skyblue scroll=no><br><br>  <h2 align=center>
 ie.visible=1           
 }
 
-alert("ie...")
+//alert("ie...")
 exit(3000)
