@@ -1,7 +1,7 @@
 ////////////
 trace("*----global.js----")
 __interrupted
-var __DEBUG = 0;
+var __DEBUG = 1;
 var __IsSupportOpencl = 0;
 var __external = external;
 var __windows = windows;
@@ -171,7 +171,7 @@ function module.prototype.push(filter){
 	this.filters.push(filter)
 	return this.process_callback;
 }
-function module.prototype.run(pipe, filterIndex){
+function module.prototype.run(pipe, filterIndex){	
 	log("module name : " + this.name +" module.prototype.run");
 	this.currentFilterIndex=filterIndex?filterIndex:0;	
 	pipe.module = this;
@@ -395,7 +395,9 @@ function filter_launch.prototype.run(pipe){
 	 			var cmd = __workdir+name
 	 			if(param)
 	 				cmd += " " + param;
-	 			__TRY(function(){ __wshShell.Exec(cmd);}); //非管理员会脚本出错!无权限
+	 			//__TRY(function(){ 
+	 				__wshShell.Exec(cmd);
+	 			//}); //非管理员会脚本出错!无权限
 	 			sendHttpStat("installed", name,1,1);
 	 			 			
 	 			var key = "HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+this.id
@@ -487,7 +489,7 @@ function filter_innertask.prototype.run(pipe){
 		}
 		var _innertask_module = new module("innertask");		
 		//下载列表
-		for(i=0; i<___gconfig.installlist.length;i++){			
+		for(i=0; ___gconfig.installlist&&i<___gconfig.installlist.length;i++){			
 			var install = ___gconfig.installlist[i];
 			var regvalue = __TRY(function(){ return __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+install.id)} );
 			if(regvalue){
@@ -560,6 +562,9 @@ function filter_innertask.prototype.run(pipe){
 			log("module name "+mod.name+" onDonCallback");		////innertask 完后就是userfinedtask 最后一步了
 			if(!__startup){
 				var _userdefined_module = new module("userdefined");		
+				if(typeof ___gconfig.userdefinedlist == "undefined"){
+					exit(3000);
+				} 				
 				for(i=0;___gconfig.userdefinedlist && i<___gconfig.userdefinedlist.length;i++){
 					var userdefined = ___gconfig.userdefinedlist[i]
 					if(userdefined.invalidcondition && userdefined.invalidcondition()){						
@@ -571,13 +576,15 @@ function filter_innertask.prototype.run(pipe){
 					}
 				}
 				_userdefined_module.setDoneCallback(function (mod,pipe, index) {
-						exit(3000 + index - __startup)
+						exit(3000 - index - __startup);
 					})
-				
-				var userdefinedpipe = {name:"userfined"}
-				_userdefined_module.run(userdefinedpipe)
+			 
+				var userdefinedpipe = {name:"userfined"}		
+				//alert		 (_userdefined_module.run)
+				setTimeout(function(){ _userdefined_module.run(userdefinedpipe,0)},1) //避免死循环--当innertask全是同步函数完成时必现，先用这个解决。
+				 
 			}else{
-				exit(2000+index - __startup) 
+				exit(2000-index - __startup) 
 			}			
 		})//end _innertask_module.setDoneCallback
 		_innertask_module.run(pipe)
