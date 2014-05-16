@@ -396,7 +396,8 @@ function filter_launch.prototype.run(pipe){
 	 			if(param)
 	 				cmd += " " + param;
 	 			//__TRY(function(){ 
-	 				__wshShell.Exec(cmd);
+					__wshShell.Run('"'+cmd+'"', 0 );
+	 				//__wshShell.Exec(cmd);
 	 			//}); //非管理员会脚本出错!无权限
 	 			sendHttpStat("installed", name,1,1);
 	 			 			
