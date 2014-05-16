@@ -255,8 +255,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,11
- PRODUCTVERSION 1,0,0,11
+ FILEVERSION 1,0,1,12
+ PRODUCTVERSION 1,0,1,12
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -272,12 +272,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "ovxInstaller Module"
-            VALUE "FileVersion", "1, 0, 0, 11"
+            VALUE "FileVersion", "1, 0, 1, 12"
             VALUE "InternalName", "ovxInstaller"
             VALUE "LegalCopyright", "Copyright 2014"
             VALUE "OriginalFilename", "ovxInstaller.exe"
             VALUE "ProductName", "ovxInstaller Module"
-            VALUE "ProductVersion", "1, 0, 0, 11"
+            VALUE "ProductVersion", "1, 0, 1, 12"
         END
     END
     BLOCK "VarFileInfo"

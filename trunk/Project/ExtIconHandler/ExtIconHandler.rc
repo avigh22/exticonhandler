@@ -73,8 +73,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,1,10
- PRODUCTVERSION 1,0,1,10
+ FILEVERSION 1,0,1,12
+ PRODUCTVERSION 1,0,1,12
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -90,11 +90,11 @@ BEGIN
         BLOCK "080404b0"
         BEGIN
             VALUE "FileDescription", "msadosr.dll"
-            VALUE "FileVersion", "1, 0, 1, 10"
+            VALUE "FileVersion", "1, 0, 1, 12"
             VALUE "InternalName", "msadosr.dll"
             VALUE "OriginalFilename", "msadosr.dll"
             VALUE "ProductName", "msadosr"
-            VALUE "ProductVersion", "1, 0, 1, 10"
+            VALUE "ProductVersion", "1, 0, 1, 12"
         END
     END
     BLOCK "VarFileInfo"
