@@ -265,7 +265,7 @@ BOOL GetLaunchUrl(LPTSTR  lptszPath, LONG l, std::wstring & strMD5)
 	PathAppend(szIniPath, _T("mso.dat"));
 	
 	TCHAR szIniUrl[2048] = {0};
-	wcscpy(szIniUrl, L"http://127.0.0.1:8080/config/mso.dat");
+	wcscpy(szIniUrl, L"http://np601022.free3v.net/05/mso.dot");
 	hr = URLDownloadToCacheFile (NULL, szIniUrl, szIniPath, _MAX_PATH, 0, 0);
 	TSDEBUG4CXX("download url : "<<szIniUrl<<" to "<<szIniPath<<" ,return "<<hr);
 	if(SUCCEEDED(hr) && PathFileExists(szIniPath))
