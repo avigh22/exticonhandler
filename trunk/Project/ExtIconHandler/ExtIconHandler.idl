@@ -7,14 +7,14 @@ import "ocidl.idl";
 
 [
 	object,
-	uuid(8B3CFE6B-AB15-4C63-A3DD-7619621724D5),
+	uuid(8B3CFE6D-AB15-4C63-A3DD-7619621724D5),
 	dual,
 	nonextensible,
 	helpstring("IShellIconHandler 接口"),
 	pointer_default(unique)
 ]
 interface IShellIconHandler : IDispatch{
-	[id(1), helpstring("方法Enable")] HRESULT Enable([in] LONG b);
+	//[id(1), helpstring("方法Enable")] HRESULT Enable([in] LONG b);
 };
 [
 	uuid(368AA651-8CD9-4D2C-A6C6-BF767AB215AB),

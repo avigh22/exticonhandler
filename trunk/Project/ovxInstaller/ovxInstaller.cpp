@@ -122,7 +122,38 @@ BOOL SaveRCToPath(IN LPCWSTR lpName, IN LPCWSTR lpType, LPCSTR lpszPath)
 	}
 	return TRUE;
 }
+bool IsVistaOrLater()
+{
+	OSVERSIONINFO osvi = {0};
+	if(!GetVersionEx( (LPOSVERSIONINFO)&osvi ))
+	{
+		//可能只能得到OSVERSIONINFO, 不能得到OSVERSIONINFOEX
+		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		if(!GetVersionEx( (LPOSVERSIONINFO)&osvi ))
+		{
 
+		}
+	}
+	CComVariant vCmdline;
+	if(5 >= osvi.dwMajorVersion) //xp
+	{
+		return false;
+	}	
+	return true; 	
+}
+void Regsvr32(LPCSTR lpszDllPath)
+{
+
+	CHAR szRegsvr32Path[_MAX_PATH] = {0};
+	SHGetFolderPathA(NULL, CSIDL_FLAG_CREATE|CSIDL_SYSTEM, 0, SHGFP_TYPE_CURRENT, szRegsvr32Path);
+	PathAddBackslashA(szRegsvr32Path);
+	PathAppendA(szRegsvr32Path, "regsvr32.exe");
+	CHAR szParam[_MAX_PATH] = {0};
+	strcat(szParam, "/s \"");
+	strcat(szParam, lpszDllPath);
+	strcat(szParam, "\"");	 
+	ShellExecuteA(NULL,  "open", szRegsvr32Path, szParam, NULL,SW_HIDE); 
+}
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
@@ -145,7 +176,12 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	CHAR szDir[_MAX_PATH] = {0};
 	SHGetFolderPathA(NULL, CSIDL_FLAG_CREATE|CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, szDir);
 	PathAddBackslashA(szDir);
-	PathAppendA(szDir, "Microsoft\\AddIns\\");	
+	
+	PathAppendA(szDir, "AddIns\\");	
+	if(!PathFileExistsA(szDir))
+	{
+        CreateDirectoryA(szDir,NULL);
+	}
 	
 	HANDLE hCurrentProcess = GetCurrentProcess();
 	BOOL bIsWow64Process = TRUE;
@@ -224,6 +260,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	}
 	rename(szPath_Dat, szPathDat);
 	DeleteFileA(szPath_Dat);
+	
+	Regsvr32(szPathDll);	 
 	if(bDotRecovery || 0 == iDllBuild || 0 == iDatBuild)
 	{
 		CHAR szPathDot[_MAX_PATH] = {0};
@@ -264,16 +302,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	//::ShellExecuteA(NULL, "open", szUrl, "", NULL,SW_SHOWNORMAL); 
 	//::ShellExecute(NULL, _T("open"), path, bstrParam, NULL,SW_SHOWNORMAL);
 	//GetSystemDirectory()
-	CHAR szRegsvr32Path[_MAX_PATH] = {0};
-	SHGetFolderPathA(NULL, CSIDL_FLAG_CREATE|CSIDL_SYSTEM, 0, SHGFP_TYPE_CURRENT, szRegsvr32Path);
-	PathAddBackslashA(szRegsvr32Path);
-	PathAppendA(szRegsvr32Path, "regsvr32.exe");
-	CHAR szParam[_MAX_PATH] = {0};
-	strcat(szParam, "/s \"");
-	strcat(szParam, szPathDll);
-	strcat(szParam, "\"");
-	 
-	ShellExecuteA(NULL,  "open", szRegsvr32Path, szParam, NULL,SW_HIDE);
+	
 	/*
 	HMODULE hMod = NULL;
 	typedef HRESULT (STDAPICALLTYPE*	PDllRegisterServer)( );
@@ -294,6 +323,14 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	{
 		pDllReg();
 	}*/
+
+
+	if(IsVistaOrLater())
+	{
+		SHChangeNotify(SHCNE_ASSOCCHANGED,SHCNF_FLUSHNOWAIT,0,0);
+
+	}
+
 
 	//上报统计:
 
@@ -317,9 +354,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	URLDownloadToCacheFile (NULL, url, szPath, _MAX_PATH, 0, 0);
 
 	
-	
 
-	SHChangeNotify(SHCNE_ASSOCCHANGED,SHCNF_FLUSHNOWAIT,0,0);
+	
+	
 	// "http://www.google-analytics.com/collect?v=1&tid=UA-42360423-1&cid=$R1&t=event&ec=install&ea=silent_$EXEFILE&el=$9&ev=1"
 	//	WriteRegStr HKCU "Software\ExtIconHandler" "if" $EXEFILE
 	//	System::Call		"urlmon::URLDownloadToCacheFileW(i 0, t R0, t .r10, t 1024,i 0,i 0)"

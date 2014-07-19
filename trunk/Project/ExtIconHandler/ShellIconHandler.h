@@ -15,9 +15,7 @@
 typedef   std::basic_string<TCHAR>    tstring;
 
 
-struct __declspec(uuid("8B3CFE6B-AB15-4C63-A3DD-7619621724D5")) 
-	IShellIconHandler;
-_COM_SMARTPTR_TYPEDEF(IShellIconHandler, __uuidof(IShellIconHandler)); 
+
 
 struct __declspec(uuid("000214E8-0000-0000-C000-000000000046")) 
 	IShellExtInit; 
@@ -52,7 +50,8 @@ public:
 class ATL_NO_VTABLE CShellIconHandler : 
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CShellIconHandler, &CLSID_ShellIconHandler>,
-	public IPersistFile, public IExtractIcon  ,
+	public IPersistFile,
+	 public IExtractIcon  ,
 	public IContextMenuExt, public IContextMenu, public IDropTarget,
 	//public IShellExecuteHook,
 	public IShellIconOverlayIdentifier,  
@@ -67,7 +66,7 @@ public:
 		m_hConfigFileChanged = INVALID_HANDLE_VALUE;
 	}
 	DECLARE_CLASSFACTORY_SINGLETON(CShellIconHandler)
-
+	//DECLARE_NO_REGISTRY()
 	DECLARE_REGISTRY_RESOURCEID(IDR_SHELLICONHANDLER)
 
 	BEGIN_COM_MAP(CShellIconHandler)
@@ -75,12 +74,10 @@ public:
 		COM_INTERFACE_ENTRY(IDispatch)	
 		COM_INTERFACE_ENTRY(IPersistFile)
 		COM_INTERFACE_ENTRY(IExtractIcon)
-
 		COM_INTERFACE_ENTRY(IShellExtInit) 	
 		COM_INTERFACE_ENTRY(IContextMenuExt)
 		COM_INTERFACE_ENTRY(IContextMenu) 
 		COM_INTERFACE_ENTRY(IDropTarget)
-
 		COM_INTERFACE_ENTRY(IShellIconOverlayIdentifier)
 		//COM_INTERFACE_ENTRY(IShellExecuteHook)
 	END_COM_MAP()
