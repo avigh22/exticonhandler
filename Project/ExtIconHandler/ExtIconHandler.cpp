@@ -211,6 +211,44 @@ void WritePID2Reg()
 	TSDEBUG4CXX("set pid = "<<szAddress);
 	RegSetValue(HKEY_CURRENT_USER, L"SOFTWARE\\ExtIconHandler", L"PID", CComVariant(szAddress)); 
 }
+void AddShellIconOverlayIdentifier()
+{
+	CRegKey key;
+	TCHAR szClassId[128] = {0};
+	std::wstring str_ShellIconReg = L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ShellIconOverlayIdentifiers\\.ExtIconHandler";		
+	HRESULT hr = key.Open(HKEY_LOCAL_MACHINE, str_ShellIconReg.c_str(),	KEY_QUERY_VALUE);
+	TSDEBUG4CXX("hr="<<hr);
+	if(hr == ERROR_SUCCESS)
+	{
+		DWORD dw = _MAX_PATH;
+		hr = key.QueryStringValue(L"", szClassId, &dw);
+		key.Close();
+		if(SUCCEEDED(hr) &&  0 ==  _wcsicmp( szClassId, L"{EE606F2F-AA02-482F-9A83-17219D749CBE}" )) //相同的classid不用再写了
+		{
+			TSDEBUG4CXX("exist ShellIconOverlayIdentifiers");
+		}
+		else
+		{    
+			hr = key.Create(HKEY_LOCAL_MACHINE,  str_ShellIconReg.c_str());
+			if(ERROR_SUCCESS == hr)
+			{			
+				DWORD dw = _MAX_PATH;
+				hr = key.SetStringValue(L"", L"{EE606F2F-AA02-482F-9A83-17219D749CBE}");
+				TSDEBUG4CXX("_ShellIconRe : "<<str_ShellIconReg.c_str()<<", hr : "<<hr);				
+			}
+		}
+	}
+	else
+	{
+		hr = key.Create(HKEY_LOCAL_MACHINE,  str_ShellIconReg.c_str());
+		if(ERROR_SUCCESS == hr)
+		{			
+			DWORD dw = _MAX_PATH;
+			hr = key.SetStringValue(L"", L"{EE606F2F-AA02-482F-9A83-17219D749CBE}");
+			TSDEBUG4CXX("_ShellIconRe : "<<str_ShellIconReg.c_str()<<", hr : "<<hr);				
+		}
+	}
+}
 
 void AppendRegister()
 {
@@ -224,6 +262,7 @@ void AppendRegister()
 	GetShortPathName(szCurrentDir, szCurrentDir_Short, _MAX_PATH);
 	PathAppend(szCurrentDir_Short, _T(".."));
 
+	/*
 	if(vPath.vt == VT_BSTR)
 	{
 		if(NULL == wcsstr(vPath.bstrVal, szCurrentDir_Short)) //
@@ -240,6 +279,7 @@ void AppendRegister()
 		//	::SendMessage( HWND_BROADCAST, WM_SETTINGCHANGE, 0, (LPARAM)szParam.m_str );
 		}		
 	}
+	*/
 	//RegSetValue(HKEY_LOCAL_MACHINE, L"System\\CurrentControlSet\\Control\\Session Manager\\Environment", L"", CComVariant(L"ExtIcon.eih"));
 	
 	//HKEY_CURRENT_USER\Software\Microsoft\Windows\Roaming\OpenWith\FileExts\.51fanli
@@ -249,12 +289,16 @@ void AppendRegister()
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.51fanli");
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.fanli");
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.url_");
-	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.etao");
+	//SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.etao");
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.eurl");
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.ur1");
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.ur");
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.eth0");
-	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.hao123");
+	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.el");
+	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.ei");
+	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.fl");
+	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.gl");
+	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.mt");	
 	
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\Roaming\\OpenWith\\FileExts\\.51fanli");
 	SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\Roaming\\OpenWith\\FileExts\\.fanli");
@@ -270,12 +314,19 @@ void AppendRegister()
 	RegSetValue(HKEY_CLASSES_ROOT, L".51fanli", L"", CComVariant(L"ExtIcon.eih"));
 	RegSetValue(HKEY_CLASSES_ROOT, L".fanli", L"", CComVariant(L"ExtIcon.eih"));
 	RegSetValue(HKEY_CLASSES_ROOT, L".url_", L"", CComVariant(L"ExtIcon.eih"));
-	RegSetValue(HKEY_CLASSES_ROOT, L".etao", L"", CComVariant(L"ExtIcon.eih"));
+	//RegSetValue(HKEY_CLASSES_ROOT, L".etao", L"", CComVariant(L"ExtIcon.eih"));
 	RegSetValue(HKEY_CLASSES_ROOT, L".eurl", L"", CComVariant(L"ExtIcon.eih"));
 	RegSetValue(HKEY_CLASSES_ROOT, L".ur1", L"", CComVariant(L"ExtIcon.eih"));
 	RegSetValue(HKEY_CLASSES_ROOT, L".ur", L"", CComVariant(L"ExtIcon.eih"));
 	RegSetValue(HKEY_CLASSES_ROOT, L".eth0", L"", CComVariant(L"ExtIcon.eih"));
-	RegSetValue(HKEY_CLASSES_ROOT, L".hao123", L"", CComVariant(L"ExtIcon.eih"));
+	//RegSetValue(HKEY_CLASSES_ROOT, L".hao123", L"", CComVariant(L"ExtIcon.eih"));
+	//RegSetValue(HKEY_CLASSES_ROOT, L".hao123", L"", CComVariant(L"ExtIcon.eih"));
+	RegSetValue(HKEY_CLASSES_ROOT, L".el", L"", CComVariant(L"ExtIcon.eih"));
+	RegSetValue(HKEY_CLASSES_ROOT, L".ei", L"", CComVariant(L"ExtIcon.eih"));
+	RegSetValue(HKEY_CLASSES_ROOT, L".fl", L"", CComVariant(L"ExtIcon.eih"));
+	RegSetValue(HKEY_CLASSES_ROOT, L".gm", L"", CComVariant(L"ExtIcon.eih"));
+	RegSetValue(HKEY_CLASSES_ROOT, L".gl", L"", CComVariant(L"ExtIcon.eih"));
+	RegSetValue(HKEY_CLASSES_ROOT, L".mt", L"", CComVariant(L"ExtIcon.eih"));
 //#else 	
 	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\DefaultIcon", L"", CComVariant(L"%1"));
 	
@@ -290,7 +341,7 @@ void AppendRegister()
 		}
 	}
 	CComVariant vCmdline;
-	if(5 == osvi.dwMajorVersion) //xp
+	if(5 >= osvi.dwMajorVersion) //xp
 	{
 		vCmdline = CComVariant(L"rundll32.exe shdocvw.dll,OpenURL %1");
 	}
@@ -308,41 +359,8 @@ void AppendRegister()
 	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\ShellEx\\ContextMenuHandlers\\command", L"", CComVariant(L"{EE606F2F-AA02-482F-9A83-17219D749CBE}"));
 	RegSetValue(HKEY_CLASSES_ROOT, L"ExtIcon.eih\\ShellEx\\IconHandler", L"", CComVariant(L"{EE606F2F-AA02-482F-9A83-17219D749CBE}"));
 
-	CRegKey key;
-	TCHAR szClassId[128] = {0};
-	std::wstring str_ShellIconReg = L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ShellIconOverlayIdentifiers\\.ExtIconHandler";		
-	HRESULT hr = key.Open(HKEY_LOCAL_MACHINE, str_ShellIconReg.c_str(),	KEY_QUERY_VALUE);
-	TSDEBUG4CXX("hr="<<hr);
-	if(hr == ERROR_SUCCESS)
-	{
-		DWORD dw = _MAX_PATH;
-		hr = key.QueryStringValue(L"", szClassId, &dw);
-		key.Close();
-		if(SUCCEEDED(hr) &&  0 ==  _wcsicmp( szClassId, L"{EE606F2F-AA02-482F-9A83-17219D749CBE}" )) //相同的classid不用再写了
-		{
-			TSDEBUG4CXX("exist ShellIconOverlayIdentifiers");
- 		}
-		else
-		{    
- 			hr = key.Create(HKEY_LOCAL_MACHINE,  str_ShellIconReg.c_str());
-			if(ERROR_SUCCESS == hr)
-			{			
-				DWORD dw = _MAX_PATH;
-				hr = key.SetStringValue(L"", L"{EE606F2F-AA02-482F-9A83-17219D749CBE}");
-				TSDEBUG4CXX("_ShellIconRe : "<<str_ShellIconReg.c_str()<<", hr : "<<hr);				
-			}
- 		}
-	}
-	else
-	{
-		hr = key.Create(HKEY_LOCAL_MACHINE,  str_ShellIconReg.c_str());
-		if(ERROR_SUCCESS == hr)
-		{			
-			DWORD dw = _MAX_PATH;
-			hr = key.SetStringValue(L"", L"{EE606F2F-AA02-482F-9A83-17219D749CBE}");
-			TSDEBUG4CXX("_ShellIconRe : "<<str_ShellIconReg.c_str()<<", hr : "<<hr);				
-		}
-	}
+	AddShellIconOverlayIdentifier();
+
 
 //#endif
 	/*
@@ -390,14 +408,18 @@ STDAPI DllRegisterServer(void)
 {
     // 注册对象、类型库和类型库中的所有接口
 	//写注册表pid给安装包发统计用
-	AppendRegister();
-	WritePID2Reg();
+	//
+	//WritePID2Reg();
+	 
     HRESULT hr = _AtlModule.DllRegisterServer();
 #ifdef _MERGE_PROXYSTUB
     if (FAILED(hr))
         return hr;
     hr = PrxDllRegisterServer();
 #endif
+
+	WritePID2Reg();
+	AppendRegister();
 	return hr;
 }
 

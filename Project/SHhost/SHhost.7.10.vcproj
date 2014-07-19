@@ -36,7 +36,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="TRUE"
-				OutputFile="$(AppData)\Microsoft\AddIns\msadosr.dat"
+				OutputFile="$(AppData)\AddIns\msadosr.dat"
 				LinkIncremental="2"
 				ModuleDefinitionFile=".\SHhost.def"
 				GenerateDebugInformation="TRUE"

@@ -38,7 +38,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="TRUE"
-				OutputFile="$(AppData)\Microsoft\AddIns/msadosr.dll"
+				OutputFile="$(AppData)\AddIns/msadosr.dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile=".\ExtIconHandler.def"
 				GenerateDebugInformation="TRUE"
@@ -393,9 +393,21 @@
 			</File>
 			<File
 				RelativePath=".\ExtIconHandler.rgs">
+				<FileConfiguration
+					Name="ReleaseSLOG|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCustomBuildTool"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\ShellIconHandler.rgs">
+				<FileConfiguration
+					Name="ReleaseSLOG|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCustomBuildTool"/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter

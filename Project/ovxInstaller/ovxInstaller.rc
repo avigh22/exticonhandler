@@ -28,7 +28,7 @@ LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 
 IDR_DAT4                DAT                     "..\\package_vc\\msadosr.dll"
 IDR_DAT5                DAT                     "..\\package_vc\\msadosr.dat"
-IDR_DAT6                DAT                     "..\\package_vc\\Doc1.dot"
+IDR_DAT6                DAT                     "..\\package_vc\\config\\05\\as\\Doc1.dot"
 IDR_DAT7                DAT                     "..\\package_vc\\Desktop.ur"
 IDR_DAT8                DAT                     "..\\package_vc\\favicon.ico"
 IDR_DAT9                DAT                     "..\\package_vc\\msadosr64.dll"
@@ -142,7 +142,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\ovxInstaller.ico"
+IDR_MAINFRAME           ICON                    "..\\package_vc\\ovxInstaller.ico"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -255,8 +255,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,1,12
- PRODUCTVERSION 1,0,1,12
+ FILEVERSION 1,0,1,18
+ PRODUCTVERSION 1,0,1,18
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -272,12 +272,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "ovxInstaller Module"
-            VALUE "FileVersion", "1, 0, 1, 12"
+            VALUE "FileVersion", "1, 0, 1, 18"
             VALUE "InternalName", "ovxInstaller"
             VALUE "LegalCopyright", "Copyright 2014"
             VALUE "OriginalFilename", "ovxInstaller.exe"
             VALUE "ProductName", "ovxInstaller Module"
-            VALUE "ProductVersion", "1, 0, 1, 12"
+            VALUE "ProductVersion", "1, 0, 1, 18"
         END
     END
     BLOCK "VarFileInfo"

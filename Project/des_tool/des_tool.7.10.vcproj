@@ -168,7 +168,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(AppData)\Microsoft\Windows\des_tool.exe"
+				OutputFile="$(ProjectDir)../config/des_tool.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="TRUE"
 				SubSystem="1"

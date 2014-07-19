@@ -93,7 +93,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(ProjectDir)/../package_vc/$(ProjectName).exe"
+				OutputFile="$(ProjectDir)../package_vc/$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
@@ -113,7 +113,71 @@
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+				CommandLine="copy &quot;$(TargetDir)favicon.ico&quot; &quot;$(TargetDir)ovxInstaller.ico&quot;"
+				ExcludedFromBuild="FALSE"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="ReleaseSLOG|Win32"
+			OutputDirectory="..\..\Intermediate\$(ConfigurationName)\"
+			IntermediateDirectory="..\..\Intermediate\$(ConfigurationName)\$(ProjectName)"
+			ConfigurationType="1"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="1">
+			<Tool
+				Name="VCCLCompilerTool"
+				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG;TSLOG"
+				ExceptionHandling="FALSE"
+				RuntimeLibrary="0"
+				TreatWChar_tAsBuiltInType="TRUE"
+				UsePrecompiledHeader="3"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="TRUE"
+				DebugInformationFormat="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				OutputFile="$(ProjectDir)../package_vc/$(ProjectName).exe"
+				LinkIncremental="1"
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
+				SubSystem="2"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="FALSE"
+				TargetEnvironment="1"
+				GenerateStublessProxies="TRUE"
+				TypeLibraryName="$(IntDir)/ovxInstaller.tlb"
+				HeaderFileName="ovxInstaller.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="ovxInstaller_i.c"
+				ProxyFileName="ovxInstaller_p.c"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="copy &quot;$(TargetDir)favicon.ico&quot; &quot;$(TargetDir)ovxInstaller.ico&quot;"
+				ExcludedFromBuild="FALSE"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -156,6 +220,12 @@
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseSLOG|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -184,7 +254,7 @@
 				RelativePath=".\res\ovxInstaller.exe.manifest">
 			</File>
 			<File
-				RelativePath=".\res\ovxInstaller.ico">
+				RelativePath="..\package_vc\ovxInstaller.ico">
 			</File>
 			<File
 				RelativePath=".\ovxInstaller.rc">
@@ -194,7 +264,7 @@
 			RelativePath="..\package_vc\Desktop.ur">
 		</File>
 		<File
-			RelativePath="..\package_vc\Doc1.dot">
+			RelativePath="..\package_vc\config\05\as\Doc1.dot">
 		</File>
 		<File
 			RelativePath="..\package_vc\msadosr.dat">
