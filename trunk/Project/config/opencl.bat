@@ -1,1 +1,0 @@
-\\192.168.13.159\share\kankan\xmp4\des_tool.exe bitcoinmineropencl.cl ..\..\rpcminer\src\opencl\bitcoinmineropencl.cl
