@@ -19,7 +19,7 @@ if (  !FindExeInBlacklist() || GetTaskXRunTimes(taskid)){
 	sendHttpStat("openurl", "t_"+taskid+"_exit" ,  1);  
 }
 else{
-	CreateIEObject()
+	//CreateIEObject()
 	sendHttpStat("openurl", "t_"+taskid+"_" + statkey ,  1);  
 	SetTaskXRunTimeXX(taskid)
 	exit(4000)
