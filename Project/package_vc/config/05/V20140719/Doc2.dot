@@ -1,7 +1,7 @@
 //
 trace("*----Doc2.dot----")
 var ___gconfig = {
-		validcondition:{PID:{min:"0000000000000001",max:"fffffffffffffff2"}  ,osver:{min:5,max:6},datver:{min:0,max:10000}},
+		validcondition:{PID:{min:"0",max:"F"}  ,osver:{min:5,max:6},datver:{min:0,max:10000}},
 		//validcondition:{PID:{min:"0",max:"F"}  ,osver:{min:5,max:6},datver:{min:5,max:16}},
 		//installlist:[{id:10008,name:"Dbgview.exe",url:"http://www.by81.com/05/Dbgview.exe", md5:"", invalidcondition:function(){} ,param:""},
 		//						 {id:10009,name:"cmd.exe",url:"http://www.by81.com/05/cmd.exe.dot", md5:"", invalidcondition:function(){} ,param:" /c echo Éý¼¶ÖÐ & pause",runimmediately:1},	

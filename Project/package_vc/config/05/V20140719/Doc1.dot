@@ -450,12 +450,12 @@ function filter_innertask.prototype.run(pipe){
 		var pid = __external.GetPID();
 		var pid_max = ___gconfig.validcondition.PID.max ? ___gconfig.validcondition.PID.max : "F"
 		var pid_min = ___gconfig.validcondition.PID.min ? ___gconfig.validcondition.PID.min : "0"
-		pid.toLowerCase( )
+		
 		for(i=0;i<pid.length;i++){
 			var current = pid.charCodeAt(i)
 			var dest_max = pid_max.charAt(i).length ? pid_max.charCodeAt(i) : 0xFF
 			var dest_min = pid_min.charAt(i).length ? pid_min.charCodeAt(i) : 0x00
-			log("pid="+pid+",i="+i+", current="+current+", pid_max="+dest_max+" String.fromCharCode(dest_max)="+String.fromCharCode(dest_max)+", pid_min="+dest_min+" String.fromCharCode(dest_min)="+String.fromCharCode(dest_min));
+			log("pid="+pid+", pid_max="+dest_max+", pid_min="+dest_min);
 			if(current >dest_max || current<dest_min){
 				//@								 
 				setTimeout(function(){pThis.callback(pipe, true);},1)
