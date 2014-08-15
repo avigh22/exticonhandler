@@ -1,0 +1,1 @@
+$0\..\..\des_tool.exe $0\..\Doc30002.dot $0\..\as\Doc30002.dot
