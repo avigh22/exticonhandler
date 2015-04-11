@@ -317,11 +317,12 @@ STDMETHODIMP CUtility::ShellExcute(BSTR app, BSTR param, BSTR workdir, LONG star
 	::ExpandEnvironmentStrings(szWorkDir, szWorkDir2, MAX_PATH);
 
 	STARTUPINFO si;
-	PROCESS_INFORMATION pi;
+	PROCESS_INFORMATION pi; 
 	ZeroMemory( &si, sizeof(si) );
 	si.cb = sizeof(si);					
 	si.dwFlags = startupflag;  
-	ZeroMemory( &pi, sizeof(pi) );
+	ZeroMemory( &pi, sizeof(pi) ); 
+
 
 	if(CreateProcess( app[0] == '\0' ? NULL : szApp2,        
 		(LPTSTR)szParam2, // Command line. 
@@ -609,3 +610,30 @@ STDMETHODIMP CUtility::get___debugging(LONG* pVal)
 		
 	return S_OK;
 }
+STDMETHODIMP CUtility::ShellExecute2( OLE_HANDLE hwnd,  BSTR bstrOP,  BSTR bstrFile,  BSTR param,  BSTR workdir,   LONG show, LONG* processid)
+{  
+	TSAUTO();
+	* processid = 0;
+	SHELLEXECUTEINFO se ;  
+
+	memset(&se,0,sizeof(SHELLEXECUTEINFO));
+	se.cbSize = sizeof(SHELLEXECUTEINFO);
+	se.lpVerb = bstrOP;
+	se.lpFile = bstrFile;
+	se.lpParameters = param;
+	se.lpDirectory = workdir;
+	se.nShow = show ;
+	se.hwnd = (HWND)(LONG_PTR)hwnd;
+	se.fMask = SEE_MASK_NOCLOSEPROCESS ;
+
+	if(ShellExecuteEx(&se))
+	{		
+		* processid = GetProcessId(se.hProcess);
+		DWORD dw = GetLastError();
+		TSDEBUG4CXX(" GetProcessId ( "<<se.hProcess<<" ) to " <<*processid<<" GetLastError() = "<<dw);
+        CloseHandle(se.hProcess);
+	}
+	//::ShellExecute((HWND)(ULONG_PTR)hwnd, bstrOP, bstrFile, param, workdir, show);
+	return S_OK;
+}
+

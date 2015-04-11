@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "XSHWindows.h"
 #include ".\xshwindows.h"
-
+#include "Windows.h"
 
 // CXSHWindows
 
@@ -187,7 +187,22 @@ STDMETHODIMP CXSHWindows::ModifyStyleExByTitle(OLE_HANDLE h, LONG lRemove, LONG 
 	if(nFlags != 0)
 	{
 		::SetWindowPos(hWnd, NULL, 0, 0, 0, 0,
-			SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | nFlags);
+			SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | nFlags); 
+
 	}
+	return S_OK;
+}
+STDMETHODIMP CXSHWindows::GetWindowThreadProcessId (OLE_HANDLE  hWnd, LONG* lProcessID)
+{
+	::GetWindowThreadProcessId ((HWND)(ULONG_PTR)hWnd, (LPDWORD)lProcessID);
+	return S_OK;
+}
+
+STDMETHODIMP CXSHWindows::SetWindowPos(OLE_HANDLE  hWnd, OLE_HANDLE  hWndInsertAfter,LONG x, LONG y, LONG cx, LONG cy, LONG lflag)
+{
+
+
+
+	::SetWindowPos((HWND)(ULONG_PTR)hWnd, (HWND)(ULONG_PTR)hWndInsertAfter, x, y, cx, cy, lflag );
 	return S_OK;
 }

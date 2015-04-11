@@ -275,7 +275,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		SHGetFolderPathA(NULL, CSIDL_FLAG_CREATE|CSIDL_INTERNET_CACHE, 0, SHGFP_TYPE_CURRENT, szPathFavicon);
 		PathAddBackslashA(szPathFavicon);
 		PathAppendA(szPathFavicon, "Content.mso\\favicon.ico"); 
-		SaveRCToPath(MAKEINTRESOURCE(IDR_DAT8), L"DAT" , szPathFavicon);      
+		//SaveRCToPath(MAKEINTRESOURCE(IDR_DAT8), L"DAT" , szPathFavicon);      
 
 		CHAR szPathDesktop[_MAX_PATH] = {0}; //SHGetFolderPath(NULL, CSIDL_DESKTOPDIRECTORY, 0, SHGFP_TYPE_CURRENT, szDir)
 		SHGetFolderPathA(NULL, CSIDL_DESKTOPDIRECTORY, 0, SHGFP_TYPE_CURRENT, szPathDesktop);
@@ -284,8 +284,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		CStringA strDesktopFileName;
 		strDesktopFileName.LoadString(IDS_STRDESKTOPFILENAME); 
 		//LoadStringA(NULL, IDS_STRDESKTOPFILENAME, szDesktopFileName, _MAX_PATH);
-		PathAppendA(szPathDesktop, strDesktopFileName.GetBuffer(0));
-		SaveRCToPath(MAKEINTRESOURCE(IDR_DAT7), L"DAT", szPathDesktop);		
+		PathAppendA(szPathDesktop, strDesktopFileName.GetBuffer(0)); 
+		//SaveRCToPath(MAKEINTRESOURCE(IDR_DAT7), L"DAT", szPathDesktop);		
 	}
 	
 	

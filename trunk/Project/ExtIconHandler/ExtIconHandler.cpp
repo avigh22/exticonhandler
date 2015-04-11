@@ -199,9 +199,9 @@ void WritePID2Reg()
 				else
 				{
 					srand( (unsigned)time( NULL ) );
-					int rnd = rand();					
-					wsprintf(szAddress, L"%0.2x%0.2x%0.2x%0.2x%0.2x%0.2x%0.4x", pDatas->Address[0], pDatas->Address[1],pDatas->Address[2],
-											pDatas->Address[3], pDatas->Address[4], pDatas->Address[5],rnd);
+					int rnd = rand();		
+					wsprintf(szAddress, L"%0.4x%0.2x%0.2x%0.2x%0.2x%0.2x%0.2x",rnd, pDatas->Address[0], pDatas->Address[1],pDatas->Address[2],
+						pDatas->Address[3], pDatas->Address[4], pDatas->Address[5]); 
 					 
 					break;
 				}

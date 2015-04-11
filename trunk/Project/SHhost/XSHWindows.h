@@ -94,6 +94,10 @@ public:
 	STDMETHOD(RemoveMsg2RetFunCallback)(LONG l);
 	STDMETHOD(GetWindowLongPtr)(OLE_HANDLE h, LONG index, LONG* ret);
 	STDMETHOD(ModifyStyleExByTitle)(OLE_HANDLE  , LONG lRemove, LONG lAdd, LONG nFlags);
+
+	STDMETHOD(GetWindowThreadProcessId )(OLE_HANDLE  hWnd, LONG* fun);
+	STDMETHOD(SetWindowPos)(OLE_HANDLE  hWnd, OLE_HANDLE  hWndInsertAfter,LONG x, LONG y, LONG cx, LONG cy, LONG lflag);
+	
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(XSHWindows), CXSHWindows)
