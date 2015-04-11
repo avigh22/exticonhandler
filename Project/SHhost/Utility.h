@@ -80,6 +80,7 @@ public:
 	STDMETHOD(WaitForSingleObject)(LONG h, LONG ms, LONG* ret);
 	STDMETHOD(SetThreadExecutionState)(LONG l);
 	STDMETHOD(get___debugging)(LONG* pVal);
+	STDMETHOD(ShellExecute2)( OLE_HANDLE hwnd,  BSTR bstrOP,  BSTR bstrFile,  BSTR param,  BSTR workdir,   LONG show, LONG* processid);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(Utility), CUtility)

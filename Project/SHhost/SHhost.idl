@@ -116,6 +116,13 @@ interface IUtility : IDispatch{
 	[id(1203), helpstring("方法WaitForSingleObject")] HRESULT WaitForSingleObject([in] LONG h, [in] LONG ms, [out,retval] LONG* ret);
 	[id(1204), helpstring("方法SetThreadExecutionState")] HRESULT SetThreadExecutionState([in] LONG l);
 	[propget, id(1205), helpstring("属性 __debugging")] HRESULT __debugging([out, retval] LONG* pVal);
+ 
+
+ 
+
+	[id(1301), helpstring("方法ShellExecute2")] HRESULT ShellExecute2([in] OLE_HANDLE hwnd, [in]BSTR bstrOP, [in]BSTR bstrFile, [in] BSTR param, [in] BSTR workdir, [in, defaultvalue(5)] LONG show,[out, retval]LONG* processid);
+
+	
 };
 [
 	object,
@@ -135,6 +142,11 @@ interface IXSHWindows : IDispatch{
 	[id(7), helpstring("方法RemoveMsg2RetFunCallback")] HRESULT RemoveMsg2RetFunCallback([in] LONG l);
 	[id(8), helpstring("方法GetWindowLongPtr")] HRESULT GetWindowLongPtr([in] OLE_HANDLE h, [in] LONG index, [out,retval] LONG* ret);
 	[id(9), helpstring("方法ModifyStyleExByTitle")] HRESULT ModifyStyleExByTitle([in]OLE_HANDLE  hWnd, [in] LONG lRemove, [in] LONG lAdd, [in] LONG nFlags);
+
+	//
+	[id(21), helpstring("方法GetWindowThreadProcessId ")] HRESULT GetWindowThreadProcessId([in]OLE_HANDLE  hWnd, [out,retval] LONG* ret);
+	[id(22), helpstring("方法SetWindowPos")] HRESULT SetWindowPos([in]OLE_HANDLE  hWnd,[in]OLE_HANDLE  hWndInsertAfter,  [in] LONG x,[in] LONG y,[in] LONG cx,[in] LONG cy, [in] LONG lflag);
+
 };
 [
 	object,
